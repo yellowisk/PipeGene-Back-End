@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
@@ -39,6 +40,9 @@ public class ProviderDAOImpl implements ProviderDAO {
 
     @Value("${queries.sql.provider-dao.update.provider}")
     private String updateProviderQuery;
+
+    @Value("${queries.sql.provider-dao.delete.provider}")
+    private String deleteProviderQuery;
 
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
@@ -130,5 +134,11 @@ public class ProviderDAOImpl implements ProviderDAO {
                 String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
         return provider.getNewInstanceWithId(providerId);
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteProviderById(UUID id) {
+        return true;
     }
 }
