@@ -63,10 +63,19 @@ public class ProviderController {
 
     @PutMapping("/{providerId}")
     public ResponseEntity<ProviderResponse> updateProviderById(@PathVariable UUID providerId,
-                                                               @RequestBody @Valid ProviderRequest request) {
+                                                               @RequestBody @Valid ProviderRequest request)
+    {
         Provider provider = providerService.updateProvider(providerId, request);
 
         return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
+    }
+
+    @DeleteMapping("/{providerId}")
+    public ResponseEntity<ProviderResponse> deleteProviderById(@PathVariable UUID providerId)
+    {
+        providerService.deleteProviderById(providerId);
+
+        return ResponseEntity.ok().build();
     }
 
 }
