@@ -60,4 +60,13 @@ public class ProviderController {
 
         return ResponseEntity.accepted().build();
     }
+
+    @PutMapping("/{providerId}")
+    public ResponseEntity<ProviderResponse> updateProviderById(@PathVariable UUID providerId,
+                                                               @RequestBody @Valid ProviderRequest request) {
+        Provider provider = providerService.updateProvider(providerId, request);
+
+        return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
+    }
+
 }

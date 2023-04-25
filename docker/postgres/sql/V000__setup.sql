@@ -6,4 +6,4 @@ ALTER USER "pipegine-app" SET search_path = public,pipegine_platform;
 
 CREATE DATABASE "pipegine" WITH OWNER "pipegine-app";
 
-\connect "pipegine"
+/connect "pipegine"
