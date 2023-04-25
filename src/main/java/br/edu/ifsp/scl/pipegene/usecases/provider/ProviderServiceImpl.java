@@ -1,8 +1,8 @@
 package br.edu.ifsp.scl.pipegene.usecases.provider;
 
-import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
+import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
 import org.springframework.stereotype.Service;
@@ -41,5 +41,19 @@ public class ProviderServiceImpl implements ProviderService {
         Provider provider = optional.get();
 
         return providerDAO.updateProvider(provider.getNewInstanceWithId(providerId));
+    }
+
+    @Override
+    public void deleteProviderById(UUID providerId) {
+        Optional<Provider> optional = providerDAO.deleteProviderById(providerId);
+
+        if (optional.isEmpty()) {
+            throw new ResourceNotFoundException("Not found project with id: " + providerId);
+        }
+        Provider provider = optional.get();
+
+        if (!providerDAO.deleteProviderById(providerId)) {
+            throw new GenericResourceException("The project cannot be deleted because exists process still using him", "Delete project not allowed");
+        }
     }
 }
