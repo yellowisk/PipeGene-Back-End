@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,13 @@ public class ProviderController {
                         .map(ProviderResponse::createFromProvider)
                         .collect(Collectors.toList())
         );
+    }
+
+    @GetMapping("/{providerId}")
+    public ResponseEntity<ProviderResponse> findProviderById(@PathVariable UUID providerId) {
+        Provider provider = providerService.findProviderById(providerId);
+
+        return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
     }
 
     @PostMapping("/{providerId}/executions/{executionId}/steps/{stepId}")

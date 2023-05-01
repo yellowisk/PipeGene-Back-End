@@ -12,6 +12,8 @@ public interface ProviderService {
 
     Provider createNewProvider(ProviderRequest providerRequest);
 
+    Provider findProviderById(UUID providerId);
+
     Provider updateProvider(UUID projectId, ProviderRequest providerRequest);
 
     void deleteProviderById(UUID providerId);

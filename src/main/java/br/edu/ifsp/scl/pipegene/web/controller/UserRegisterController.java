@@ -5,11 +5,12 @@ import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.web.model.account.ApplicationUserResponse;
 import br.edu.ifsp.scl.pipegene.web.model.account.CreateUserRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.UUID;
 
 @RestController
 public class UserRegisterController {
@@ -28,4 +29,21 @@ public class UserRegisterController {
                 ApplicationUserResponse.createFromApplicationUser(applicationUser)
         );
     }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApplicationUser> findUserById(@PathVariable UUID userId) {
+        ApplicationUser applicationUser = applicationUserCRUD.findUserById(userId);
+
+        return ResponseEntity.ok(applicationUser);
+    }
+
+
+    //TODO: Create what's needed in other classes to make this method work
+//    @PatchMapping("/{userId}")
+//    public ResponseEntity<ApplicationUser> updateUserById(@PathVariable UUID userId, @RequestBody ApplicationUser applicationUser) {
+//        ApplicationUser applicationUserUpdated = applicationUserCRUD.updateUserById(userId, applicationUser);
+//
+//        return ResponseEntity.ok(applicationUserUpdated);
+//    }
+
 }
