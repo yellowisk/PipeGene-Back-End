@@ -63,7 +63,6 @@ public class ProjectCRUDImpl implements ProjectCRUD {
 
         Project project = optional.get();
         verifyAccess(project.getOwnerId());
-
         return projectDAO.updateProject(
                 project.getUpdatedInstance(request)
         );
