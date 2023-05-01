@@ -13,4 +13,7 @@ public interface ProviderService {
     Provider createNewProvider(ProviderRequest providerRequest);
 
     Provider updateProvider(UUID projectId, ProviderRequest providerRequest);
+
+    void deleteProviderById(UUID providerId);
+
 }

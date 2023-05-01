@@ -16,4 +16,7 @@ public interface ProviderDAO {
     Provider saveNewProvider(Provider provider);
 
     Provider updateProvider(Provider provider);
+
+    boolean deleteProviderById(UUID id);
+
 }
