@@ -48,12 +48,12 @@ public class ProviderServiceImpl implements ProviderService {
         Optional<Provider> optional = providerDAO.deleteProviderById(providerId);
 
         if (optional.isEmpty()) {
-            throw new ResourceNotFoundException("Not found project with id: " + providerId);
+            throw new ResourceNotFoundException("Not found provider with id: " + providerId);
         }
         Provider provider = optional.get();
 
         if (!providerDAO.deleteProviderById(providerId)) {
-            throw new GenericResourceException("The project cannot be deleted because exists process still using him", "Delete project not allowed");
+            throw new GenericResourceException("Error message to be created", "");
         }
     }
 }
