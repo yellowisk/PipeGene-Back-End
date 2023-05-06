@@ -284,3 +284,40 @@ queries:
                   AND es.id=?
                   -- AND es.provider_id=?
           )
+    group-dao:
+      insert:
+        group: >
+          INSERT INTO pipegine_platform.group(id, name, description, owner_id) VALUES(?, ?, ?, ?)
+
+      select:
+        group-by-id: >
+          SELECT * FROM pipegine_platform.group g WHERE g.id=?
+
+        groups-by-ids: >
+          SELECT * FROM pipegine_platform.group g WHERE g.id=ANY(?)
+
+        group-all: >
+          SELECT * FROM pipegine_platform.group
+
+        groups-by-owner-id: >
+          SELECT * FROM pipegine_platform.group g WHERE g.owner_id=?
+
+      update:
+        group: >
+          UPDATE pipegine_platform.group SET name=?, description=? WHERE id=?
+
+      delete:
+        group: >
+          DELETE FROM pipegine_platform.group WHERE id=?
+
+    group-participation-dao:
+
+      insert:
+        group-participation: >
+          INSERT INTO pipegine_platform.group_participation(id, group_id, receive_user_id, submitter_user_id, status) 
+          VALUES(?, ?, ?, ?, ?::group_participation_status)
+      update:
+        group-participation: >
+          UPDATE pipegine_platform.group_participation SET status=?::group_participation_status WHERE id=?
+
+
