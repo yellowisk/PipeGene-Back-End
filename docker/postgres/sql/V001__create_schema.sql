@@ -155,6 +155,52 @@ ALTER TABLE pipegine_platform.execution_step
 ALTER TABLE pipegine_platform.execution_step
     ADD CONSTRAINT execution_step_provider_id_fkey FOREIGN KEY (provider_id) REFERENCES pipegine_platform.provider(id);
 
+CREATE TABLE pipegine_platform.group(
+    id uuid NOT NULL,
+    name varchar NOT NULL,
+    description varchar NOT NULL,
+    owner_id uuid NOT NULL
+);
+
+ALTER TABLE pipegine_platform.group OWNER TO "pipegine";
+
+ALTER TABLE pipegine_platform.group
+    ADD CONSTRAINT group_pkey PRIMARY KEY (id);
+
+CREATE TYPE pipegine_platform.group_participation_status AS ENUM (
+    'PENDING',
+    'ACCEPTED',
+    'REJECTED',
+    'CANCELED'
+);
+
+ALTER TYPE pipegine_platform.group_participation_status OWNER TO "pipegine";
+
+CREATE TABLE pipegine_platform.group_participation(
+    id uuid NOT NULL,
+    group_id uuid NOT NULL,
+    receive_user_id uuid NOT NULL,
+    submitter_user_id uuid NOT NULL,
+    status pipegine_platform.group_participation_status
+);
+
+ALTER TABLE pipegine_platform.group_participation OWNER TO "pipegine";
+
+ALTER TABLE pipegine_platform.group_participation
+    ADD CONSTRAINT group_participation_pkey PRIMARY KEY (id);
+
+ALTER TABLE pipegine_platform.group_participation
+    ADD CONSTRAINT group_participation_group_id_fkey FOREIGN KEY (group_id)
+        REFERENCES pipegine_platform.group(id) ON DELETE CASCADE;
+
+ALTER TABLE pipegine_platform.group_participation
+    ADD CONSTRAINT group_participation_receive_user_id_fkey FOREIGN KEY (receive_user_id)
+        REFERENCES pipegine_platform.application_user(id) ON DELETE CASCADE;
+
+ALTER TABLE pipegine_platform.group_participation
+    ADD CONSTRAINT group_participation_submitter_user_id_fkey FOREIGN KEY (submitter_user_id)
+        REFERENCES pipegine_platform.application_user(id) ON DELETE CASCADE;
+
 
 CREATE TABLE pipegine_platform.application_user(
     id uuid NOT NULL,

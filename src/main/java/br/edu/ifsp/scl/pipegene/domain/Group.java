@@ -8,18 +8,16 @@ public class Group {
 
     private UUID id;
     private String name;
-    private ArrayList<UUID> members;
+    private ArrayList<GroupParticipation> groupParticipations;
     private String description;
     private UUID ownerId;
-    private ArrayList<UUID> invitedUsers;
 
-    private Group(UUID id, String name, ArrayList<UUID> members, String description, UUID ownerId, ArrayList<UUID> invitedUsers) {
+    private Group(UUID id, String name, ArrayList<GroupParticipation> members, String description, UUID ownerId) {
         this.id = id;
         this.name = name;
-        this.members = members;
+        this.groupParticipations = members;
         this.description = description;
         this.ownerId = ownerId;
-        this.invitedUsers = invitedUsers;
     }
 
     private Group(UUID id) {
@@ -30,22 +28,17 @@ public class Group {
         return new Group(id);
     }
 
-    public static Group createWithMembersAndInvitedUsers(UUID id, String name, String description, UUID ownerId, ArrayList<UUID> members, ArrayList<UUID> invitedUsers) {
-        ArrayList<UUID> membersList = Objects.isNull(members) ? new ArrayList<>() : new ArrayList<>(members);
-        ArrayList<UUID> invitedList = Objects.isNull(invitedUsers) ? new ArrayList<>() : new ArrayList<>(invitedUsers);
-        return new Group(id, name, membersList, description, ownerId, invitedList);
+    public static Group createWithMembersAndInvitedUsers(UUID id, String name, String description, UUID ownerId, ArrayList<GroupParticipation> groupParticipations) {
+        ArrayList<GroupParticipation> groupParticipationList = Objects.isNull(groupParticipations) ? new ArrayList<>() : new ArrayList<>(groupParticipations);
+        return new Group(id, name, groupParticipationList, description, ownerId);
     }
 
-    public static Group createWithoutMembersAndInvitedUser(UUID id, String name, String description, UUID ownerId) {
-        return new Group(id, name, new ArrayList<>(), description, ownerId, new ArrayList<>());
+    public static Group createWithoutGroupParticipations(UUID id, String name, String description, UUID ownerId) {
+        return new Group(id, name, new ArrayList<>(), description, ownerId);
     }
 
-    public void addMember(ArrayList<UUID> members) {
-        this.members.addAll(members);
-    }
-
-    public void addInvitedUser(ArrayList<UUID> invitedUsers) {
-        this.invitedUsers.addAll(invitedUsers);
+    public void addParticipation(ArrayList<GroupParticipation> groupParticipations) {
+        this.groupParticipations.addAll(groupParticipations);
     }
 
     public UUID getId() {
@@ -79,12 +72,7 @@ public class Group {
     public void setOwnerId(UUID ownerId) {
         this.ownerId = ownerId;
     }
-
-    public ArrayList<UUID> getMembers() {
-        return members;
-    }
-
-    public ArrayList<UUID> getInvitedUsers() {
-        return invitedUsers;
+    public ArrayList<GroupParticipation> getGroupParticipations() {
+        return groupParticipations;
     }
 }
