@@ -58,7 +58,7 @@ public class GroupDAOimpl implements GroupDAO {
                 groupParticipation.getGroup().getId(), groupParticipation.getReceiverId(),
                 groupParticipation.getStatus().toString(), groupParticipation.getSubmitterId());
 
-        return GroupParticipation.createOnlyWithId(groupParticipation.getId());
+        return groupParticipation;
     }
 
     @Override
