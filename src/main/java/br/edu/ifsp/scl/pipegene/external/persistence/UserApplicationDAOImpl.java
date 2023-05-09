@@ -27,6 +27,12 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
     @Value("${queries.sql.application-user-dao.select.application-user-by-username}")
     private String selectApplicationUserByUsernameQuery;
 
+    @Value("${queries.sql.application-user-dao.select.application-user-by-id}")
+    private String selectApplicationUserByIdQuery;
+
+    @Value("${queries.sql.application-user-dao.update.application-user}")
+    private String updateApplicationUserQuery;
+
     public UserApplicationDAOImpl(PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
@@ -47,6 +53,22 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
             return Optional.empty();
         }
 
+    }
+
+    @Override
+    public Optional<ApplicationUser> findUserById(UUID userId) {
+        try {
+            ApplicationUser user = jdbcTemplate.queryForObject(selectApplicationUserByIdQuery,
+                    this::mapperApplicationUserFromRs, userId);
+
+            if (Objects.isNull(user)) {
+                throw new IllegalStateException();
+            }
+
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Transactional
