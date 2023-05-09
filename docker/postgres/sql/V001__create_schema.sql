@@ -171,7 +171,7 @@ CREATE TYPE pipegine_platform.group_participation_status AS ENUM (
     'PENDING',
     'ACCEPTED',
     'REJECTED',
-    'CANCELED'
+    'EXITED'
 );
 
 ALTER TYPE pipegine_platform.group_participation_status OWNER TO "pipegine";
