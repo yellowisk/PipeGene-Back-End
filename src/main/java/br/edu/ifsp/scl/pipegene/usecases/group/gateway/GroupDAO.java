@@ -3,8 +3,10 @@ package br.edu.ifsp.scl.pipegene.usecases.group.gateway;
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipationStatusEnum;
+import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface GroupDAO {
@@ -13,15 +15,11 @@ public interface GroupDAO {
 
     GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation);
 
-    void acceptGroupParticipation(GroupParticipation groupParticipation);
+    void updateGroupParticipation(GroupParticipation groupParticipation);
 
-    void rejectGroupParticipation(GroupParticipation groupParticipation);
+    Optional<GroupParticipation> findGroupParticipationById(UUID groupParticipationId);
 
-    void leaveGroup(GroupParticipation groupParticipation);
-
-    Collection<Group> findAllGroupsByUserId(UUID userId);
-
-    Collection<GroupParticipation> findAllGroupParticipationsByGroupId(UUID groupId);
+    Optional<Group> findGroupById(UUID groupId);
 
 
 }

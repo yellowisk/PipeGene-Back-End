@@ -37,8 +37,12 @@ public class Group {
         return new Group(id, name, new ArrayList<>(), description, ownerId);
     }
 
-    public void addParticipation(ArrayList<GroupParticipation> groupParticipations) {
+    public void addParticipationArrayList(ArrayList<GroupParticipation> groupParticipations) {
         this.groupParticipations.addAll(groupParticipations);
+    }
+
+    public void addParticipation(GroupParticipation groupParticipation) {
+        this.groupParticipations.add(groupParticipation);
     }
 
     public UUID getId() {

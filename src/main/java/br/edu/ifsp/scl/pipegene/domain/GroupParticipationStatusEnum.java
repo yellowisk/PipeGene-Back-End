@@ -5,5 +5,5 @@ public enum GroupParticipationStatusEnum {
     PENDING,
     ACCEPTED,
     REJECTED,
-    CANCELED
+    EXITED
 }

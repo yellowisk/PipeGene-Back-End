@@ -8,14 +8,14 @@ public class GroupParticipation {
     private Group group;
     private UUID receiverId;
     private GroupParticipationStatusEnum status;
-    private UUID SubmitterId;
+    private UUID submitterId;
 
     private GroupParticipation(UUID id, Group group, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId) {
         this.id = id;
         this.group = group;
         this.receiverId = receiverId;
         this.status = status;
-        SubmitterId = submitterId;
+        this.submitterId = submitterId;
     }
 
     private GroupParticipation(UUID id) {
@@ -62,10 +62,10 @@ public class GroupParticipation {
     }
 
     public UUID getSubmitterId() {
-        return SubmitterId;
+        return submitterId;
     }
 
     public void setSubmitterId(UUID submitterId) {
-        SubmitterId = submitterId;
+        this.submitterId = submitterId;
     }
 }
