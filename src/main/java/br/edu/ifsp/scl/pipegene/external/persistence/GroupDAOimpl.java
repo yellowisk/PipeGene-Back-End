@@ -56,7 +56,7 @@ public class GroupDAOimpl implements GroupDAO {
     public GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation) {
         jdbcTemplate.update(saveGroupParticipationQuery, groupParticipation.getId(),
                 groupParticipation.getGroup().getId(), groupParticipation.getReceiverId(),
-                groupParticipation.getStatus().toString(), groupParticipation.getSubmitterId());
+                groupParticipation.getSubmitterId(), groupParticipation.getStatus());
 
         return groupParticipation;
     }

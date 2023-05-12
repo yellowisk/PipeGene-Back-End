@@ -18,4 +18,16 @@ public class GroupResponse {
     public static GroupResponse createFromGroup(Group group) {
         return new GroupResponse(group.getId(), group.getName(), group.getDescription());
     }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
 }

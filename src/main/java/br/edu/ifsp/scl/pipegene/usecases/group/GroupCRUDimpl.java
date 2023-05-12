@@ -49,23 +49,27 @@ public class GroupCRUDimpl implements GroupCRUD{
 
     @Override
     public GroupParticipation acceptGroupParticipation(UUID groupParticipationId) {
-        Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationById(groupParticipationId);
-        if (groupParticipationOptional.isEmpty())
-            throw new ResourceNotFoundException("Not found group participation with id: " + groupParticipationId);
-
-        var groupParticipation = groupParticipationOptional.get();
+        var groupParticipation = getParticionOrThrow(groupParticipationId);
         groupParticipation.setStatus(GroupParticipationStatusEnum.ACCEPTED);
         groupDAO.updateGroupParticipation(groupParticipation);
         return groupParticipation;
     }
 
+   /* public GroupParticipation acceptGroupParticipation(UUID groupParticipationId) {
+        return updateParticipationStatus(getParticionOrThrow(groupParticipationId), () ->
+            updateParticipationStatus(groupParticipationId, )
+        );
+    }*/
+
+    /*private GroupParticipation updateParticipationStatus(GroupParticipation groupParticipation, Runnable newStatus){
+        newStatus.run();
+        groupDAO.updateGroupParticipation(groupParticipation);
+        return groupParticipation;
+    }*/
+
     @Override
     public GroupParticipation denyGroupParticipation(UUID groupParticipationId) {
-        Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationById(groupParticipationId);
-        if (groupParticipationOptional.isEmpty())
-            throw new ResourceNotFoundException("Not found group participation with id: " + groupParticipationId);
-
-        var groupParticipation = groupParticipationOptional.get();
+        var groupParticipation = getParticionOrThrow(groupParticipationId);
         groupParticipation.setStatus(GroupParticipationStatusEnum.REJECTED);
         groupDAO.updateGroupParticipation(groupParticipation);
         return groupParticipation;
@@ -73,13 +77,18 @@ public class GroupCRUDimpl implements GroupCRUD{
 
     @Override
     public GroupParticipation exitGroup(UUID groupParticipationId){
+        GroupParticipation groupParticipation = getParticionOrThrow(groupParticipationId);
+        groupParticipation.setStatus(GroupParticipationStatusEnum.EXITED);
+        groupDAO.updateGroupParticipation(groupParticipation);
+        return groupParticipation;
+    }
+
+    private GroupParticipation getParticionOrThrow(UUID groupParticipationId) {
         Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationById(groupParticipationId);
         if (groupParticipationOptional.isEmpty())
             throw new ResourceNotFoundException("Not found group participation with id: " + groupParticipationId);
 
         var groupParticipation = groupParticipationOptional.get();
-        groupParticipation.setStatus(GroupParticipationStatusEnum.EXITED);
-        groupDAO.updateGroupParticipation(groupParticipation);
         return groupParticipation;
     }
 }
