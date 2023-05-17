@@ -324,5 +324,8 @@ queries:
           SELECT * FROM pipegine_platform.group_participation gp WHERE gp.group_id=?
         group-participation-by-id: >
           SELECT * FROM pipegine_platform.group_participation gp WHERE gp.id=?
+      delete:
+        group-participation-by-id: >
+          DELETE FROM pipegine_platform.group_participation WHERE id=?
 
 

@@ -4,6 +4,7 @@ import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipationStatusEnum;
 import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
+import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -39,6 +40,9 @@ public class GroupDAOimpl implements GroupDAO {
     @Value("${queries.sql.group-participation-dao.select.group-participation-by-id}")
     private String findGroupParticipationByIdQuery;
 
+    @Value("${queries.sql.group-participation-dao.delete.group-participation-by-id}")
+    private String deleteGroupParticipationByIdQuery;
+
     private final JdbcTemplate jdbcTemplate;
 
     public GroupDAOimpl(JdbcTemplate jdbcTemplate) {
@@ -56,7 +60,7 @@ public class GroupDAOimpl implements GroupDAO {
     public GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation) {
         jdbcTemplate.update(saveGroupParticipationQuery, groupParticipation.getId(),
                 groupParticipation.getGroup().getId(), groupParticipation.getReceiverId(),
-                groupParticipation.getSubmitterId(), groupParticipation.getStatus());
+                groupParticipation.getSubmitterId(), groupParticipation.getStatus().name());
 
         return groupParticipation;
     }
@@ -64,7 +68,7 @@ public class GroupDAOimpl implements GroupDAO {
     @Override
     public void updateGroupParticipation(GroupParticipation groupParticipation) {
         jdbcTemplate.update(updateGroupParticipationStatusQuery, ps -> {
-            ps.setString(1, groupParticipation.getStatus().toString());
+            ps.setString(1, groupParticipation.getStatus().name());
             ps.setObject(2, groupParticipation.getId());
         });
 
@@ -119,4 +123,15 @@ public class GroupDAOimpl implements GroupDAO {
             return Optional.empty();
         }
     }
+
+    @Override
+    @Transactional
+    public GroupParticipation deleteGroupParticipation(UUID id) {
+        if (jdbcTemplate.update(deleteGroupParticipationByIdQuery, id) != 1) {
+            throw new GenericResourceException("Unexpected error when try delete project with id=" + id, "Exclusion Error");
+        }
+        return GroupParticipation.createOnlyWithId(id);
+    }
+
 }
+

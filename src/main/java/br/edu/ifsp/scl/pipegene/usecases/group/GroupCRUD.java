@@ -17,4 +17,6 @@ public interface GroupCRUD {
 
     GroupParticipation exitGroup(UUID groupParticipationId);
 
+    GroupParticipation deleteGroupParticipation(UUID groupParticipationId);
+
 }

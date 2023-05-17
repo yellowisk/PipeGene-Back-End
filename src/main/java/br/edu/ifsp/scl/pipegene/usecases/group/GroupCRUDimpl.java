@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 @Service
 public class GroupCRUDimpl implements GroupCRUD{
@@ -49,38 +50,30 @@ public class GroupCRUDimpl implements GroupCRUD{
 
     @Override
     public GroupParticipation acceptGroupParticipation(UUID groupParticipationId) {
-        var groupParticipation = getParticionOrThrow(groupParticipationId);
-        groupParticipation.setStatus(GroupParticipationStatusEnum.ACCEPTED);
-        groupDAO.updateGroupParticipation(groupParticipation);
-        return groupParticipation;
+        return updateGroupStatus(getParticionOrThrow(groupParticipationId),
+                group -> group.acceptGroup());
     }
-
-   /* public GroupParticipation acceptGroupParticipation(UUID groupParticipationId) {
-        return updateParticipationStatus(getParticionOrThrow(groupParticipationId), () ->
-            updateParticipationStatus(groupParticipationId, )
-        );
-    }*/
-
-    /*private GroupParticipation updateParticipationStatus(GroupParticipation groupParticipation, Runnable newStatus){
-        newStatus.run();
-        groupDAO.updateGroupParticipation(groupParticipation);
-        return groupParticipation;
-    }*/
 
     @Override
     public GroupParticipation denyGroupParticipation(UUID groupParticipationId) {
-        var groupParticipation = getParticionOrThrow(groupParticipationId);
-        groupParticipation.setStatus(GroupParticipationStatusEnum.REJECTED);
-        groupDAO.updateGroupParticipation(groupParticipation);
-        return groupParticipation;
+        return updateGroupStatus(getParticionOrThrow(groupParticipationId),
+                group -> group.denyGroup());
     }
 
     @Override
     public GroupParticipation exitGroup(UUID groupParticipationId){
-        GroupParticipation groupParticipation = getParticionOrThrow(groupParticipationId);
-        groupParticipation.setStatus(GroupParticipationStatusEnum.EXITED);
-        groupDAO.updateGroupParticipation(groupParticipation);
-        return groupParticipation;
+        return updateGroupStatus(getParticionOrThrow(groupParticipationId),
+                group -> group.quitGroup());
+    }
+
+    @Override
+    public GroupParticipation deleteGroupParticipation(UUID id){
+        Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationById(id);
+        if (groupParticipationOptional.isEmpty())
+            throw new ResourceNotFoundException("Not found group participation with id: " + id);
+
+        var groupParticipation = groupParticipationOptional.get();
+        return groupDAO.deleteGroupParticipation(groupParticipation.getId());
     }
 
     private GroupParticipation getParticionOrThrow(UUID groupParticipationId) {
@@ -90,5 +83,11 @@ public class GroupCRUDimpl implements GroupCRUD{
 
         var groupParticipation = groupParticipationOptional.get();
         return groupParticipation;
+    }
+
+    private GroupParticipation updateGroupStatus(GroupParticipation group, Consumer<GroupParticipation> action){
+        action.accept(group);
+        groupDAO.updateGroupParticipation(group);
+        return group;
     }
 }

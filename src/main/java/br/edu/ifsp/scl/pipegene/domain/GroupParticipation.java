@@ -68,4 +68,25 @@ public class GroupParticipation {
     public void setSubmitterId(UUID submitterId) {
         this.submitterId = submitterId;
     }
+
+    public void quitGroup(){
+        if (!(this.status == GroupParticipationStatusEnum.ACCEPTED)){
+            throw new IllegalStateException("You can't quit a group that you are not participating");
+        }
+        this.status = GroupParticipationStatusEnum.EXITED;
+    }
+
+    public void acceptGroup(){
+        if (this.status == GroupParticipationStatusEnum.ACCEPTED){
+            throw new IllegalStateException("You can't accept a group that you are already participating");
+        }
+        this.status = GroupParticipationStatusEnum.ACCEPTED;
+    }
+
+    public void denyGroup(){
+        if (!(this.status == GroupParticipationStatusEnum.PENDING)){
+            throw new IllegalStateException("You can't deny a group that you are not invited");
+        }
+        this.status = GroupParticipationStatusEnum.REJECTED;
+    }
 }
