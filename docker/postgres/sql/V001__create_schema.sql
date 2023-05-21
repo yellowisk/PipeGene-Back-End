@@ -181,6 +181,7 @@ CREATE TABLE pipegine_platform.group_participation(
     group_id uuid NOT NULL,
     receive_user_id uuid NOT NULL,
     submitter_user_id uuid NOT NULL,
+    create_date timestamp NOT NULL,
     status pipegine_platform.group_participation_status
 );
 

@@ -1,5 +1,6 @@
 package br.edu.ifsp.scl.pipegene.domain;
 
+import java.sql.Timestamp;
 import java.util.UUID;
 
 public class GroupParticipation {
@@ -9,13 +10,15 @@ public class GroupParticipation {
     private UUID receiverId;
     private GroupParticipationStatusEnum status;
     private UUID submitterId;
+    private Timestamp createdDate;
 
-    private GroupParticipation(UUID id, Group group, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId) {
+    private GroupParticipation(UUID id, Group group, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId, Timestamp createdDate) {
         this.id = id;
         this.group = group;
         this.receiverId = receiverId;
         this.status = status;
         this.submitterId = submitterId;
+        this.createdDate = createdDate;
     }
 
     private GroupParticipation(UUID id) {
@@ -25,8 +28,8 @@ public class GroupParticipation {
     public static GroupParticipation createOnlyWithId(UUID id){
         return new GroupParticipation(id);
     }
-    public static GroupParticipation createWithAllFields(UUID id, Group group, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId){
-        return new GroupParticipation(id, group, receiverId, status, submitterId);
+    public static GroupParticipation createWithAllFields(UUID id, Group group, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId, Timestamp createdDate){
+        return new GroupParticipation(id, group, receiverId, status, submitterId, createdDate);
     }
 
     public UUID getId() {
@@ -67,6 +70,14 @@ public class GroupParticipation {
 
     public void setSubmitterId(UUID submitterId) {
         this.submitterId = submitterId;
+    }
+
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
     }
 
     public void quitGroup(){

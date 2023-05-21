@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.awt.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.*;
 import java.util.List;
@@ -60,7 +61,7 @@ public class GroupDAOimpl implements GroupDAO {
     public GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation) {
         jdbcTemplate.update(saveGroupParticipationQuery, groupParticipation.getId(),
                 groupParticipation.getGroup().getId(), groupParticipation.getReceiverId(),
-                groupParticipation.getSubmitterId(), groupParticipation.getStatus().name());
+                groupParticipation.getSubmitterId(), groupParticipation.getCreatedDate() ,groupParticipation.getStatus().name());
 
         return groupParticipation;
     }
@@ -83,8 +84,9 @@ public class GroupDAOimpl implements GroupDAO {
                 UUID groupId = (UUID) rs.getObject("group_id");
                 UUID receiveUserId = (UUID) rs.getObject("receive_user_id");
                 UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
+                Timestamp createdDate = rs.getTimestamp("create_date");
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
-                return GroupParticipation.createWithAllFields(id, Group.createWithOnlyId(groupId), receiveUserId, status, submitterUserId);
+                return GroupParticipation.createWithAllFields(id, Group.createWithOnlyId(groupId), receiveUserId, status, submitterUserId, createdDate);
             }, groupParticipationId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -113,8 +115,9 @@ public class GroupDAOimpl implements GroupDAO {
                 UUID id = (UUID) rs.getObject("id");
                 UUID receiveUserId = (UUID) rs.getObject("receive_user_id");
                 UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
+                Timestamp createdDate = rs.getTimestamp("create_date");
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
-                return GroupParticipation.createWithAllFields(id, group, receiveUserId, status, submitterUserId);
+                return GroupParticipation.createWithAllFields(id, group, receiveUserId, status, submitterUserId, createdDate);
             }, groupId);
             groupParticipationList.forEach(group::addParticipation);
 

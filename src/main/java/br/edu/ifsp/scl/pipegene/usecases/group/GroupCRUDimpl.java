@@ -10,9 +10,12 @@ import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+
+import static java.time.Instant.now;
 
 @Service
 public class GroupCRUDimpl implements GroupCRUD{
@@ -44,7 +47,7 @@ public class GroupCRUDimpl implements GroupCRUD{
         if (groupOptional.isEmpty())
             throw new ResourceNotFoundException("Not found group with id: " + groupId);
 
-        var groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), groupOptional.get(), userOptional.get().getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId());
+        var groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), groupOptional.get(), userOptional.get().getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
         return groupDAO.saveGroupParticipation(groupParticipation);
     }
 

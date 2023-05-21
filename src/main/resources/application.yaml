@@ -314,8 +314,8 @@ queries:
 
       insert:
         group-participation: >
-          INSERT INTO pipegine_platform.group_participation(id, group_id, receive_user_id, submitter_user_id, status) 
-          VALUES(?, ?, ?, ?, ?::group_participation_status)
+          INSERT INTO pipegine_platform.group_participation(id, group_id, receive_user_id, submitter_user_id, create_date, status) 
+          VALUES(?, ?, ?, ?, ?, ?::group_participation_status)
       update:
         group-participation-status: >
           UPDATE pipegine_platform.group_participation SET status=?::group_participation_status WHERE id=?
