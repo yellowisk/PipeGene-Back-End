@@ -75,6 +75,8 @@ public class ProviderDAOImpl implements ProviderDAO {
         String name = rs.getString("name");
         String description = rs.getString("description");
         String url = rs.getString("url");
+        Boolean isPublic = rs.getBoolean("is_public");
+        UUID groupId = (Objects.isNull(rs.getObject("group_id"))) ? null : (UUID) rs.getObject("group_id");
 
         String inputSupported = rs.getString("input_supported_types");
         List<String> inputSupportedTypes = Objects.isNull(inputSupported) ? Collections.emptyList()
@@ -90,7 +92,7 @@ public class ProviderDAOImpl implements ProviderDAO {
                     : objectMapper.readValue(operationStr, new TypeReference<>() {
             });
 
-            return Provider.createWithAllValues(id, name, description, url, inputSupportedTypes, outputSupportedTypes,
+            return Provider.createWithAllValues(id, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes,
                     operations);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -109,7 +111,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(insertProviderQuery, providerId, provider.getName(), provider.getDescription(),
-                provider.getUrl(), String.join(",", provider.getInputSupportedTypes()),
+                provider.getUrl(), provider.getPublic(), provider.getGroupId(), String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, authentication.getUserAuthenticatedId());
 
         return provider.getNewInstanceWithId(providerId);

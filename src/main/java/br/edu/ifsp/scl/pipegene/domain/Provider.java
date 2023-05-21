@@ -8,21 +8,24 @@ public class Provider {
     private String name;
     private String description;
     private String url;
+    private Boolean isPublic;
+    private UUID groupId;
     private List<String> inputSupportedTypes;
     private List<String> outputSupportedTypes;
     private List<ProviderOperation> operations;
 
-    public static Provider createWithAllValues(UUID id, String name, String description, String url,
+    public static Provider createWithAllValues(UUID id, String name, String description, String url, Boolean isPublic, UUID groupId,
                                                Collection<String> inputSupportedTypes, Collection<String> outputSupportedTypes,
                                                Collection<ProviderOperation> operations) {
-        return new Provider(id, name, description, url, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(id, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public static Provider createWithoutId(String name, String description, String url,
+                                           boolean isPublic, UUID groupId,
                                            Collection<String> inputSupportedTypes,
                                            Collection<String> outputSupportedTypes,
                                            Collection<ProviderOperation> operations) {
-        return new Provider(null, name, description, url, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(null, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public static Provider createWithIdAndInputOutputSupportedTypes(UUID id, String inputSupportedType, String outputSupportedType) {
@@ -72,12 +75,15 @@ public class Provider {
         this.outputSupportedTypes = outputSupportedType;
     }
 
-    private Provider(UUID id, String name, String description, String url, Collection<String> inputSupportedTypes,
+    private Provider(UUID id, String name, String description, String url, Boolean isPublic,
+                     UUID groupId, Collection<String> inputSupportedTypes,
                      Collection<String> outputSupportedTypes, Collection<ProviderOperation> operations) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
+        this.isPublic = isPublic;
+        this.groupId = groupId;
         this.inputSupportedTypes = Objects.requireNonNull(List.copyOf(inputSupportedTypes));
         this.outputSupportedTypes = Objects.requireNonNull(List.copyOf(outputSupportedTypes));
         this.operations = Objects.requireNonNull(List.copyOf(operations));
@@ -88,7 +94,7 @@ public class Provider {
     }
 
     public Provider getNewInstanceWithId(UUID id) {
-        return new Provider(id, name, description, url, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(id, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public String getUrl() {
@@ -113,5 +119,21 @@ public class Provider {
 
     public List<ProviderOperation> getOperations() {
         return operations;
+    }
+
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(UUID groupId) {
+        this.groupId = groupId;
     }
 }
