@@ -45,9 +45,16 @@ queries:
           INSERT INTO pipegine_platform.application_user(id, name, username, password, orcid, github,
             is_account_non_expired, is_account_nonLocked, is_credentials_non_expired, is_enabled)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      update:
+        application-user: >
+          UPDATE pipegine_platform.application_user SET name=?, username=?, password=?, orcid=?, github=?,
+            is_account_non_expired=?, is_account_nonLocked=?, is_credentials_non_expired=?, is_enabled=?
+            WHERE id=?
       select:
         application-user-by-username: >
           SELECT * FROM pipegine_platform.application_user where username=?
+        application-user-by-id: >
+          SELECT * FROM pipegine_platform.application_user where id=?
     project-dao:
       insert:
         project: >
@@ -165,6 +172,13 @@ queries:
 
         provider-all: >
           SELECT * FROM pipegine_platform.provider
+      update:
+        provider: >
+          UPDATE pipegine_platform.provider SET name=?, description=?, url=?, input_supported_types=?,
+            output_supported_types=?, operations=(to_json(?::jsonb)) WHERE id=?
+      delete:
+        provider-by-id: >
+          DELETE FROM pipegine_platform.provider WHERE id=?
 
     execution-dao:
       insert:

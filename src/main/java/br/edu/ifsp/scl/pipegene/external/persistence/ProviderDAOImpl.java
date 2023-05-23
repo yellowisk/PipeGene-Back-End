@@ -41,7 +41,7 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.provider-dao.update.provider}")
     private String updateProviderQuery;
 
-    @Value("${queries.sql.provider-dao.delete.provider}")
+    @Value("${queries.sql.provider-dao.delete.provider-by-id}")
     private String deleteProviderQuery;
 
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, IAuthenticationFacade authentication) {
