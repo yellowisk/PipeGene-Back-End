@@ -19,4 +19,8 @@ public interface PipelineDAO {
     Collection<Pipeline> findPipelinesByProjectId(UUID projectId);
 
     Optional<Pipeline> findPipelineById(UUID pipelineId);
+
+    Optional<Pipeline> updatePipeline(UUID pipelineId, Pipeline pipeline);
+
+
 }

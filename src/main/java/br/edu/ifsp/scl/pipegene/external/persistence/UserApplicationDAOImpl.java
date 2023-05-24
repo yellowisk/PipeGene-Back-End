@@ -27,6 +27,12 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
     @Value("${queries.sql.application-user-dao.select.application-user-by-username}")
     private String selectApplicationUserByUsernameQuery;
 
+    @Value("${queries.sql.application-user-dao.select.application-user-by-id}")
+    private String selectApplicationUserByIdQuery;
+
+    @Value("${queries.sql.application-user-dao.update.application-user}")
+    private String updateApplicationUserQuery;
+
     public UserApplicationDAOImpl(PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
@@ -49,6 +55,42 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
 
     }
 
+    @Override
+    public Optional<ApplicationUser> findUserById(UUID userId) {
+        try {
+            ApplicationUser user = jdbcTemplate.queryForObject(selectApplicationUserByIdQuery,
+                    this::mapperApplicationUserFromRs, userId);
+
+            if (Objects.isNull(user)) {
+                throw new IllegalStateException();
+            }
+
+            return Optional.of(user);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<ApplicationUser> updateUser(ApplicationUser user) {
+
+
+        jdbcTemplate.update(updateApplicationUserQuery, rs-> {
+            rs.setString(1, user.getName());
+            rs.setString(2, user.getUsername());
+            rs.setString(3, passwordEncoder.encode(user.getPassword()));
+            rs.setString(4, user.getOrcid());
+            rs.setString(5, user.getGithub());
+            rs.setBoolean(6, user.isAccountNonExpired());
+            rs.setBoolean(7, user.isAccountNonLocked());
+            rs.setBoolean(8, user.isCredentialsNonExpired());
+            rs.setBoolean(9, user.isEnabled());
+            rs.setObject(10, user.getId());
+        });
+
+        return findUserById(user.getId());
+    }
+
     @Transactional
     @Override
     public ApplicationUser saveNewUser(ApplicationUser user) {
@@ -69,7 +111,6 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
 
         return user.getNewInstanceWithId(id);
     }
-
     private ApplicationUser mapperApplicationUserFromRs(ResultSet rs, int rowNum) throws SQLException {
         UUID id = (UUID) rs.getObject("id");
         String name = rs.getString("name");

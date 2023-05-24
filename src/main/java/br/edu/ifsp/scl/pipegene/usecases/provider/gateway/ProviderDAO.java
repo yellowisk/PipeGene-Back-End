@@ -14,4 +14,7 @@ public interface ProviderDAO {
     List<Provider> findProvidersByIds(Collection<UUID> ids);
 
     Provider saveNewProvider(Provider provider);
+
+    Provider updateProvider(Provider provider);
+
 }

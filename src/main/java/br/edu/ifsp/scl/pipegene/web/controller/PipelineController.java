@@ -1,6 +1,7 @@
 package br.edu.ifsp.scl.pipegene.web.controller;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
+import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.PipelineCRUD;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.CreatePipelineRequest;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.PipelineResponse;
@@ -48,4 +49,13 @@ public class PipelineController {
 
         return ResponseEntity.ok(PipelineResponse.createFromPipeline(pipeline));
     }
+
+    @PatchMapping("/{pipelineId}/steps")
+    public ResponseEntity<PipelineResponse> updatePipelineSteps( @PathVariable UUID projectId, @PathVariable UUID pipelineId, @RequestBody List<PipelineStep> updatedSteps) {
+        pipelineCRUD.updatePipelineSteps(pipelineId, updatedSteps);
+        Pipeline updatedPipeline = pipelineCRUD.findByProjectIdAndPipelineId(projectId, pipelineId);
+
+        return ResponseEntity.ok(PipelineResponse.createFromPipeline(updatedPipeline));
+    }
+
 }

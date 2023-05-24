@@ -48,6 +48,12 @@ queries:
       select:
         application-user-by-username: >
           SELECT * FROM pipegine_platform.application_user where username=?
+        application-user-by-id: >
+          SELECT * FROM pipegine_platform.application_user where id=?
+      update:
+        application-user-by-id: >
+            UPDATE pipegine_platform.application_user SET name=?, username=?, password=?, orcid=?, github=?,
+              is_account_non_expired=?, is_account_nonLocked=?, is_credentials_non_expired=?, is_enabled=? WHERE id=?
     project-dao:
       insert:
         project: >
@@ -150,12 +156,20 @@ queries:
           FROM pipegine_platform.pipeline_step ps
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=ANY(?)
+      update:
+        pipeline-by-id: >
+          UPDATE pipegine_platform.pipeline SET description=? WHERE id=?
+        pipeline-step-by-id: >
+          UPDATE pipegine_platform.pipeline_step SET provider_id=?, input_type=?, output_type=?, params=(to_json(?::jsonb)), step_number=? WHERE step_id=?
     provider-dao:
       insert:
         provider: >
           INSERT INTO pipegine_platform.provider(id, name, description, url, input_supported_types,
             output_supported_types, operations, owner_id) VALUES(?, ?, ?, ?, ?, ?, (to_json(?::jsonb)), ?)
-
+      update:
+        provider: >
+          UPDATE pipegine_platform.provider SET name=?, description=?, url=?, input_supported_types=?,
+            output_supported_types=?, operations=(to_json(?::jsonb)) WHERE id=?
       select:
         provider-by-id: >
           SELECT * FROM pipegine_platform.provider p WHERE p.id=?

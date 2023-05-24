@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.ResultSet;
 import java.sql.SQLDataException;
@@ -36,6 +37,9 @@ public class ProviderDAOImpl implements ProviderDAO {
 
     @Value("${queries.sql.provider-dao.insert.provider}")
     private String insertProviderQuery;
+
+    @Value("${queries.sql.provider-dao.update.provider}")
+    private String updateProviderQuery;
 
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
@@ -107,6 +111,24 @@ public class ProviderDAOImpl implements ProviderDAO {
         jdbcTemplate.update(insertProviderQuery, providerId, provider.getName(), provider.getDescription(),
                 provider.getUrl(), String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, authentication.getUserAuthenticatedId());
+
+        return provider.getNewInstanceWithId(providerId);
+    }
+
+    @Override
+    public Provider updateProvider(Provider provider) {
+        UUID providerId = provider.getId();
+        String operations;
+
+        try {
+            operations = objectMapper.writeValueAsString(provider.getOperations());
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException();
+        }
+
+        jdbcTemplate.update(updateProviderQuery, provider.getName(), provider.getDescription(), provider.getUrl(),
+                String.join(",", provider.getInputSupportedTypes()),
+                String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
         return provider.getNewInstanceWithId(providerId);
     }
