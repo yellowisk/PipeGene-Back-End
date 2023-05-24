@@ -78,12 +78,4 @@ public class ProviderController {
         return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
     }
 
-    @DeleteMapping("/{providerId}")
-    public ResponseEntity<ProviderResponse> deleteProviderById(@PathVariable UUID providerId)
-    {
-        providerService.deleteProviderById(providerId);
-
-        return ResponseEntity.ok().build();
-    }
-
 }

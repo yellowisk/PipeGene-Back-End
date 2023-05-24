@@ -50,6 +50,11 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-by-pipeline-id}")
     private String selectPipelineStepsByPipelineIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.update.pipeline-by-id}")
+    private String updatePipelineByIdQuery;
+
+    @Value("${queries.sql.pipeline-dao.update.pipeline-step-by-id}")
+    private String updatePipelineStepByIdQuery;
 
     public PipelineDAOImpl(JdbcTemplate jdbcTemplate, JsonUtil jsonUtil) {
         this.jdbcTemplate = jdbcTemplate;
@@ -179,6 +184,31 @@ public class PipelineDAOImpl implements PipelineDAO {
         }
     }
 
+    @Override
+    public Optional<Pipeline> updatePipeline(UUID pipelineId, Pipeline pipeline) {
+        Optional<Pipeline> updatedPipeline = updatePipeline(pipelineId, pipeline);
+
+        List<PipelineStep> steps = pipeline.getSteps();
+        steps.forEach(step -> updatePipelineStep(step));
+
+        return updatedPipeline;
+    }
+
+    private PipelineStep updatePipelineStep(PipelineStep step) {
+        int updatedRows = jdbcTemplate.update(updatePipelineStepByIdQuery,
+                step.getProvider().getId(),
+                step.getInputType(),
+                step.getOutputType(),
+                jsonUtil.writeMapStringObjectAsJsonString(step.getParams()),
+                step.getStepNumber(),
+                step.getStepId());
+
+        if (updatedRows == 0) {
+            throw new IllegalStateException();
+        }
+
+        return step;
+    }
 
     private PipelineStep mapperPipelineStepFromRs(ResultSet rs, int rowNum) throws SQLException {
         UUID stepId = (UUID) rs.getObject("step_id");

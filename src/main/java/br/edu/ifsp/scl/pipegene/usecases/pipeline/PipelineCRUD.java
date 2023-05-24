@@ -1,6 +1,7 @@
 package br.edu.ifsp.scl.pipegene.usecases.pipeline;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
+import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.CreatePipelineRequest;
 
 import java.util.List;
@@ -15,4 +16,7 @@ public interface PipelineCRUD {
     Pipeline findByProjectIdAndPipelineId(UUID projectId, UUID pipelineId);
 
     List<Pipeline> listAllPipelinesByUserId(UUID userId);
+
+    Pipeline updatePipelineSteps(UUID pipelineId, List<PipelineStep> updatedSteps);
+
 }

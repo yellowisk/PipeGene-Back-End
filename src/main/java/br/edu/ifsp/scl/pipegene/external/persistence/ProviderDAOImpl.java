@@ -41,9 +41,6 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.provider-dao.update.provider}")
     private String updateProviderQuery;
 
-    @Value("${queries.sql.provider-dao.delete.provider}")
-    private String deleteProviderQuery;
-
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -134,11 +131,5 @@ public class ProviderDAOImpl implements ProviderDAO {
                 String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
         return provider.getNewInstanceWithId(providerId);
-    }
-
-    @Transactional
-    @Override
-    public boolean deleteProviderById(UUID id) {
-        return true;
     }
 }

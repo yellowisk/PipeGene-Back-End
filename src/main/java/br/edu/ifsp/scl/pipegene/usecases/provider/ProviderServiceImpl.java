@@ -53,18 +53,4 @@ public class ProviderServiceImpl implements ProviderService {
 
         return optional.get();
     }
-
-    @Override
-    public void deleteProviderById(UUID providerId) {
-//        Optional<Provider> optional = providerDAO.deleteProviderById(providerId);
-//
-//        if (optional.isEmpty()) {
-//            throw new ResourceNotFoundException("Not found provider with id: " + providerId);
-//        }
-//        Provider provider = optional.get();
-//
-//        if (!providerDAO.deleteProviderById(providerId)) {
-//            throw new GenericResourceException("Error message to be created", "");
-//        }
-    }
 }

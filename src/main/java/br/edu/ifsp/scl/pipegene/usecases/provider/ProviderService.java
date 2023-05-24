@@ -16,6 +16,4 @@ public interface ProviderService {
 
     Provider updateProvider(UUID projectId, ProviderRequest providerRequest);
 
-    void deleteProviderById(UUID providerId);
-
 }

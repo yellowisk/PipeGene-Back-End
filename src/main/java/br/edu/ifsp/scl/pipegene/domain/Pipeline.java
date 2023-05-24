@@ -54,6 +54,10 @@ public class Pipeline {
         return new Pipeline(uuid, project, description, steps);
     }
 
+    public Pipeline getNewInstanceWithDescription(String description) {
+        return new Pipeline(id, project, description, steps);
+    }
+
     public void setProject(Project project) {
         if (Objects.isNull(this.project)) {
             this.project = project;
@@ -78,6 +82,10 @@ public class Pipeline {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public List<PipelineStep> getSteps() {
