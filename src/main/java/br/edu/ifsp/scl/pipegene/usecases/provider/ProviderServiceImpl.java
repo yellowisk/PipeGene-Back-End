@@ -1,8 +1,9 @@
 package br.edu.ifsp.scl.pipegene.usecases.provider;
 
 import br.edu.ifsp.scl.pipegene.domain.Provider;
+import br.edu.ifsp.scl.pipegene.usecases.account.gateway.UserApplicationDAO;
+import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
-import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,11 @@ public class ProviderServiceImpl implements ProviderService {
 
     private final ProviderDAO providerDAO;
 
-    public ProviderServiceImpl(ProviderDAO providerDAO) {
+    private final UserApplicationDAO userApplicationDAO;
+
+    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO) {
         this.providerDAO = providerDAO;
+        this.userApplicationDAO = userApplicationDAO;
     }
 
     @Override
@@ -41,6 +45,17 @@ public class ProviderServiceImpl implements ProviderService {
         Provider provider = optional.get();
 
         return providerDAO.updateProvider(provider.getNewInstanceWithId(providerId));
+    }
+
+    @Override
+    public List<Provider> listAllProvidersByUserId(UUID userId) {
+        Optional<ApplicationUser> optionalUser = userApplicationDAO.findUserById(userId);
+
+        if (optionalUser.isEmpty()){
+            throw new ResourceNotFoundException("Not found user with id: " + userId);
+        }
+
+        return providerDAO.findAllProvidersByUserId(userId);
     }
 
     @Override

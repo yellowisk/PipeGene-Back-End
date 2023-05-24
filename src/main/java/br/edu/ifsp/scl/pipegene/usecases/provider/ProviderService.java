@@ -16,4 +16,6 @@ public interface ProviderService {
 
     Provider updateProvider(UUID projectId, ProviderRequest providerRequest);
 
+    List<Provider> listAllProvidersByUserId(UUID userId);
+
 }

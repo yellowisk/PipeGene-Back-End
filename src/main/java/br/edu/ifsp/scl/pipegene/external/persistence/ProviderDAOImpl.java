@@ -41,6 +41,9 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.provider-dao.update.provider}")
     private String updateProviderQuery;
 
+    @Value("${queries.sql.provider-dao.select.provider-all-by-userId}")
+    private String selectAllProvidersByUserIdQuery;
+
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -75,7 +78,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         String name = rs.getString("name");
         String description = rs.getString("description");
         String url = rs.getString("url");
-        Boolean isPublic = rs.getBoolean("is_public");
+        Boolean isPublic = rs.getBoolean("public");
         UUID groupId = (Objects.isNull(rs.getObject("group_id"))) ? null : (UUID) rs.getObject("group_id");
 
         String inputSupported = rs.getString("input_supported_types");
@@ -129,9 +132,15 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(updateProviderQuery, provider.getName(), provider.getDescription(), provider.getUrl(),
+                provider.getPublic(), provider.getGroupId(),
                 String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
         return provider.getNewInstanceWithId(providerId);
+    }
+
+    @Override
+    public List<Provider> findAllProvidersByUserId(UUID userId) {
+        return jdbcTemplate.query(selectAllProvidersByUserIdQuery, this::mapperToProvider, userId, userId);
     }
 }
