@@ -21,5 +21,7 @@ public interface GroupDAO {
 
     Optional<Group> findGroupById(UUID groupId);
 
+    GroupParticipation deleteGroupParticipation(UUID id);
+    Optional<GroupParticipation> findGroupParticipationByGroupIdAndReceiverId(UUID groupId, UUID receiverId);
 
 }

@@ -4,6 +4,7 @@ import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipationStatusEnum;
 import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
+import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.awt.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.*;
 import java.util.List;
@@ -39,6 +41,12 @@ public class GroupDAOimpl implements GroupDAO {
     @Value("${queries.sql.group-participation-dao.select.group-participation-by-id}")
     private String findGroupParticipationByIdQuery;
 
+    @Value("${queries.sql.group-participation-dao.delete.group-participation-by-id}")
+    private String deleteGroupParticipationByIdQuery;
+
+    @Value("${queries.sql.group-participation-dao.select.group-participation-by-group-id-and-receiver-id}")
+    private String selectGroupParticipationByGroupIdAndReceiverIdQuery;
+
     private final JdbcTemplate jdbcTemplate;
 
     public GroupDAOimpl(JdbcTemplate jdbcTemplate) {
@@ -56,7 +64,7 @@ public class GroupDAOimpl implements GroupDAO {
     public GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation) {
         jdbcTemplate.update(saveGroupParticipationQuery, groupParticipation.getId(),
                 groupParticipation.getGroup().getId(), groupParticipation.getReceiverId(),
-                groupParticipation.getStatus().toString(), groupParticipation.getSubmitterId());
+                groupParticipation.getSubmitterId(), groupParticipation.getCreatedDate() ,groupParticipation.getStatus().name());
 
         return groupParticipation;
     }
@@ -64,7 +72,7 @@ public class GroupDAOimpl implements GroupDAO {
     @Override
     public void updateGroupParticipation(GroupParticipation groupParticipation) {
         jdbcTemplate.update(updateGroupParticipationStatusQuery, ps -> {
-            ps.setString(1, groupParticipation.getStatus().toString());
+            ps.setString(1, groupParticipation.getStatus().name());
             ps.setObject(2, groupParticipation.getId());
         });
 
@@ -79,8 +87,9 @@ public class GroupDAOimpl implements GroupDAO {
                 UUID groupId = (UUID) rs.getObject("group_id");
                 UUID receiveUserId = (UUID) rs.getObject("receive_user_id");
                 UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
+                Timestamp createdDate = rs.getTimestamp("create_date");
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
-                return GroupParticipation.createWithAllFields(id, Group.createWithOnlyId(groupId), receiveUserId, status, submitterUserId);
+                return GroupParticipation.createWithAllFields(id, Group.createWithOnlyId(groupId), receiveUserId, status, submitterUserId, createdDate);
             }, groupParticipationId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -109,8 +118,9 @@ public class GroupDAOimpl implements GroupDAO {
                 UUID id = (UUID) rs.getObject("id");
                 UUID receiveUserId = (UUID) rs.getObject("receive_user_id");
                 UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
+                Timestamp createdDate = rs.getTimestamp("create_date");
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
-                return GroupParticipation.createWithAllFields(id, group, receiveUserId, status, submitterUserId);
+                return GroupParticipation.createWithAllFields(id, group, receiveUserId, status, submitterUserId, createdDate);
             }, groupId);
             groupParticipationList.forEach(group::addParticipation);
 
@@ -119,4 +129,38 @@ public class GroupDAOimpl implements GroupDAO {
             return Optional.empty();
         }
     }
+
+    @Override
+    @Transactional
+    public GroupParticipation deleteGroupParticipation(UUID id) {
+        if (jdbcTemplate.update(deleteGroupParticipationByIdQuery, id) != 1) {
+            throw new GenericResourceException("Unexpected error when try delete project with id=" + id, "Exclusion Error");
+        }
+        return GroupParticipation.createOnlyWithId(id);
+    }
+
+    @Override
+    public Optional<GroupParticipation> findGroupParticipationByGroupIdAndReceiverId(UUID groupId, UUID receiverId) {
+        GroupParticipation groupParticipation;
+        try {
+            groupParticipation = jdbcTemplate.queryForObject(selectGroupParticipationByGroupIdAndReceiverIdQuery, (rs, rowNum) -> {
+                UUID id = (UUID) rs.getObject("id");
+                UUID groupIdNew = (UUID) rs.getObject("group_id");
+                UUID receiveUserId = (UUID) rs.getObject("receive_user_id");
+                UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
+                Timestamp createdDate = rs.getTimestamp("create_date");
+                GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
+                return GroupParticipation.createWithAllFields(id, Group.createWithOnlyId(groupIdNew), receiveUserId, status, submitterUserId, createdDate);
+            }, groupId, receiverId);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+
+        if (Objects.isNull(groupParticipation))
+            throw new IllegalStateException();
+
+        return Optional.of(groupParticipation);
+    }
+
 }
+

@@ -35,6 +35,23 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
+    public Pipeline updatePipelineSteps(UUID pipelineId, List<PipelineStep> updatedSteps) {
+        Optional<Pipeline> optionalPipeline = pipelineDAO.findPipelineById(pipelineId);
+        Pipeline pipeline = optionalPipeline.get();
+
+        if (optionalPipeline.isEmpty()) {
+            throw new ResourceNotFoundException("Not found pipeline with id: " + pipelineId);
+        } else {
+            pipeline.getSteps().clear();
+            pipeline.getSteps().addAll(updatedSteps);
+            pipeline.getSteps().forEach(step -> step.setPipeline(pipeline));
+            pipeline.sortedSteps();
+            pipelineDAO.updatePipeline(pipelineId, pipeline);
+        }
+        return pipeline;
+    }
+
+    @Override
     public Pipeline addNewPipeline(UUID projectId, CreatePipelineRequest request) {
         Optional<Project> optionalProject = projectDAO.findProjectById(projectId);
 
@@ -130,4 +147,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         return opt.get();
      }
+
+
 }

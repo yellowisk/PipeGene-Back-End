@@ -4,6 +4,7 @@ import br.edu.ifsp.scl.pipegene.domain.Provider;
 
 import javax.validation.constraints.NotNull;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class ProviderRequest {
@@ -19,6 +20,11 @@ public class ProviderRequest {
     private String url;
 
     @NotNull
+    private Boolean isPublic;
+
+    private UUID groupId;
+
+    @NotNull
     private Set<String> inputSupportedTypes;
 
     @NotNull
@@ -31,7 +37,7 @@ public class ProviderRequest {
     }
 
     public Provider convertToProvider() {
-        return Provider.createWithoutId(name, description, url, inputSupportedTypes, outputSupportedTypes,
+        return Provider.createWithoutId(name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes,
                 operations.stream()
                         .map(ProviderOperationDTO::convertToProviderOperation)
                         .collect(Collectors.toList())
@@ -85,4 +91,22 @@ public class ProviderRequest {
     public void setOperations(Set<ProviderOperationDTO> operations) {
         this.operations = operations;
     }
+
+    public Boolean getPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(Boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(UUID groupId) {
+        this.groupId = groupId;
+    }
+
+
 }

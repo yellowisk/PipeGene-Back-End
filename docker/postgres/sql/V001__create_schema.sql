@@ -38,6 +38,8 @@ CREATE TABLE pipegine_platform.provider(
     name varchar NOT NULL,
     description varchar NOT NULL,
     url varchar NOT NULL,
+    public boolean NOT NULL,
+    group_id uuid,
     input_supported_types text,
     output_supported_types text,
     operations jsonb,
@@ -48,7 +50,6 @@ ALTER TABLE pipegine_platform.provider OWNER TO "pipegine";
 
 ALTER TABLE pipegine_platform.provider
     ADD CONSTRAINT provider_pkey PRIMARY KEY (id);
-
 
 CREATE TABLE pipegine_platform.pipeline(
    id uuid NOT NULL,
@@ -181,6 +182,7 @@ CREATE TABLE pipegine_platform.group_participation(
     group_id uuid NOT NULL,
     receive_user_id uuid NOT NULL,
     submitter_user_id uuid NOT NULL,
+    create_date timestamp NOT NULL,
     status pipegine_platform.group_participation_status
 );
 
@@ -192,14 +194,6 @@ ALTER TABLE pipegine_platform.group_participation
 ALTER TABLE pipegine_platform.group_participation
     ADD CONSTRAINT group_participation_group_id_fkey FOREIGN KEY (group_id)
         REFERENCES pipegine_platform.group(id) ON DELETE CASCADE;
-
-ALTER TABLE pipegine_platform.group_participation
-    ADD CONSTRAINT group_participation_receive_user_id_fkey FOREIGN KEY (receive_user_id)
-        REFERENCES pipegine_platform.application_user(id) ON DELETE CASCADE;
-
-ALTER TABLE pipegine_platform.group_participation
-    ADD CONSTRAINT group_participation_submitter_user_id_fkey FOREIGN KEY (submitter_user_id)
-        REFERENCES pipegine_platform.application_user(id) ON DELETE CASCADE;
 
 
 CREATE TABLE pipegine_platform.application_user(
@@ -226,3 +220,15 @@ ALTER TABLE pipegine_platform.project
 
 ALTER TABLE pipegine_platform.provider
     ADD CONSTRAINT provider_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES pipegine_platform.application_user(id);
+
+Alter TABLE pipegine_platform.provider
+    ADD CONSTRAINT provider_group_id_fkey FOREIGN KEY (group_id)
+        REFERENCES pipegine_platform.group(id) ON DELETE CASCADE;
+
+ALTER TABLE pipegine_platform.group_participation
+    ADD CONSTRAINT group_participation_receive_user_id_fkey FOREIGN KEY (receive_user_id)
+        REFERENCES pipegine_platform.application_user(id) ON DELETE CASCADE;
+
+ALTER TABLE pipegine_platform.group_participation
+    ADD CONSTRAINT group_participation_submitter_user_id_fkey FOREIGN KEY (submitter_user_id)
+        REFERENCES pipegine_platform.application_user(id) ON DELETE CASCADE;

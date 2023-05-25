@@ -7,10 +7,12 @@ import br.edu.ifsp.scl.pipegene.usecases.provider.ProviderService;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderExecutionResultRequest;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
 import br.edu.ifsp.scl.pipegene.web.model.provider.response.ProviderResponse;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -69,21 +71,14 @@ public class ProviderController {
         return ResponseEntity.accepted().build();
     }
 
-//    @PatchMapping("/{providerId}")
-//    public ResponseEntity<ProviderResponse> updateProviderById(@PathVariable UUID providerId,
-//                                                               @RequestBody @Valid ProviderRequest request)
-//    {
-//        Provider provider = providerService.updateProvider(providerId, request);
-//
-//        return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
-//    }
+    @GetMapping("/all")
+    public ResponseEntity<List<ProviderResponse>> getAllProvidersByUserId(){
 
-//    @DeleteMapping("/{providerId}")
-//    public ResponseEntity<ProviderResponse> deleteProviderById(@PathVariable UUID providerId)
-//    {
-//        providerService.deleteProviderById(providerId);
-//
-//        return ResponseEntity.ok().build();
-//    }
+        List<Provider> providers = providerService.listAllProvidersByUserId(authenticationFacade.getUserAuthenticatedId());
 
+        return ResponseEntity.ok(providers.stream()
+                .map(ProviderResponse::createFromProvider)
+                .collect(Collectors.toList()));
+    }
 }
+
