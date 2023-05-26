@@ -51,11 +51,12 @@ public class PipelineController {
     }
 
     @PatchMapping("/{pipelineId}/steps")
-    public ResponseEntity<PipelineResponse> updatePipelineSteps( @PathVariable UUID projectId, @PathVariable UUID pipelineId, @RequestBody List<PipelineStep> updatedSteps) {
-        pipelineCRUD.updatePipelineSteps(pipelineId, updatedSteps);
-        Pipeline updatedPipeline = pipelineCRUD.findByProjectIdAndPipelineId(projectId, pipelineId);
+    public ResponseEntity<PipelineResponse> updatePipeline(
+            @PathVariable UUID pipelineId,
+            @RequestBody List<PipelineStep> pipelineSteps) {
+        Pipeline pipeline = pipelineCRUD.updatePipelineSteps(pipelineId, pipelineSteps);
 
-        return ResponseEntity.ok(PipelineResponse.createFromPipeline(updatedPipeline));
+        return ResponseEntity.ok(PipelineResponse.createFromPipeline(pipeline));
     }
 
 }

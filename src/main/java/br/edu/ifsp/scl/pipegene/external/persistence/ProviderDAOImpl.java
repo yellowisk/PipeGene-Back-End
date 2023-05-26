@@ -136,7 +136,7 @@ public class ProviderDAOImpl implements ProviderDAO {
                 String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
-        return provider.getNewInstanceWithId(providerId);
+        return provider.getNewInstanceWithId(providerId); //return provider;
     }
 
     @Override
