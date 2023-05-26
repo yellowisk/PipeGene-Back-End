@@ -195,17 +195,9 @@ public class PipelineDAOImpl implements PipelineDAO {
     }
 
     private PipelineStep updatePipelineStep(PipelineStep step) {
-        int updatedRows = jdbcTemplate.update(updatePipelineStepByIdQuery,
-                step.getProvider().getId(),
-                step.getInputType(),
-                step.getOutputType(),
-                jsonUtil.writeMapStringObjectAsJsonString(step.getParams()),
-                step.getStepNumber(),
-                step.getStepId());
-
-        if (updatedRows == 0) {
-            throw new IllegalStateException();
-        }
+        jdbcTemplate.update(updatePipelineStepByIdQuery, step.getProvider().getId(), step.getInputType(),
+                step.getOutputType(), jsonUtil.writeMapStringObjectAsJsonString(step.getParams()),
+                step.getStepNumber(), step.getStepId());
 
         return step;
     }

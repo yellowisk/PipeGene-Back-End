@@ -39,6 +39,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         Optional<Pipeline> optionalPipeline = pipelineDAO.findPipelineById(pipelineId);
         Pipeline pipeline = optionalPipeline.get();
 
+
         if (optionalPipeline.isEmpty()) {
             throw new ResourceNotFoundException("Not found pipeline with id: " + pipelineId);
         } else {
