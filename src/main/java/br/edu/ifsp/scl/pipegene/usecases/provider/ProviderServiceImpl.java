@@ -44,7 +44,7 @@ public class ProviderServiceImpl implements ProviderService {
 
         Provider provider = optional.get();
 
-        return providerDAO.updateProvider(provider.getNewInstanceWithId(providerId));
+        return providerDAO.updateProvider(providerRequest.convertToProvider());
     }
 
     @Override

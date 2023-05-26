@@ -50,9 +50,19 @@ public class ProviderController {
         );
     }
 
-    @GetMapping("/{providerId}")
+    @GetMapping("{providerId}")
     public ResponseEntity<ProviderResponse> findProviderById(@PathVariable UUID providerId) {
         Provider provider = providerService.findProviderById(providerId);
+
+        return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
+    }
+
+    @PatchMapping("/{providerId}")
+    public ResponseEntity<ProviderResponse> updateProvider(
+            @PathVariable UUID providerId,
+            @RequestBody @Valid ProviderRequest providerRequest
+    ) {
+        Provider provider = providerService.updateProvider(providerId, providerRequest);
 
         return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
     }

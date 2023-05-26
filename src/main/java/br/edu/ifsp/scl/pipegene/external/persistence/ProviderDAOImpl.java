@@ -52,13 +52,9 @@ public class ProviderDAOImpl implements ProviderDAO {
 
     @Override
     public Optional<Provider> findProviderById(UUID id) {
-        Provider provider = jdbcTemplate.queryForObject(selectProviderByIdQuery, this::mapperToProvider, id);
+        List<Provider> providers = jdbcTemplate.query(selectProviderByIdQuery, ps -> ps.setObject(1, id), this::mapperToProvider);
 
-        if (Objects.nonNull(provider)) {
-            return Optional.of(provider);
-        }
-
-        return Optional.empty();
+        return providers.isEmpty() ? Optional.empty() : Optional.of(providers.get(0));
     }
 
     @Override

@@ -74,21 +74,23 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
     @Override
     public Optional<ApplicationUser> updateUser(ApplicationUser user) {
 
+        Optional<ApplicationUser> optionalUser = findUserById(user.getId());
 
-        jdbcTemplate.update(updateApplicationUserQuery, rs-> {
+        if (optionalUser.isEmpty()) {
+            return Optional.empty();
+        }
+
+        jdbcTemplate.update(updateApplicationUserQuery, rs -> {
             rs.setString(1, user.getName());
             rs.setString(2, user.getUsername());
             rs.setString(3, passwordEncoder.encode(user.getPassword()));
             rs.setString(4, user.getOrcid());
             rs.setString(5, user.getGithub());
-            rs.setBoolean(6, user.isAccountNonExpired());
-            rs.setBoolean(7, user.isAccountNonLocked());
-            rs.setBoolean(8, user.isCredentialsNonExpired());
-            rs.setBoolean(9, user.isEnabled());
             rs.setObject(10, user.getId());
         });
 
-        return findUserById(user.getId());
+
+        return Optional.of(user);
     }
 
     @Transactional

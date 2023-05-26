@@ -52,8 +52,7 @@ queries:
           SELECT * FROM pipegine_platform.application_user where id=?
       update:
         application-user: >
-          UPDATE pipegine_platform.application_user SET name=?, username=?, password=?, orcid=?, github=?,
-            is_account_non_expired=?, is_account_nonLocked=?, is_credentials_non_expired=?, is_enabled=? WHERE id=?
+          UPDATE pipegine_platform.application_user SET name=?, username=?, orcid=?, github=? WHERE id=?
     project-dao:
       insert:
         project: >

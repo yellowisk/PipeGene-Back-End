@@ -37,7 +37,7 @@ public class UserRegisterController {
         return ResponseEntity.ok(applicationUser);
     }
 
-    @PutMapping("/{userId}")
+    @PatchMapping("/{userId}")
     public ResponseEntity<ApplicationUser> updateUserById(@PathVariable UUID userId, @RequestBody @Valid CreateUserRequest request) {
         ApplicationUser applicationUser = applicationUserCRUD.updateUserById(userId, request.toCreateUserApplication()).get();
 
