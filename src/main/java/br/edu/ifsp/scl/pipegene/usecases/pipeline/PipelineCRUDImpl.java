@@ -193,7 +193,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         Pipeline pipeline = optionalPipeline.get();
 
         for (UpdatePipelineStepRequest request : requests) {
-            pipelineDAO.updateStep(pipeline);
+            pipelineDAO.updateStep(request.convertToPipelineStep());
         }
 
         return pipeline;

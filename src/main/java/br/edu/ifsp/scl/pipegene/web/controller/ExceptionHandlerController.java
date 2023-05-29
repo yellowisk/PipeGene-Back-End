@@ -3,6 +3,7 @@ package br.edu.ifsp.scl.pipegene.web.controller;
 import br.edu.ifsp.scl.pipegene.web.exception.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -102,6 +103,19 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
                 .build();
         logger.error(ex.getMessage());
         return new ResponseEntity<>(rnfDetails, headers, status);
+    }
+
+    @ExceptionHandler(PermissionDeniedDataAccessException.class)
+    public ResponseEntity<ErrorDetails> handlePermissionDeniedDataAccessException(PermissionDeniedDataAccessException reException) {
+        ErrorDetails details = ErrorDetails.Builder
+                .newBuilder()
+                .timestamp(new Date().getTime())
+                .status(HttpStatus.FORBIDDEN.value())
+                .title("Not allowed")
+                .detail(reException.getMessage())
+                .developerMessage(reException.getClass().getName())
+                .build();
+        return new ResponseEntity<>(details, HttpStatus.FORBIDDEN);
     }
 
 }

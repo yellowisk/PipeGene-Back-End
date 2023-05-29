@@ -252,33 +252,25 @@ public class PipelineDAOImpl implements PipelineDAO {
     }
 
     @Override
-    public Pipeline updateStep(Pipeline pipeline) {
-        UUID pipelineId = pipeline.getId();
+    public Pipeline updateStep(PipelineStep step) {
+        UUID pipelineId = step.getPipelineId();
         Optional<Pipeline> pipelineOptional = findPipelineById(pipelineId);
 
         if (pipelineOptional.isEmpty()) {
             throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
         }
 
-        List<PipelineStep> steps = pipeline.getSteps();
-
-        if (steps.isEmpty()) {
-            throw new IllegalArgumentException("Pipeline's got to have at least one step.");
-        }
-
-        for (PipelineStep step : steps) {
-            jdbcTemplate.update(
+        jdbcTemplate.update(
                     updateStepQuery, step.getInputType(),
-                    step.getOutputType(), step.getParams(),
-                    step.getStepNumber(), pipelineId
-            );
-        }
+                    step.getOutputType(), jsonUtil.writeMapStringObjectAsJsonString(step.getParams()),
+                    step.getStepNumber(), pipelineId);
 
-        return pipeline;
+        return pipelineOptional.get();
     }
 
     private PipelineStepDTO shortMapperPipelineStepFromRs(ResultSet rs, int rowNum) throws SQLException {
         UUID stepId = (UUID) rs.getObject("step_id");
+        UUID providerId = (UUID) rs.getObject("provider_id");
         String inputType = rs.getString("input_type");
         String outputType = rs.getString("output_type");
 
@@ -288,7 +280,7 @@ public class PipelineDAOImpl implements PipelineDAO {
         String providerName = rs.getString("provider_name");
         String providerDescription = rs.getString("provider_description");
 
-        Provider provider = Provider.createWithNameAndDescription(providerName, providerDescription);
+        Provider provider = Provider.createWithPartialValues(providerId, providerName, providerDescription);
 
         return new PipelineStepDTO(stepId, provider, inputType, outputType, jsonUtil.retrieveStepParams(params), stepNumber);
     }

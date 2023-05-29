@@ -3,8 +3,10 @@ package br.edu.ifsp.scl.pipegene.web.model.pipeline.request;
 import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 
 import java.util.Map;
+import java.util.UUID;
 
 public class UpdatePipelineStepRequest {
+    private UUID pipelineId;
     private String inputType;
     private String outputType;
     private Map<String, Object> params;
@@ -15,7 +17,7 @@ public class UpdatePipelineStepRequest {
 
     //Check its need, logic's too complex
     public PipelineStep convertToPipelineStep() {
-        return PipelineStep.getNewInstanceWithOnlyBodyOfStep(inputType, outputType, params, stepNumber);
+        return PipelineStep.getNewInstanceOfStep(pipelineId, inputType, outputType, params, stepNumber);
     }
 
     public String getInputType() {
@@ -49,4 +51,13 @@ public class UpdatePipelineStepRequest {
     public void setStepNumber(Integer stepNumber) {
         this.stepNumber = stepNumber;
     }
+
+    public UUID getPipelineID() {
+        return pipelineId;
+    }
+
+    public void setPipelineID(UUID pipelineID) {
+        this.pipelineId = pipelineID;
+    }
+
 }

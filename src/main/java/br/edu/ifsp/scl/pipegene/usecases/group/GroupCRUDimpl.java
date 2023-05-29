@@ -42,15 +42,13 @@ public class GroupCRUDimpl implements GroupCRUD{
     public GroupParticipation addToGroup(UUID groupId, String username) {
         GroupParticipation groupParticipation = null;
 
-        Optional<ApplicationUser> userOptional = userApplicationDAO.findUserByUsername(username);
-        if (userOptional.isEmpty())
-            throw new ResourceNotFoundException("Not found user with username: " + username);
+        ApplicationUser applicationUser = userApplicationDAO.findUserByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found user with username: " + username));
 
-        Optional<Group> groupOptional = groupDAO.findGroupById(groupId);
-        if (groupOptional.isEmpty())
-            throw new ResourceNotFoundException("Not found group with id: " + groupId);
+        Group group = groupDAO.findGroupById(groupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found group with id: " + groupId));
 
-        Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationByGroupIdAndReceiverId(groupId, userOptional.get().getId());
+        Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationByGroupIdAndReceiverId(groupId, applicationUser.getId());
         if (groupParticipationOptional.isPresent()){
             groupParticipation = groupParticipationOptional.get();
             if (groupParticipation.getStatus().equals(GroupParticipationStatusEnum.ACCEPTED))
@@ -63,26 +61,26 @@ public class GroupCRUDimpl implements GroupCRUD{
             return groupParticipation;
         }
 
-        groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), groupOptional.get(), userOptional.get().getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
+        groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), group, applicationUser.getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
         return groupDAO.saveGroupParticipation(groupParticipation);
     }
 
     @Override
     public GroupParticipation acceptGroupParticipation(UUID groupParticipationId) {
         return updateGroupStatus(getParticionOrThrow(groupParticipationId),
-                group -> group.acceptGroup());
+                GroupParticipation::acceptGroup);
     }
 
     @Override
     public GroupParticipation denyGroupParticipation(UUID groupParticipationId) {
         return updateGroupStatus(getParticionOrThrow(groupParticipationId),
-                group -> group.denyGroup());
+                GroupParticipation::denyGroup);
     }
 
     @Override
     public GroupParticipation exitGroup(UUID groupParticipationId){
         return updateGroupStatus(getParticionOrThrow(groupParticipationId),
-                group -> group.quitGroup());
+                GroupParticipation::quitGroup);
     }
 
     @Override

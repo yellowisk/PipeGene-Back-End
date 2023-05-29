@@ -92,9 +92,7 @@ public class PipelineController {
 
         Pipeline updatedPipeline = pipelineCRUD.updatePipelineSteps(projectId, pipelineId, requests);
 
-        for (UpdatePipelineStepRequest request : requests) {
-            PipelineStep pipelineStep = request.convertToPipelineStep();
-        }
+
 
         List<PipelineStepDTO> updatedSteps = PipelineStepDTO.convertToPipelineStepDTOs(updatedPipeline.getSteps());
         return ResponseEntity.ok(UpdatePipelineStepResponse.createFromPipelineStepDTOList(updatedSteps));

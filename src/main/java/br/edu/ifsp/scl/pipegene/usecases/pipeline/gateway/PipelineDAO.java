@@ -1,6 +1,7 @@
 package br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
+import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.UpdatePipelineStepRequest;
 
@@ -29,7 +30,7 @@ public interface PipelineDAO {
 
     Pipeline updatePipeline(Pipeline pipeline);
 
-    Pipeline updateStep(Pipeline pipeline);
+    Pipeline updateStep(PipelineStep pipelineStep);
 
     Boolean pipelineExists(UUID pipelineId);
 

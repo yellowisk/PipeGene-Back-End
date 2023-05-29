@@ -181,11 +181,11 @@ queries:
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=?
         step: >
-          UPDATE pipegine_platform.pipeline_step ps
-            SET ps.input_type = ?,
-            ps.output_type = ?,
-            ps.params = ?,
-            ps.step_number = ?
+          UPDATE pipegine_platform.pipeline_step
+            SET input_type = ?,
+            output_type = ?,
+            params = ?::jsonb,
+            step_number = ?
           FROM pipegine_platform.pipeline_step ps
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=?

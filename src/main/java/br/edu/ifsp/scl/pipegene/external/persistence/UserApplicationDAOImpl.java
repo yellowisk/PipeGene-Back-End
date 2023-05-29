@@ -16,7 +16,7 @@ import java.util.*;
 @Repository
 public class UserApplicationDAOImpl implements UserApplicationDAO {
 
-    private final PasswordEncoder passwordEncoder;
+        private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
 
     @Value("${queries.sql.application-user-dao.insert.application-user}")

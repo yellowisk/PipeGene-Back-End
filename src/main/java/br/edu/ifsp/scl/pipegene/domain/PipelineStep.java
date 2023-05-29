@@ -1,7 +1,5 @@
 package br.edu.ifsp.scl.pipegene.domain;
 
-import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -63,9 +61,9 @@ public class PipelineStep {
                 Objects.requireNonNull(executionStepParams), stepNumber, null);
     }
 
-    public static PipelineStep getNewInstanceWithOnlyBodyOfStep(String inputType, String outputType,
-                                                                Map<String, Object> params,
-                                                                Integer stepNumber) {
+    public static PipelineStep getNewInstanceOfStep(UUID pipelineId, String inputType, String outputType,
+                                                    Map<String, Object> params,
+                                                    Integer stepNumber) {
         return new PipelineStep(inputType, outputType, params, stepNumber);
     }
 
