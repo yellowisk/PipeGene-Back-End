@@ -10,8 +10,7 @@ import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
-import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.CreatePipelineRequest;
-import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepRequest;
+import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -32,24 +31,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         this.providerDAO = providerDAO;
         this.pipelineDAO = pipelineDAO;
         this.authenticationFacade = authenticationFacade;
-    }
-
-    @Override
-    public Pipeline updatePipelineSteps(UUID pipelineId, List<PipelineStep> updatedSteps) {
-        Optional<Pipeline> optionalPipeline = pipelineDAO.findPipelineById(pipelineId);
-        Pipeline pipeline = optionalPipeline.get();
-
-
-        if (optionalPipeline.isEmpty()) {
-            throw new ResourceNotFoundException("Not found pipeline with id: " + pipelineId);
-        } else {
-            pipeline.getSteps().clear();
-            pipeline.getSteps().addAll(updatedSteps);
-            pipeline.getSteps().forEach(step -> step.setPipeline(pipeline));
-            pipeline.sortedSteps();
-            pipelineDAO.updatePipeline(pipelineId, pipeline);
-        }
-        return pipeline;
     }
 
     @Override
@@ -124,6 +105,8 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         return pipelineDAO.findAll(projectId);
     }
 
+
+
     @Override
     public List<Pipeline> listAllPipelinesByUserId(UUID userId) {
         if (!userId.equals(authenticationFacade.getUserAuthenticatedId())) {
@@ -148,6 +131,74 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         return opt.get();
      }
+
+    @Override
+    public PipelineStepDTO findPipelineStepById(UUID projectId, UUID pipelineId, UUID stepId) {
+        Boolean projectExists = projectDAO.projectExists(projectId);
+        if (!projectExists) {
+            throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
+        }
+
+        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
+        if (!pipelineExists) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+
+        return pipelineDAO.findPipelineStepById(pipelineId);
+
+    }
+
+    @Override
+    public List<PipelineStepDTO> listAllPipelineStepsByPipelineId(UUID projectId, UUID pipelineId) {
+        Boolean projectExists = projectDAO.projectExists(projectId);
+        if (!projectExists) {
+            throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
+        }
+
+        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
+        if (!pipelineExists) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+
+        return pipelineDAO.findAllPipelineStepsByPipelineId(pipelineId);
+    }
+
+    @Override
+    public Pipeline updatePipelineHeader(UUID projectId, UUID pipelineId, UpdatePipelineRequest pipelineRequest) {
+        Boolean projectExists = projectDAO.projectExists(projectId);
+        if (!projectExists) {
+            throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
+        }
+
+        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
+        if (!pipelineExists) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+
+
+        return pipelineDAO.updatePipeline(pipelineRequest.convertToPipeline());
+    }
+
+    @Override
+    public Pipeline updatePipelineSteps(UUID projectId, UUID pipelineId, List<UpdatePipelineStepRequest> requests) {
+        Boolean projectExists = projectDAO.projectExists(projectId);
+        if (!projectExists) {
+            throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
+        }
+
+        Optional<Pipeline> optionalPipeline = pipelineDAO.findPipelineById(pipelineId);
+        if (optionalPipeline.isEmpty()) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+        Pipeline pipeline = optionalPipeline.get();
+
+        for (UpdatePipelineStepRequest request : requests) {
+            pipelineDAO.updateStep(pipeline);
+        }
+
+        return pipeline;
+    }
+
 
 
 }

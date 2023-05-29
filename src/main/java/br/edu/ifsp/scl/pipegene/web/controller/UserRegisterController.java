@@ -2,8 +2,8 @@ package br.edu.ifsp.scl.pipegene.web.controller;
 
 import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
-import br.edu.ifsp.scl.pipegene.web.model.account.ApplicationUserResponse;
-import br.edu.ifsp.scl.pipegene.web.model.account.CreateUserRequest;
+import br.edu.ifsp.scl.pipegene.web.model.account.response.ApplicationUserResponse;
+import br.edu.ifsp.scl.pipegene.web.model.account.request.CreateUserRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,13 +33,6 @@ public class UserRegisterController {
     @GetMapping("/{userId}")
     public ResponseEntity<ApplicationUser> findUserById(@PathVariable UUID userId) {
         ApplicationUser applicationUser = applicationUserCRUD.findUserById(userId);
-
-        return ResponseEntity.ok(applicationUser);
-    }
-
-    @PatchMapping("/{userId}")
-    public ResponseEntity<ApplicationUser> updateUserById(@PathVariable UUID userId, @RequestBody @Valid CreateUserRequest request) {
-        ApplicationUser applicationUser = applicationUserCRUD.updateUserById(userId, request.toCreateUserApplication()).get();
 
         return ResponseEntity.ok(applicationUser);
     }

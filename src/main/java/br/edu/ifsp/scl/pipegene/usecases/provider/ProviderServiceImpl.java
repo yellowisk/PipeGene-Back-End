@@ -39,10 +39,8 @@ public class ProviderServiceImpl implements ProviderService {
         Optional<Provider> optional = providerDAO.findProviderById(providerId);
 
         if(optional.isEmpty()) {
-            throw new ResourceNotFoundException("Not found provider with id: " + providerId);
+            throw new ResourceNotFoundException("Couldn't find provider with id: " + providerId);
         }
-
-        Provider provider = optional.get();
 
         return providerDAO.updateProvider(providerRequest.convertToProvider());
     }
@@ -63,7 +61,7 @@ public class ProviderServiceImpl implements ProviderService {
         Optional<Provider> optional = providerDAO.findProviderById(providerId);
 
         if(optional.isEmpty()) {
-            throw new ResourceNotFoundException("Not found provider with id: " + providerId);
+            throw new ResourceNotFoundException("Couldn't find provider with id: " + providerId);
         }
 
         return optional.get();

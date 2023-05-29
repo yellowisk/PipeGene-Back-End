@@ -1,4 +1,4 @@
-package br.edu.ifsp.scl.pipegene.web.model.account;
+package br.edu.ifsp.scl.pipegene.web.model.account.request;
 
 import br.edu.ifsp.scl.pipegene.usecases.account.model.CreateApplicationUser;
 

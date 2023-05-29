@@ -40,8 +40,17 @@ public class Provider {
         return new Provider(id, name, description);
     }
 
+    public static Provider createWithNameAndDescription(String name, String description) {
+        return new Provider(name, description);
+    }
+
     private Provider(UUID id, String name, String description) {
         this.id = id;
+        this.name = name;
+        this.description = description;
+    }
+
+    private Provider(String name, String description) {
         this.name = name;
         this.description = description;
     }

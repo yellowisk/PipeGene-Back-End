@@ -1,5 +1,7 @@
 package br.edu.ifsp.scl.pipegene.domain;
 
+import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
+
 import java.util.*;
 
 public class Pipeline {
@@ -30,6 +32,10 @@ public class Pipeline {
         this.steps = new ArrayList<>();
     }
 
+    public Pipeline(String description) {
+        this.description = description;
+    }
+
     public static Pipeline createWithoutProjectAndSteps(UUID id, String description) {
         return new Pipeline(id, description);
     }
@@ -54,14 +60,28 @@ public class Pipeline {
         return new Pipeline(uuid, project, description, steps);
     }
 
-    public Pipeline getNewInstanceWithDescription(String description) {
-        return new Pipeline(id, project, description, steps);
+    public static Pipeline getNewInstanceWithDescription(String description) {
+        return new Pipeline(description);
     }
 
     public void setProject(Project project) {
         if (Objects.isNull(this.project)) {
             this.project = project;
         }
+    }
+
+    public void addStepDTO(PipelineStepDTO stepDTO) {
+        Provider provider = stepDTO.getProvider();
+        PipelineStep step = PipelineStep.of(
+                stepDTO.getStepId(),
+                provider,
+                stepDTO.getInputType(),
+                stepDTO.getOutputType(),
+                stepDTO.getParams(),
+                stepDTO.getStepNumber(),
+                this
+        );
+        addStep(step);
     }
 
     public static Pipeline createWithoutId(Project project, String description, List<PipelineStep> steps) {
@@ -104,5 +124,10 @@ public class Pipeline {
         }
 
         step.setInputType(fileType);
+    }
+
+    public void setSteps(List<PipelineStepDTO> updatedPipelineSteps) {
+        steps.clear();
+        updatedPipelineSteps.forEach(this::addStepDTO);
     }
 }

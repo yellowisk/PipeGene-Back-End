@@ -5,8 +5,6 @@ import br.edu.ifsp.scl.pipegene.usecases.account.gateway.UserApplicationDAO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +60,7 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
                     this::mapperApplicationUserFromRs, userId);
 
             if (Objects.isNull(user)) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Couldn't find user with id: " + userId);
             }
 
             return Optional.of(user);
@@ -83,10 +81,9 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
         jdbcTemplate.update(updateApplicationUserQuery, rs -> {
             rs.setString(1, user.getName());
             rs.setString(2, user.getUsername());
-            rs.setString(3, passwordEncoder.encode(user.getPassword()));
-            rs.setString(4, user.getOrcid());
-            rs.setString(5, user.getGithub());
-            rs.setObject(10, user.getId());
+            rs.setString(3, user.getOrcid());
+            rs.setString(4, user.getGithub());
+            rs.setObject(5, user.getId());
         });
 
 

@@ -8,7 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,13 +33,7 @@ public class ApplicationUserService implements UserDetailsService, ApplicationUs
     @Override
     public ApplicationUser findUserById(UUID userId) {
         return userApplicationDAO.findUserById(userId)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with id %s not found", userId)));
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with id" + userId + "not found")));
     }
 
-    @Override
-    public Optional<ApplicationUser> updateUserById(UUID userId, CreateApplicationUser userRequest) {
-        return userApplicationDAO.findUserById(userId)
-                .map(user -> userRequest.toApplicationUser())
-                .flatMap(userApplicationDAO::updateUser);
-    }
 }

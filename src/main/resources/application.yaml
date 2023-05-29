@@ -90,6 +90,8 @@ queries:
       update:
         project: >
           UPDATE pipegine_platform.project SET name=?, description=? WHERE id=?
+        project-dataset: >
+          UPDATE pipegine_platform.dataset SET filename=? WHERE id=?
 
     dataset-dao:
       select:
@@ -144,7 +146,18 @@ queries:
           FROM pipegine_platform.pipeline_step ps
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=?
-
+        pipeline-steps-all-data-and-service-data-by-pipeline-id: >
+          SELECT
+            ps.step_id,
+            p.name provider_name,
+            p.description provider_description,
+            ps.input_type,
+            ps.output_type,
+            ps.params,
+            ps.step_number
+          FROM pipegine_platform.pipeline_step ps
+            INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
+          WHERE ps.pipeline_id=?
         pipeline-steps-by-pipeline-ids: >
           SELECT
             ps.*,
@@ -157,9 +170,25 @@ queries:
           WHERE ps.pipeline_id=ANY(?)
       update:
         pipeline-by-id: >
-          UPDATE pipegine_platform.pipeline SET description=? WHERE id=?
+          UPDATE pipegine_platform.pipeline SET description=?/*, project_id=?*/ WHERE id=?;
         pipeline-step-by-id: >
-          UPDATE pipegine_platform.pipeline_step SET provider_id=?, input_type=?, output_type=?, params=(to_json(?::jsonb)), step_number=? WHERE step_id=?
+          UPDATE pipegine_platform.pipeline_step ps
+            ps.input_type = ?,
+            ps.output_type = ?,
+            ps.params = ?,
+            ps.step_number = ?
+          FROM pipegine_platform.pipeline_step ps
+            INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
+          WHERE ps.pipeline_id=?
+        step: >
+          UPDATE pipegine_platform.pipeline_step ps
+            SET ps.input_type = ?,
+            ps.output_type = ?,
+            ps.params = ?,
+            ps.step_number = ?
+          FROM pipegine_platform.pipeline_step ps
+            INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
+          WHERE ps.pipeline_id=?
     provider-dao:
       insert:
         provider: >

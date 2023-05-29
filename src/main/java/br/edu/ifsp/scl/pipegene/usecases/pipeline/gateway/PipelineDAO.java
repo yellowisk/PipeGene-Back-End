@@ -1,7 +1,8 @@
 package br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
-import br.edu.ifsp.scl.pipegene.domain.Provider;
+import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
+import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.UpdatePipelineStepRequest;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,7 +21,16 @@ public interface PipelineDAO {
 
     Optional<Pipeline> findPipelineById(UUID pipelineId);
 
-    Optional<Pipeline> updatePipeline(UUID pipelineId, Pipeline pipeline);
 
+
+    List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId);
+
+    PipelineStepDTO findPipelineStepById(UUID pipelineId);
+
+    Pipeline updatePipeline(Pipeline pipeline);
+
+    Pipeline updateStep(Pipeline pipeline);
+
+    Boolean pipelineExists(UUID pipelineId);
 
 }

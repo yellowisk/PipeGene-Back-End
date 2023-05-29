@@ -5,7 +5,8 @@ import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.external.persistence.util.JsonUtil;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway.PipelineDAO;
-import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
+import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
+import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -50,15 +51,31 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-by-pipeline-id}")
     private String selectPipelineStepsByPipelineIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.select.pipeline-steps-all-data-and-service-data-by-pipeline-id}")
+    private String selectPipelineStepsConnectionToProviderByPipelineIdQuery;
+
     @Value("${queries.sql.pipeline-dao.update.pipeline-by-id}")
     private String updatePipelineByIdQuery;
 
     @Value("${queries.sql.pipeline-dao.update.pipeline-step-by-id}")
     private String updatePipelineStepByIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.update.step}")
+    private String updateStepQuery;
+
     public PipelineDAOImpl(JdbcTemplate jdbcTemplate, JsonUtil jsonUtil) {
         this.jdbcTemplate = jdbcTemplate;
         this.jsonUtil = jsonUtil;
+    }
+
+    @Override
+    public Boolean pipelineExists(UUID pipelineId) {
+        try {
+            jdbcTemplate.queryForObject(selectPipelineByIdQuery, (rs, rowNum) -> null, pipelineId);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return false;
+        }
     }
 
     @Transactional
@@ -185,21 +202,95 @@ public class PipelineDAOImpl implements PipelineDAO {
     }
 
     @Override
-    public Optional<Pipeline> updatePipeline(UUID pipelineId, Pipeline pipeline) {
-        Optional<Pipeline> updatedPipeline = updatePipeline(pipelineId, pipeline);
+    public List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId) {
+        Optional<Pipeline> pipelineOptional = findPipelineById(pipelineId);
 
-        List<PipelineStep> steps = pipeline.getSteps();
-        steps.forEach(step -> updatePipelineStep(step));
+        if (pipelineOptional.isEmpty()) {
+            throw new IllegalStateException("Couldn't find pipeline with id: " + pipelineId);
+        }
 
-        return updatedPipeline;
+        Pipeline pipeline = pipelineOptional.get();
+
+        Map<UUID, PipelineStepDTO> pipelineStepMap = jdbcTemplate.query(
+                        selectPipelineStepsConnectionToProviderByPipelineIdQuery,
+                        ps -> ps.setObject(1, pipelineId),
+                        this::shortMapperPipelineStepFromRs)
+                .stream()
+                .collect(Collectors.toMap(PipelineStepDTO::getStepId, Function.identity()));
+
+        pipelineStepMap.values().forEach(pipeline::addStepDTO);
+
+        return new ArrayList<>(pipelineStepMap.values());
     }
 
-    private PipelineStep updatePipelineStep(PipelineStep step) {
-        jdbcTemplate.update(updatePipelineStepByIdQuery, step.getProvider().getId(), step.getInputType(),
-                step.getOutputType(), jsonUtil.writeMapStringObjectAsJsonString(step.getParams()),
-                step.getStepNumber(), step.getStepId());
+    @Override
+    public PipelineStepDTO findPipelineStepById(UUID pipelineId) {
+        List<PipelineStepDTO> pipelineSteps = jdbcTemplate.query(
+                selectPipelineStepsByPipelineIdQuery,
+                ps -> {
+                    ps.setObject(1, pipelineId);
+                },
+                this::shortMapperPipelineStepFromRs
+        );
 
-        return step;
+        if (pipelineSteps.isEmpty()) {
+            throw new IllegalStateException("Couldn't find pipeline step with id: " + pipelineId);
+        }
+
+        return pipelineSteps.get(0);
+    }
+
+    @Override
+    public Pipeline updatePipeline(/*UUID projectId,*/ Pipeline pipeline) {
+        UUID pipelineId = pipeline.getId();
+       /*pipelineOptional.get()
+                        .setProjectByProjectId(projectId);*/
+
+        jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipelineId);
+
+        return pipeline;
+    }
+
+    @Override
+    public Pipeline updateStep(Pipeline pipeline) {
+        UUID pipelineId = pipeline.getId();
+        Optional<Pipeline> pipelineOptional = findPipelineById(pipelineId);
+
+        if (pipelineOptional.isEmpty()) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+
+        List<PipelineStep> steps = pipeline.getSteps();
+
+        if (steps.isEmpty()) {
+            throw new IllegalArgumentException("Pipeline's got to have at least one step.");
+        }
+
+        for (PipelineStep step : steps) {
+            jdbcTemplate.update(
+                    updateStepQuery, step.getInputType(),
+                    step.getOutputType(), step.getParams(),
+                    step.getStepNumber(), pipelineId
+            );
+        }
+
+        return pipeline;
+    }
+
+    private PipelineStepDTO shortMapperPipelineStepFromRs(ResultSet rs, int rowNum) throws SQLException {
+        UUID stepId = (UUID) rs.getObject("step_id");
+        String inputType = rs.getString("input_type");
+        String outputType = rs.getString("output_type");
+
+        String params = rs.getString("params");
+        Integer stepNumber = rs.getInt("step_number");
+
+        String providerName = rs.getString("provider_name");
+        String providerDescription = rs.getString("provider_description");
+
+        Provider provider = Provider.createWithNameAndDescription(providerName, providerDescription);
+
+        return new PipelineStepDTO(stepId, provider, inputType, outputType, jsonUtil.retrieveStepParams(params), stepNumber);
     }
 
     private PipelineStep mapperPipelineStepFromRs(ResultSet rs, int rowNum) throws SQLException {

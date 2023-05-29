@@ -92,6 +92,14 @@ public class Project {
         return description;
     }
 
+    public Project(String id) {
+        this.id = UUID.fromString(id);
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public Project getUpdatedInstance(ProjectUpdateRequest request) {
         String newName = Objects.nonNull(request.getName()) ? request.getName() : name;
         String newDescription = Objects.nonNull(request.getDescription()) ? request.getDescription() : description;
