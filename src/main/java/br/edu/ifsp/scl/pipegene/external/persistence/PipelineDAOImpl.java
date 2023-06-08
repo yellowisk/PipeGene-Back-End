@@ -63,6 +63,10 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.update.step}")
     private String updateStepQuery;
 
+    @Value("${queries.sql.pipeline-dao.delete.pipeline-step-by-id}")
+    private String deletePipelineStepsQuery;
+
+
     public PipelineDAOImpl(JdbcTemplate jdbcTemplate, JsonUtil jsonUtil) {
         this.jdbcTemplate = jdbcTemplate;
         this.jsonUtil = jsonUtil;
@@ -240,33 +244,37 @@ public class PipelineDAOImpl implements PipelineDAO {
         return pipelineSteps.get(0);
     }
 
+    @Transactional
     @Override
-    public Pipeline updatePipeline(/*UUID projectId,*/ Pipeline pipeline) {
+    public Pipeline updatePipeline(Pipeline pipeline) {
         UUID pipelineId = pipeline.getId();
-       /*pipelineOptional.get()
-                        .setProjectByProjectId(projectId);*/
 
         jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipelineId);
+
+        List<PipelineStep> steps = pipeline.getSteps();
+
+        jdbcTemplate.update(deletePipelineStepsQuery, pipelineId);
+        jdbcTemplate.batchUpdate(insertPipelineStepQuery, new BatchPreparedStatementSetter() {
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setObject(1, steps.get(i).getStepId());
+                ps.setObject(2, pipelineId);
+                ps.setObject(3, steps.get(i).getProvider().getId());
+                ps.setString(4, steps.get(i).getInputType());
+                ps.setString(5, steps.get(i).getOutputType());
+                ps.setString(6, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
+                ps.setInt(7, steps.get(i).getStepNumber());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return steps.size();
+            }
+        });
 
         return pipeline;
     }
 
-    @Override
-    public Pipeline updateStep(PipelineStep step) {
-        UUID pipelineId = step.getPipelineId();
-        Optional<Pipeline> pipelineOptional = findPipelineById(pipelineId);
-
-        if (pipelineOptional.isEmpty()) {
-            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
-        }
-
-        jdbcTemplate.update(
-                    updateStepQuery, step.getInputType(),
-                    step.getOutputType(), jsonUtil.writeMapStringObjectAsJsonString(step.getParams()),
-                    step.getStepNumber(), pipelineId);
-
-        return pipelineOptional.get();
-    }
 
     private PipelineStepDTO shortMapperPipelineStepFromRs(ResultSet rs, int rowNum) throws SQLException {
         UUID stepId = (UUID) rs.getObject("step_id");

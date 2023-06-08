@@ -16,7 +16,7 @@ import java.util.*;
 @Repository
 public class UserApplicationDAOImpl implements UserApplicationDAO {
 
-        private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final JdbcTemplate jdbcTemplate;
 
     @Value("${queries.sql.application-user-dao.insert.application-user}")
@@ -70,13 +70,11 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
     }
 
     @Override
-    public Optional<ApplicationUser> updateUser(ApplicationUser user) {
+    public ApplicationUser updateUser(ApplicationUser user) {
 
         Optional<ApplicationUser> optionalUser = findUserById(user.getId());
 
-        if (optionalUser.isEmpty()) {
-            return Optional.empty();
-        }
+
 
         jdbcTemplate.update(updateApplicationUserQuery, rs -> {
             rs.setString(1, user.getName());
@@ -87,7 +85,7 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
         });
 
 
-        return Optional.of(user);
+        return user;
     }
 
     @Transactional

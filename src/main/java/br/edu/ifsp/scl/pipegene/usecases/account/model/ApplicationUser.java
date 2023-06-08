@@ -62,6 +62,13 @@ public class ApplicationUser implements UserDetails {
         this.isEnabled = isEnabled;
     }
 
+    public ApplicationUser(String username, String name, String orcid, String github) {
+        this.username = username;
+        this.name = name;
+        this.orcid = orcid;
+        this.github = github;
+    }
+
     public UUID getId() {
         return id;
     }

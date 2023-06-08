@@ -130,4 +130,8 @@ public class Pipeline {
         steps.clear();
         updatedPipelineSteps.forEach(this::addStepDTO);
     }
+
+    public void setPipelineSteps(List<PipelineStep> pipelineSteps) {
+        this.steps = pipelineSteps;
+    }
 }

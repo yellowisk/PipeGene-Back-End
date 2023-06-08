@@ -78,7 +78,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
                 throw new GenericResourceException("Please, verify provider id, inputType and outputType", "Invalid Pipeline Request");
             }
 
-            // if has next step
+            // if it has next step
             if (i+ 1 < steps.size()) {
                 PipelineStepRequest nextStep = steps.get(i + 1);
                 Provider nextProvider = providersMap.get(nextStep.getProviderId());
@@ -164,40 +164,29 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
-    public Pipeline updatePipelineHeader(UUID projectId, UUID pipelineId, UpdatePipelineRequest pipelineRequest) {
-        Boolean projectExists = projectDAO.projectExists(projectId);
-        if (!projectExists) {
-            throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
-        }
-
-        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
-        if (!pipelineExists) {
-            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
-        }
-
-
-        return pipelineDAO.updatePipeline(pipelineRequest.convertToPipeline());
-    }
-
-    @Override
-    public Pipeline updatePipelineSteps(UUID projectId, UUID pipelineId, List<UpdatePipelineStepRequest> requests) {
-        Boolean projectExists = projectDAO.projectExists(projectId);
-        if (!projectExists) {
-            throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
-        }
-
+    public Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request) {
         Optional<Pipeline> optionalPipeline = pipelineDAO.findPipelineById(pipelineId);
+
         if (optionalPipeline.isEmpty()) {
-            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+            throw new ResourceNotFoundException("Not found pipeline with id: " + pipelineId);
         }
+
         Pipeline pipeline = optionalPipeline.get();
 
-        for (UpdatePipelineStepRequest request : requests) {
-            pipelineDAO.updateStep(request.convertToPipelineStep());
+        if (request.getDescription() != null) {
+            pipeline.setDescription(request.getDescription());
         }
 
-        return pipeline;
+        List<PipelineStepRequest> steps = request.getSteps();
+
+        List<PipelineStep> updatedSteps = mapToPipelineStep(steps);
+        pipeline.setPipelineSteps(updatedSteps);
+
+        Pipeline updatedPipeline = pipelineDAO.savePipeline(pipeline);
+
+        return updatedPipeline;
     }
+
 
 
 

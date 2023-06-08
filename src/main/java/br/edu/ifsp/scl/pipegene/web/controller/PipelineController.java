@@ -75,27 +75,13 @@ public class PipelineController {
     }
 
     @PatchMapping("/{pipelineId}")
-    public ResponseEntity<UpdatePipelineResponse> updatePipelineHeader (
+    public ResponseEntity<PipelineResponse> updatePipeline(
             @PathVariable UUID pipelineId,
-            @PathVariable UUID projectId,
-            @RequestBody UpdatePipelineRequest pipelineRequest) {
-        Pipeline updatedPipeline = pipelineCRUD.updatePipelineHeader(projectId, pipelineId, pipelineRequest);
+            @RequestBody @Valid UpdatePipelineRequest updatePipelineRequest) {
+        Pipeline updatedPipeline = pipelineCRUD.updatePipeline(pipelineId, updatePipelineRequest);
 
-        return ResponseEntity.ok(UpdatePipelineResponse.createFromPipeline(updatedPipeline));
+        return ResponseEntity.ok(PipelineResponse.createJustId(updatedPipeline.getId()));
     }
 
-    @PatchMapping("/{pipelineId}/steps")
-    public ResponseEntity<UpdatePipelineStepResponse> updatePipelineSteps(
-            @PathVariable UUID projectId,
-            @PathVariable UUID pipelineId,
-            @RequestBody List<UpdatePipelineStepRequest> requests) {
-
-        Pipeline updatedPipeline = pipelineCRUD.updatePipelineSteps(projectId, pipelineId, requests);
-
-
-
-        List<PipelineStepDTO> updatedSteps = PipelineStepDTO.convertToPipelineStepDTOs(updatedPipeline.getSteps());
-        return ResponseEntity.ok(UpdatePipelineStepResponse.createFromPipelineStepDTOList(updatedSteps));
-    }
 
 }

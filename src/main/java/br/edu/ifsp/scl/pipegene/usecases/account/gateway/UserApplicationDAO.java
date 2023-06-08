@@ -13,6 +13,6 @@ public interface UserApplicationDAO {
 
     Optional<ApplicationUser> findUserById(UUID userId);
 
-    Optional<ApplicationUser> updateUser(ApplicationUser user);
+    ApplicationUser updateUser(ApplicationUser user);
 
 }

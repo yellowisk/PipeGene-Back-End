@@ -25,7 +25,6 @@ public interface PipelineCRUD {
 
 
     //TODO: VERIFY PROJECT EDITING FUNCTIONALITIES
-    Pipeline updatePipelineSteps(UUID projectId, UUID pipelineId, List<UpdatePipelineStepRequest> requests);
-    Pipeline updatePipelineHeader(UUID projectId, UUID pipelineId, UpdatePipelineRequest pipelineRequest);
+    Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request);
 
 }

@@ -189,6 +189,9 @@ queries:
           FROM pipegine_platform.pipeline_step ps
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=?
+      delete:
+        pipeline-step-by-id: >
+          DELETE FROM pipegine_platform.pipeline_step WHERE step_id=?
     provider-dao:
       insert:
         provider: >
