@@ -158,8 +158,6 @@ ALTER TABLE pipegine_platform.execution_step
 
 CREATE TABLE pipegine_platform.group(
     id uuid NOT NULL,
-    name varchar NOT NULL,
-    description varchar NOT NULL,
     owner_id uuid NOT NULL
 );
 

@@ -56,7 +56,7 @@ public class GroupDAOimpl implements GroupDAO {
     @Transactional
     @Override
     public Group saveGroup(Group group) {
-        jdbcTemplate.update(insertGroupQuery, group.getId(), group.getName(), group.getDescription(), group.getOwnerId());
+        jdbcTemplate.update(insertGroupQuery, group.getId(), group.getOwnerId());
         return Group.createWithOnlyId(group.getId());
     }
 
@@ -106,10 +106,8 @@ public class GroupDAOimpl implements GroupDAO {
         try {
             Group group = jdbcTemplate.queryForObject(findGroupByIdQuery, (rs, rowNum) -> {
                 UUID id = (UUID) rs.getObject("id");
-                String name = rs.getString("name");
-                String description = rs.getString("description");
                 UUID ownerId = (UUID) rs.getObject("owner_id");
-                return Group.createWithoutGroupParticipations(id, name, description, ownerId);
+                return Group.createWithoutGroupParticipations(id, ownerId);
             }, groupId);
             if (Objects.isNull(group))
                 throw new IllegalStateException();
@@ -122,7 +120,7 @@ public class GroupDAOimpl implements GroupDAO {
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
                 return GroupParticipation.createWithAllFields(id, group, receiveUserId, status, submitterUserId, createdDate);
             }, groupId);
-            groupParticipationList.forEach(group::addParticipation);
+            group.addParticipationList(groupParticipationList);
 
             return Optional.of(group);
         } catch (EmptyResultDataAccessException e) {

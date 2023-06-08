@@ -22,7 +22,6 @@ import static java.time.Instant.now;
 public class GroupCRUDimpl implements GroupCRUD{
 
     private final GroupDAO groupDAO;
-
     private final UserApplicationDAO userApplicationDAO;
     private final IAuthenticationFacade authentication;
 
@@ -33,8 +32,8 @@ public class GroupCRUDimpl implements GroupCRUD{
     }
 
     @Override
-    public Group addNewGroup(String name, String description) {
-        Group group = Group.createWithoutGroupParticipations(UUID.randomUUID(), name, description, authentication.getUserAuthenticatedId());
+    public Group addNewGroup() {
+        Group group = Group.createWithoutGroupParticipations(UUID.randomUUID(), authentication.getUserAuthenticatedId());
         return groupDAO.saveGroup(group);
     }
 

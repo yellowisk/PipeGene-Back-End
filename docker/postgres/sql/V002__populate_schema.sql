@@ -10,6 +10,13 @@ insert into pipegine_platform.application_user(id, name, username, password, is_
     values ('78cec5db-6396-4fd9-803f-1fd469d76330'::uuid, 'vini', 'vini',
         '$2a$10$M2lu6nBJ4yCdJ/qtbT7aZeofmxsFqYlMQtz1M2QQgRm1sCwTi2i/m', true, true, true, true);
 
+-- Cria um usuário com username 'arthur' e senha '123'
+
+insert into pipegine_platform.application_user(id, name, username, password, is_account_non_expired,
+                                               is_account_nonLocked, is_credentials_non_expired, is_enabled)
+values ('9780ed75-52db-4a4d-a0ad-13681a28e00a'::uuid, 'teste2', 'arthur',
+        '$2a$10$XbQdgwykWtY7no9nNJTVO.97cSRNZx2b6MZ9AYnTNNtoDWX0Q9zxi', true, true, true, true);
+
 
 -- cria provider para grafico pre processamento
 insert into pipegine_platform.provider(id, name, description, url, public, input_supported_types, output_supported_types,

@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public interface GroupCRUD {
 
-    Group addNewGroup(String name, String description);
+    Group addNewGroup();
 
     GroupParticipation addToGroup(UUID groupId, String username);
 

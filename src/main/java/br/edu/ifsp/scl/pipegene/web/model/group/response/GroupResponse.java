@@ -7,27 +7,16 @@ import java.util.UUID;
 public class GroupResponse {
 
     private UUID id;
-    private String name;
-    private String description;
 
-    public GroupResponse(UUID id, String name, String description) {
+    public GroupResponse(UUID id) {
         this.id = id;
-        this.name = name;
-        this.description = description;
     }
     public static GroupResponse createFromGroup(Group group) {
-        return new GroupResponse(group.getId(), group.getName(), group.getDescription());
+        return new GroupResponse(group.getId());
     }
 
     public UUID getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }
