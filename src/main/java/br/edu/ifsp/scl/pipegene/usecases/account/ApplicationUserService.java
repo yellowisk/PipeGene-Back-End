@@ -52,8 +52,8 @@ public class ApplicationUserService implements UserDetailsService, ApplicationUs
             throw new ResourceNotFoundException("Not found user with id: " + userId);
         }
 
-        ApplicationUser user = optional.get();
+        ApplicationUser userRequest = request.toApplicationUser();
 
-        return userApplicationDAO.updateUser(user.getNewInstanceWithId(userId));
+        return userApplicationDAO.updateUser(userRequest.getNewInstanceWithId(userId));
     }
 }

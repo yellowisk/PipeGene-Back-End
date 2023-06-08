@@ -59,7 +59,7 @@ public class ProviderServiceImpl implements ProviderService {
             throw new ResourceNotFoundException("Not found provider with id: " + providerId);
         }
 
-        Provider provider = optional.get();
+        Provider provider = providerRequest.convertToProvider();
 
         return providerDAO.updateProvider(provider.getNewInstanceWithId(providerId));
     }
