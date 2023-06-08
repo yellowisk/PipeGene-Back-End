@@ -63,7 +63,7 @@ public class GroupDAOimpl implements GroupDAO {
     @Override
     public GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation) {
         jdbcTemplate.update(saveGroupParticipationQuery, groupParticipation.getId(),
-                groupParticipation.getGroup().getId(), groupParticipation.getReceiverId(),
+                groupParticipation.getGroupId(), groupParticipation.getReceiverId(),
                 groupParticipation.getSubmitterId(), groupParticipation.getCreatedDate() ,groupParticipation.getStatus().name());
 
         return groupParticipation;
@@ -89,7 +89,7 @@ public class GroupDAOimpl implements GroupDAO {
                 UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
                 Timestamp createdDate = rs.getTimestamp("create_date");
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
-                return GroupParticipation.createWithAllFields(id, Group.createWithOnlyId(groupId), receiveUserId, status, submitterUserId, createdDate);
+                return GroupParticipation.createWithAllFields(id, groupId, receiveUserId, status, submitterUserId, createdDate);
             }, groupParticipationId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -118,7 +118,7 @@ public class GroupDAOimpl implements GroupDAO {
                 UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
                 Timestamp createdDate = rs.getTimestamp("create_date");
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
-                return GroupParticipation.createWithAllFields(id, group, receiveUserId, status, submitterUserId, createdDate);
+                return GroupParticipation.createWithAllFields(id, groupId, receiveUserId, status, submitterUserId, createdDate);
             }, groupId);
             group.addParticipationList(groupParticipationList);
 
@@ -148,7 +148,7 @@ public class GroupDAOimpl implements GroupDAO {
                 UUID submitterUserId = (UUID) rs.getObject("submitter_user_id");
                 Timestamp createdDate = rs.getTimestamp("create_date");
                 GroupParticipationStatusEnum status = GroupParticipationStatusEnum.valueOf(rs.getString("status"));
-                return GroupParticipation.createWithAllFields(id, Group.createWithOnlyId(groupIdNew), receiveUserId, status, submitterUserId, createdDate);
+                return GroupParticipation.createWithAllFields(id, groupIdNew, receiveUserId, status, submitterUserId, createdDate);
             }, groupId, receiverId);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();

@@ -20,9 +20,16 @@ public class GroupController {
     public GroupController(GroupCRUD groupCRUD) {
         this.groupCRUD = groupCRUD;
     }
-    @PostMapping("/save")
+    @PostMapping("/create")
     public ResponseEntity<GroupResponse> addNewGroup() {
         Group group = groupCRUD.addNewGroup();
+        return ResponseEntity.ok(GroupResponse.createJustWithId(group.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GroupResponse> findGroupById(@PathVariable("id")
+                                                       UUID groupId){
+        Group group = groupCRUD.findGroupById(groupId);
         return ResponseEntity.ok(GroupResponse.createFromGroup(group));
     }
 

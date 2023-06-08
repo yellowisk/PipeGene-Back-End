@@ -9,6 +9,8 @@ public interface GroupCRUD {
 
     Group addNewGroup();
 
+    Group findGroupById(UUID id);
+
     GroupParticipation addToGroup(UUID groupId, String username);
 
     GroupParticipation acceptGroupParticipation(UUID groupParticipationId);

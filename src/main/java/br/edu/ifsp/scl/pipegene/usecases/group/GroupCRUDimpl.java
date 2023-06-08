@@ -38,6 +38,12 @@ public class GroupCRUDimpl implements GroupCRUD{
     }
 
     @Override
+    public Group findGroupById(UUID id) {
+        return groupDAO.findGroupById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Not found group with id: " + id)
+        );
+    }
+    @Override
     public GroupParticipation addToGroup(UUID groupId, String username) {
         GroupParticipation groupParticipation = null;
 
@@ -60,7 +66,7 @@ public class GroupCRUDimpl implements GroupCRUD{
             return groupParticipation;
         }
 
-        groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), group, applicationUser.getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
+        groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), groupId, applicationUser.getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
         return groupDAO.saveGroupParticipation(groupParticipation);
     }
 

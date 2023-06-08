@@ -6,15 +6,15 @@ import java.util.UUID;
 public class GroupParticipation {
 
     private UUID id;
-    private Group group;
+    private UUID groupId;
     private UUID receiverId;
     private GroupParticipationStatusEnum status;
     private UUID submitterId;
     private Timestamp createdDate;
 
-    private GroupParticipation(UUID id, Group group, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId, Timestamp createdDate) {
+    private GroupParticipation(UUID id, UUID groupId, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId, Timestamp createdDate) {
         this.id = id;
-        this.group = group;
+        this.groupId = groupId;
         this.receiverId = receiverId;
         this.status = status;
         this.submitterId = submitterId;
@@ -28,8 +28,8 @@ public class GroupParticipation {
     public static GroupParticipation createOnlyWithId(UUID id){
         return new GroupParticipation(id);
     }
-    public static GroupParticipation createWithAllFields(UUID id, Group group, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId, Timestamp createdDate){
-        return new GroupParticipation(id, group, receiverId, status, submitterId, createdDate);
+    public static GroupParticipation createWithAllFields(UUID id, UUID groupId, UUID receiverId, GroupParticipationStatusEnum status, UUID submitterId, Timestamp createdDate){
+        return new GroupParticipation(id, groupId, receiverId, status, submitterId, createdDate);
     }
 
     public UUID getId() {
@@ -40,12 +40,12 @@ public class GroupParticipation {
         this.id = id;
     }
 
-    public Group getGroup() {
-        return group;
+    public UUID getGroupId() {
+        return groupId;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setGroupId(UUID groupId) {
+        this.groupId = groupId;
     }
 
     public UUID getReceiverId() {
