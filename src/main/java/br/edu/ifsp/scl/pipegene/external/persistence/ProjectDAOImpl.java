@@ -41,6 +41,9 @@ public class ProjectDAOImpl implements ProjectDAO {
     @Value("${queries.sql.project-dao.select.project-all}")
     private String selectAllProjectQuery;
 
+    @Value("${queries.sql.project-dao.select.project-all-by-user}")
+    private String selectAllProjectByUserQuery;
+
     @Value("${queries.sql.project-dao.exists.project-id}")
     private String existsProjectIdQuery;
 
@@ -129,12 +132,23 @@ public class ProjectDAOImpl implements ProjectDAO {
         Map<UUID, Project> projects = jdbcTemplate.query(selectAllProjectQuery, this::mapperProjectFromRs).stream()
                 .collect(Collectors.toMap(Project::getId, Function.identity()));
 
+        return findPipelines(projects);
+    }
+
+    @Override
+    public List<Project> findAllProjectsByUser(UUID userId) {
+        Map<UUID, Project> projects = jdbcTemplate.query(selectAllProjectByUserQuery, this::mapperProjectFromRs, userId).stream()
+                .distinct().collect(Collectors.toMap(Project::getId, Function.identity()));
+
+        return findPipelines(projects);
+    }
+
+    private List<Project> findPipelines(Map<UUID, Project> projects) {
         Collection<UUID> projectIds = projects.keySet();
 
         datasetDAO.findDatasetsByProjectIds(projectIds)
                 .forEach(dataset -> projects.get(dataset.getProjectId()).addDataset(dataset));
 
-        // TODO("Create a findPipelinesByProjectIds method at PipelineDAO")
         projectIds.forEach(id -> {
             Project project = projects.get(id);
             List<Pipeline> pipelines = pipelineDAO.findPipelinesByProjectId(id).stream()

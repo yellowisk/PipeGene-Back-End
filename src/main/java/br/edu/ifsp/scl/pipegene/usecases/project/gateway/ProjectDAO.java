@@ -18,6 +18,8 @@ public interface ProjectDAO {
 
     List<Project> findAllProjects();
 
+    List<Project> findAllProjectsByUser(UUID userId);
+
     Boolean projectExists(UUID id);
 
     boolean deleteProjectById(UUID id);

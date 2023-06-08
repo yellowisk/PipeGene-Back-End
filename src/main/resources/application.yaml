@@ -71,6 +71,13 @@ queries:
 
         project-all: >
           SELECT * FROM pipegine_platform.project
+
+        project-all-by-user: >
+          SELECT * FROM pipegine_platform.project p 
+          INNER JOIN pipegine_platform.group g ON g.id = p.group_id
+          INNER JOIN pipegine_platform.group_participation gp ON gp.group_id = g.id
+          WHERE gp.receive_user_id = ? AND gp.status='ACCEPTED'
+
       exists:
         project-id: >
           SELECT EXISTS(SELECT 1 FROM pipegine_platform.project p WHERE p.id=?)

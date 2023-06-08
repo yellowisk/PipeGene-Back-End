@@ -75,9 +75,7 @@ public class ProjectCRUDImpl implements ProjectCRUD {
 
     @Override
     public List<Project> findAllProjects() {
-        return projectDAO.findAllProjects().stream()
-                .filter(p -> p.getOwnerId().equals(authentication.getUserAuthenticatedId()))
-                .collect(Collectors.toList());
+        return projectDAO.findAllProjectsByUser(authentication.getUserAuthenticatedId());
     }
 
 
