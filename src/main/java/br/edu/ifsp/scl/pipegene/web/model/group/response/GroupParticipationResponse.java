@@ -10,7 +10,6 @@ public class GroupParticipationResponse {
 
     private UUID id;
     private GroupParticipationStatusEnum status;
-
     private Timestamp createdDate;
 
     private GroupParticipationResponse(UUID id, GroupParticipationStatusEnum status, Timestamp createdDate) {
@@ -39,5 +38,11 @@ public class GroupParticipationResponse {
         this.status = status;
     }
 
+    public Timestamp getCreatedDate() {
+        return createdDate;
+    }
 
+    public void setCreatedDate(Timestamp createdDate) {
+        this.createdDate = createdDate;
+    }
 }

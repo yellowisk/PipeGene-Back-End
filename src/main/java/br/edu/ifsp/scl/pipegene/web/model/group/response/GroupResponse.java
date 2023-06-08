@@ -1,33 +1,39 @@
 package br.edu.ifsp.scl.pipegene.web.model.group.response;
 
 import br.edu.ifsp.scl.pipegene.domain.Group;
+import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class GroupResponse {
 
     private UUID id;
-    private String name;
-    private String description;
 
-    public GroupResponse(UUID id, String name, String description) {
+    private ArrayList<GroupParticipation> groupParticipations;
+
+    public GroupResponse(UUID id) {
         this.id = id;
-        this.name = name;
-        this.description = description;
     }
-    public static GroupResponse createFromGroup(Group group) {
-        return new GroupResponse(group.getId(), group.getName(), group.getDescription());
+
+    public GroupResponse(UUID id, ArrayList<GroupParticipation> groupParticipations) {
+        this.id = id;
+        this.groupParticipations = groupParticipations;
+    }
+
+    public static GroupResponse createJustWithId(UUID id) {
+        return new GroupResponse(id);
+    }
+
+    public static GroupResponse createFromGroup(Group group){
+        return new GroupResponse(group.getId(), group.getGroupParticipations());
     }
 
     public UUID getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
+    public ArrayList<GroupParticipation> getGroupParticipations() {
+        return groupParticipations;
     }
 }

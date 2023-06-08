@@ -1,8 +1,11 @@
 package br.edu.ifsp.scl.pipegene.usecases.provider;
 
+import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.usecases.account.gateway.UserApplicationDAO;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
+import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
+import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
@@ -19,9 +22,12 @@ public class ProviderServiceImpl implements ProviderService {
 
     private final UserApplicationDAO userApplicationDAO;
 
-    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO) {
+    private final GroupDAO groupDAO;
+
+    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupDAO groupDAO) {
         this.providerDAO = providerDAO;
         this.userApplicationDAO = userApplicationDAO;
+        this.groupDAO = groupDAO;
     }
 
     @Override
@@ -32,6 +38,17 @@ public class ProviderServiceImpl implements ProviderService {
     @Override
     public Provider createNewProvider(ProviderRequest providerRequest) {
         return providerDAO.saveNewProvider(providerRequest.convertToProvider());
+    }
+
+    @Override
+    public void insertIntoGroup(UUID groupId, UUID providerId) {
+        groupDAO.findGroupById(groupId).orElseThrow(
+                () -> new ResourceNotFoundException("Not found group with id: " + groupId)
+        );
+        providerDAO.findProviderById(providerId).orElseThrow(
+                () -> new ResourceNotFoundException("Not found provider with id: " + providerId)
+        );
+        providerDAO.createGroupProvider(groupId, providerId);
     }
 
     @Override

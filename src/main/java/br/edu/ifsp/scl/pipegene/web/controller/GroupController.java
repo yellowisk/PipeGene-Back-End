@@ -3,15 +3,15 @@ package br.edu.ifsp.scl.pipegene.web.controller;
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
-import br.edu.ifsp.scl.pipegene.web.model.group.request.CreateGroupRequest;
 import br.edu.ifsp.scl.pipegene.web.model.group.request.CreateInviteRequest;
 import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupParticipationResponse;
 import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/groups")
@@ -22,10 +22,25 @@ public class GroupController {
     public GroupController(GroupCRUD groupCRUD) {
         this.groupCRUD = groupCRUD;
     }
-    @PostMapping("/save")
-    public ResponseEntity<GroupResponse> addNewGroup(@RequestBody CreateGroupRequest request) {
-        Group group = groupCRUD.addNewGroup(request.getName(), request.getDescription());
+    @PostMapping("/create")
+    public ResponseEntity<GroupResponse> addNewGroup() {
+        Group group = groupCRUD.addNewGroup();
+        return ResponseEntity.ok(GroupResponse.createJustWithId(group.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GroupResponse> findGroupById(@PathVariable("id")
+                                                       UUID groupId){
+        Group group = groupCRUD.findGroupById(groupId);
         return ResponseEntity.ok(GroupResponse.createFromGroup(group));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<GroupResponse>> findAllGroupsByUserId(){
+        List<Group> groups = groupCRUD.findAllGroupByUserId();
+        return ResponseEntity.ok(groups.stream()
+                .map(GroupResponse::createFromGroup)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/addUser")
@@ -58,10 +73,5 @@ public class GroupController {
     public ResponseEntity<GroupParticipationResponse> deleteGroupParticipation(@PathVariable("id") UUID groupParticipationId){
         GroupParticipation groupParticipation = groupCRUD.deleteGroupParticipation(groupParticipationId);
         return ResponseEntity.ok(GroupParticipationResponse.createFromGroupParticipation(groupParticipation));
-    }
-
-    @GetMapping("/teste")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Teste");
     }
 }

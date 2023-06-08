@@ -2,7 +2,9 @@ package br.edu.ifsp.scl.pipegene.usecases.project;
 
 import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
 import br.edu.ifsp.scl.pipegene.domain.Dataset;
+import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Project;
+import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ObjectStorageService;
 import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
@@ -21,11 +23,14 @@ import java.util.stream.Collectors;
 public class ProjectCRUDImpl implements ProjectCRUD {
 
     private final ProjectDAO projectDAO;
+
+    private final GroupCRUD groupCRUD;
     private final ObjectStorageService objectStorageService;
     private final IAuthenticationFacade authentication;
 
-    public ProjectCRUDImpl(ProjectDAO projectDAO, ObjectStorageService objectStorageService, IAuthenticationFacade authentication) {
+    public ProjectCRUDImpl(ProjectDAO projectDAO, GroupCRUD groupCRUD, ObjectStorageService objectStorageService, IAuthenticationFacade authentication) {
         this.projectDAO = projectDAO;
+        this.groupCRUD = groupCRUD;
         this.objectStorageService = objectStorageService;
         this.authentication = authentication;
     }
@@ -35,8 +40,8 @@ public class ProjectCRUDImpl implements ProjectCRUD {
         List<Dataset> datasets = files.stream()
                 .map(objectStorageService::putObject)
                 .collect(Collectors.toList());
-
-        return projectDAO.saveNewProject(name, description, datasets, authentication.getUserAuthenticatedId());
+        Group group = groupCRUD.addNewGroup();
+        return projectDAO.saveNewProject(name, description, group.getId(), datasets, authentication.getUserAuthenticatedId());
     }
 
     @Override
@@ -70,9 +75,7 @@ public class ProjectCRUDImpl implements ProjectCRUD {
 
     @Override
     public List<Project> findAllProjects() {
-        return projectDAO.findAllProjects().stream()
-                .filter(p -> p.getOwnerId().equals(authentication.getUserAuthenticatedId()))
-                .collect(Collectors.toList());
+        return projectDAO.findAllProjectsByUser(authentication.getUserAuthenticatedId());
     }
 
 

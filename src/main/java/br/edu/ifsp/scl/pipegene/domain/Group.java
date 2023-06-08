@@ -1,22 +1,19 @@
 package br.edu.ifsp.scl.pipegene.domain;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Group {
 
     private UUID id;
-    private String name;
     private ArrayList<GroupParticipation> groupParticipations;
-    private String description;
     private UUID ownerId;
 
-    private Group(UUID id, String name, ArrayList<GroupParticipation> members, String description, UUID ownerId) {
+    private Group(UUID id, ArrayList<GroupParticipation> members, UUID ownerId) {
         this.id = id;
-        this.name = name;
         this.groupParticipations = members;
-        this.description = description;
         this.ownerId = ownerId;
     }
 
@@ -28,16 +25,16 @@ public class Group {
         return new Group(id);
     }
 
-    public static Group createWithMembersAndInvitedUsers(UUID id, String name, String description, UUID ownerId, ArrayList<GroupParticipation> groupParticipations) {
+    public static Group createWithMembersAndInvitedUsers(UUID id, UUID ownerId, ArrayList<GroupParticipation> groupParticipations) {
         ArrayList<GroupParticipation> groupParticipationList = Objects.isNull(groupParticipations) ? new ArrayList<>() : new ArrayList<>(groupParticipations);
-        return new Group(id, name, groupParticipationList, description, ownerId);
+        return new Group(id, groupParticipationList, ownerId);
     }
 
-    public static Group createWithoutGroupParticipations(UUID id, String name, String description, UUID ownerId) {
-        return new Group(id, name, new ArrayList<>(), description, ownerId);
+    public static Group createWithoutGroupParticipations(UUID id, UUID ownerId) {
+        return new Group(id, new ArrayList<>(), ownerId);
     }
 
-    public void addParticipationArrayList(ArrayList<GroupParticipation> groupParticipations) {
+    public void addParticipationList(List<GroupParticipation> groupParticipations) {
         this.groupParticipations.addAll(groupParticipations);
     }
 
@@ -51,22 +48,6 @@ public class Group {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public UUID getOwnerId() {

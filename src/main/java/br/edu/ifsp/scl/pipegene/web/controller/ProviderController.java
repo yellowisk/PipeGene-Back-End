@@ -4,6 +4,7 @@ import br.edu.ifsp.scl.pipegene.configuration.security.AuthenticationFacade;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.usecases.execution.ExecutionTransaction;
 import br.edu.ifsp.scl.pipegene.usecases.provider.ProviderService;
+import br.edu.ifsp.scl.pipegene.web.model.provider.request.GroupProvider;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderExecutionResultRequest;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
 import br.edu.ifsp.scl.pipegene.web.model.provider.response.ProviderResponse;
@@ -37,6 +38,12 @@ public class ProviderController {
         Provider provider = providerService.createNewProvider(providerRequest);
 
         return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
+    }
+
+    @PostMapping("/group")
+    public ResponseEntity<?> insertIntoGroup(@RequestBody GroupProvider groupProvider) {
+        providerService.insertIntoGroup(groupProvider.getGroupId(), groupProvider.getProviderId());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping

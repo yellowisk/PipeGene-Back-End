@@ -18,5 +18,6 @@ public interface ProviderDAO {
     Provider updateProvider(Provider provider);
 
     List<Provider> findAllProvidersByUserId(UUID userId);
+    void createGroupProvider(UUID groupId, UUID providerId);
 
 }

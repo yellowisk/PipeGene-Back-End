@@ -1,8 +1,10 @@
 package br.edu.ifsp.scl.pipegene.external.persistence;
 
 import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
+import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.domain.ProviderOperation;
+import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,6 +23,8 @@ public class ProviderDAOImpl implements ProviderDAO {
 
     private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
+
+    private final GroupDAO groupDAO;
 
     @Deprecated
     private final IAuthenticationFacade authentication;
@@ -43,9 +47,16 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.provider-dao.select.provider-all-by-userId}")
     private String selectAllProvidersByUserIdQuery;
 
-    public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, IAuthenticationFacade authentication) {
+    @Value("${queries.sql.group-provider-dao.insert.group-provider}")
+    private String insertGroupProviderQuery;
+
+    @Value("${queries.sql.group-provider-dao.select.group-id-by-provider-id}")
+    private String selectGroupIdByProviderIdQuery;
+
+    public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, GroupDAO groupDAO, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
+        this.groupDAO = groupDAO;
         this.authentication = authentication;
     }
 
@@ -74,7 +85,6 @@ public class ProviderDAOImpl implements ProviderDAO {
         String description = rs.getString("description");
         String url = rs.getString("url");
         Boolean isPublic = rs.getBoolean("public");
-        UUID groupId = (Objects.isNull(rs.getObject("group_id"))) ? null : (UUID) rs.getObject("group_id");
 
         String inputSupported = rs.getString("input_supported_types");
         List<String> inputSupportedTypes = Objects.isNull(inputSupported) ? Collections.emptyList()
@@ -84,13 +94,22 @@ public class ProviderDAOImpl implements ProviderDAO {
         List<String> outputSupportedTypes = Objects.isNull(outputSupported) ? Collections.emptyList()
                 : Arrays.asList(outputSupported.split(","));
 
+        List<UUID> groupsIds = jdbcTemplate.query(selectGroupIdByProviderIdQuery, ps -> ps.setObject(1, id),
+                    (rs1, rowNum1) -> (UUID) rs1.getObject("group_id"));
+
+        List<Group> groups = groupsIds.stream().map(groupDAO::findGroupById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+
         try {
             String operationStr = rs.getString("operations");
             List<ProviderOperation> operations = Objects.isNull(operationStr) ? Collections.emptyList()
                     : objectMapper.readValue(operationStr, new TypeReference<>() {
             });
 
-            return Provider.createWithAllValues(id, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes,
+            return Provider.createWithAllValues(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes,
                     operations);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -109,7 +128,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(insertProviderQuery, providerId, provider.getName(), provider.getDescription(),
-                provider.getUrl(), provider.getPublic(), provider.getGroupId(), String.join(",", provider.getInputSupportedTypes()),
+                provider.getUrl(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, authentication.getUserAuthenticatedId());
 
         return provider.getNewInstanceWithId(providerId);
@@ -127,7 +146,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(updateProviderQuery, provider.getName(), provider.getDescription(), provider.getUrl(),
-                provider.getPublic(), provider.getGroupId(),
+                provider.getPublic(),
                 String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
@@ -137,5 +156,10 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Override
     public List<Provider> findAllProvidersByUserId(UUID userId) {
         return jdbcTemplate.query(selectAllProvidersByUserIdQuery, this::mapperToProvider, userId, userId);
+    }
+
+    @Override
+    public void createGroupProvider(UUID groupId, UUID providerId) {
+        jdbcTemplate.update(insertGroupProviderQuery, groupId, providerId);
     }
 }

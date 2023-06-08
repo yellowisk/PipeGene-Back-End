@@ -25,9 +25,10 @@ public class ProjectController {
 
     @PostMapping
     public ResponseEntity<ProjectResponse> createNewProject(
-            @RequestParam("name") String name,
-            @RequestParam("description") String description,
-            @RequestParam("files") List<MultipartFile> files) {
+            @RequestParam String name,
+            @RequestParam String description,
+            @RequestParam List<MultipartFile> files) {
+        System.out.println(name);
         Project project = projectCRUD.createNewProject(name, description, files);
 
         return ResponseEntity.ok(ProjectResponse.createFromProject(project));

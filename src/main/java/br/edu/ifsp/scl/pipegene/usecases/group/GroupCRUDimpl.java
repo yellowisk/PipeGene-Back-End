@@ -12,6 +12,7 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -22,7 +23,6 @@ import static java.time.Instant.now;
 public class GroupCRUDimpl implements GroupCRUD{
 
     private final GroupDAO groupDAO;
-
     private final UserApplicationDAO userApplicationDAO;
     private final IAuthenticationFacade authentication;
 
@@ -33,9 +33,27 @@ public class GroupCRUDimpl implements GroupCRUD{
     }
 
     @Override
-    public Group addNewGroup(String name, String description) {
-        Group group = Group.createWithoutGroupParticipations(UUID.randomUUID(), name, description, authentication.getUserAuthenticatedId());
-        return groupDAO.saveGroup(group);
+    public Group addNewGroup() {
+        UUID groupId = UUID.randomUUID();
+        Group group = Group.createWithoutGroupParticipations(groupId, authentication.getUserAuthenticatedId());
+        GroupParticipation groupParticipation = GroupParticipation.createWithGroupCreation(
+                UUID.randomUUID(), groupId, authentication.getUserAuthenticatedId(), Timestamp.from(now())
+        );
+        groupDAO.saveGroup(group);
+        groupDAO.saveGroupParticipation(groupParticipation);
+        return Group.createWithOnlyId(groupId);
+    }
+
+    @Override
+    public Group findGroupById(UUID id) {
+        return groupDAO.findGroupById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Not found group with id: " + id)
+        );
+    }
+
+    @Override
+    public List<Group> findAllGroupByUserId() {
+        return groupDAO.findAllGroupByUserId(authentication.getUserAuthenticatedId());
     }
 
     @Override
@@ -61,7 +79,7 @@ public class GroupCRUDimpl implements GroupCRUD{
             return groupParticipation;
         }
 
-        groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), group, applicationUser.getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
+        groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), groupId, applicationUser.getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
         return groupDAO.saveGroupParticipation(groupParticipation);
     }
 

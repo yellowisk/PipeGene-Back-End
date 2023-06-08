@@ -9,6 +9,7 @@ public class Project {
     private UUID id;
     private String name;
     private String description;
+    private UUID groupId;
     private List<Dataset> datasets;
     private List<Pipeline> pipelines;
     private UUID ownerId;
@@ -43,25 +44,26 @@ public class Project {
         this.pipelines.addAll(pipelines);
     }
 
-    private Project(UUID id, List<Dataset> datasets, String name, String description, List<Pipeline> pipelines, UUID ownerId) {
+    private Project(UUID id, List<Dataset> datasets, String name, String description, UUID groupId, List<Pipeline> pipelines, UUID ownerId) {
         this.id = id;
         this.datasets = datasets;
         this.name = name;
         this.description = description;
+        this.groupId = groupId;
         this.pipelines = pipelines;
         this.ownerId = ownerId;
 
         datasets.forEach(d -> d.setProject(this));
     }
 
-    public static Project createWithoutPipelines(UUID id, List<Dataset> datasets, String name, String description,
+    public static Project createWithoutPipelines(UUID id, List<Dataset> datasets, String name, UUID groupId, String description,
                                                  UUID ownerId) {
         List<Dataset> datasetList = Objects.isNull(datasets) ? new ArrayList<>() : new ArrayList<>(datasets);
-        return new Project(id, datasetList, name, description, new ArrayList<>(), ownerId);
+        return new Project(id, datasetList, name, description, groupId, new ArrayList<>(), ownerId);
     }
 
-    public static Project createWithoutDatasetsAndPipelines(UUID id, String name, String description, UUID ownerId) {
-        return new Project(id, new ArrayList<>(), name, description, new ArrayList<>(), ownerId);
+    public static Project createWithoutDatasetsAndPipelines(UUID id, String name, String description, UUID groupId, UUID ownerId) {
+        return new Project(id, new ArrayList<>(), name, description, groupId, new ArrayList<>(), ownerId);
     }
 
     private Project(UUID id) {
@@ -109,6 +111,7 @@ public class Project {
                 datasets,
                 newName,
                 newDescription,
+                groupId,
                 pipelines,
                 ownerId
         );
@@ -116,5 +119,13 @@ public class Project {
 
     public UUID getOwnerId() {
         return ownerId;
+    }
+
+    public UUID getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(UUID groupId) {
+        this.groupId = groupId;
     }
 }
