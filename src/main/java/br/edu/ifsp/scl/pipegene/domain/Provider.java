@@ -9,23 +9,23 @@ public class Provider {
     private String description;
     private String url;
     private Boolean isPublic;
-    private UUID groupId;
+    private List<Group> groups;
     private List<String> inputSupportedTypes;
     private List<String> outputSupportedTypes;
     private List<ProviderOperation> operations;
 
-    public static Provider createWithAllValues(UUID id, String name, String description, String url, Boolean isPublic, UUID groupId,
+    public static Provider createWithAllValues(UUID id, String name, String description, String url, Boolean isPublic, List<Group> groups,
                                                Collection<String> inputSupportedTypes, Collection<String> outputSupportedTypes,
                                                Collection<ProviderOperation> operations) {
-        return new Provider(id, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
-    public static Provider createWithoutId(String name, String description, String url,
-                                           boolean isPublic, UUID groupId,
-                                           Collection<String> inputSupportedTypes,
-                                           Collection<String> outputSupportedTypes,
-                                           Collection<ProviderOperation> operations) {
-        return new Provider(null, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes, operations);
+    public static Provider createWithoutIdAndGroups(String name, String description, String url,
+                                                    boolean isPublic,
+                                                    Collection<String> inputSupportedTypes,
+                                                    Collection<String> outputSupportedTypes,
+                                                    Collection<ProviderOperation> operations) {
+        return new Provider(null, name, description, url, isPublic, null, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public static Provider createWithIdAndInputOutputSupportedTypes(UUID id, String inputSupportedType, String outputSupportedType) {
@@ -85,14 +85,14 @@ public class Provider {
     }
 
     private Provider(UUID id, String name, String description, String url, Boolean isPublic,
-                     UUID groupId, Collection<String> inputSupportedTypes,
+                     List<Group> groups, Collection<String> inputSupportedTypes,
                      Collection<String> outputSupportedTypes, Collection<ProviderOperation> operations) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
         this.isPublic = isPublic;
-        this.groupId = groupId;
+        this.groups = groups;
         this.inputSupportedTypes = Objects.requireNonNull(List.copyOf(inputSupportedTypes));
         this.outputSupportedTypes = Objects.requireNonNull(List.copyOf(outputSupportedTypes));
         this.operations = Objects.requireNonNull(List.copyOf(operations));
@@ -103,7 +103,7 @@ public class Provider {
     }
 
     public Provider getNewInstanceWithId(UUID id) {
-        return new Provider(id, name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public String getUrl() {
@@ -138,11 +138,19 @@ public class Provider {
         isPublic = aPublic;
     }
 
-    public UUID getGroupId() {
-        return groupId;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public void setGroupId(UUID groupId) {
-        this.groupId = groupId;
+    public List<Group> getGroups() {
+        return groups;
+    }
+
+    public void addToGroup(Group group) {
+        this.groups.add(group);
+    }
+
+    public void addListToGroup(List<Group> groups){
+        this.groups.addAll(groups);
     }
 }

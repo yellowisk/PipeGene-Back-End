@@ -61,9 +61,9 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Transactional
     @Override
-    public Project saveNewProject(String name, String description, List<Dataset> datasets, UUID ownerId) {
+    public Project saveNewProject(String name, String description, UUID groupId, List<Dataset> datasets, UUID ownerId) {
         UUID projectId = UUID.randomUUID();
-        jdbcTemplate.update(insertProjectQuery, projectId, name, description, ownerId);
+        jdbcTemplate.update(insertProjectQuery, projectId, name, description, groupId, ownerId);
 
         jdbcTemplate.batchUpdate(insertDatasetQuery, new BatchPreparedStatementSetter() {
             @Override
@@ -79,7 +79,7 @@ public class ProjectDAOImpl implements ProjectDAO {
             }
         });
 
-        return Project.createWithoutPipelines(projectId, datasets, name, description, ownerId);
+        return Project.createWithoutPipelines(projectId, datasets, name, groupId, description, ownerId);
     }
 
     @Override
@@ -94,9 +94,10 @@ public class ProjectDAOImpl implements ProjectDAO {
             Project project = jdbcTemplate.queryForObject(selectProjectByIdQuery, (rs, rowNum) -> {
                 String name = rs.getString("name");
                 String description = rs.getString("description");
+                UUID groupId = (UUID) rs.getObject("group_id");
                 UUID ownerId = (UUID) rs.getObject("owner_id");
 
-                return Project.createWithoutDatasetsAndPipelines(id, name, description, ownerId);
+                return Project.createWithoutDatasetsAndPipelines(id, name, description, groupId, ownerId);
             }, id);
 
             if (Objects.isNull(project)) {
@@ -164,8 +165,10 @@ public class ProjectDAOImpl implements ProjectDAO {
         UUID id = (UUID) rs.getObject("id");
         String name = rs.getString("name");
         String description = rs.getString("description");
+        UUID groupId = (UUID) rs.getObject("group_id");
         UUID ownerId = (UUID) rs.getObject("owner_id");
 
-        return Project.createWithoutDatasetsAndPipelines(id, name, description, ownerId);
+
+        return Project.createWithoutDatasetsAndPipelines(id, name, description, groupId, ownerId);
     }
 }

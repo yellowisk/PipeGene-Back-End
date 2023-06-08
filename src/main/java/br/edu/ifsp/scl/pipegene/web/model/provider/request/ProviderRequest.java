@@ -22,8 +22,6 @@ public class ProviderRequest {
     @NotNull
     private Boolean isPublic;
 
-    private UUID groupId;
-
     @NotNull
     private Set<String> inputSupportedTypes;
 
@@ -37,7 +35,7 @@ public class ProviderRequest {
     }
 
     public Provider convertToProvider() {
-        return Provider.createWithoutId(name, description, url, isPublic, groupId, inputSupportedTypes, outputSupportedTypes,
+        return Provider.createWithoutIdAndGroups(name, description, url, isPublic, inputSupportedTypes, outputSupportedTypes,
                 operations.stream()
                         .map(ProviderOperationDTO::convertToProviderOperation)
                         .collect(Collectors.toList())
@@ -99,14 +97,5 @@ public class ProviderRequest {
     public void setPublic(Boolean aPublic) {
         isPublic = aPublic;
     }
-
-    public UUID getGroupId() {
-        return groupId;
-    }
-
-    public void setGroupId(UUID groupId) {
-        this.groupId = groupId;
-    }
-
 
 }

@@ -6,13 +6,13 @@ import br.edu.ifsp.scl.pipegene.domain.GroupParticipationStatusEnum;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface GroupDAO {
 
     Group saveGroup(Group group);
-
     GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation);
 
     void updateGroupParticipation(GroupParticipation groupParticipation);
@@ -20,6 +20,8 @@ public interface GroupDAO {
     Optional<GroupParticipation> findGroupParticipationById(UUID groupParticipationId);
 
     Optional<Group> findGroupById(UUID groupId);
+
+    List<Group> findAllGroupByUserId(UUID userId);
 
     GroupParticipation deleteGroupParticipation(UUID id);
     Optional<GroupParticipation> findGroupParticipationByGroupIdAndReceiverId(UUID groupId, UUID receiverId);

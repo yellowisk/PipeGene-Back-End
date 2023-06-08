@@ -8,6 +8,7 @@ CREATE TABLE pipegine_platform.project(
     id uuid NOT NULL,
     name varchar NOT NULL,
     description varchar NOT NULL,
+    group_id uuid NOT NULL,
     owner_id uuid NOT NULL
 );
 
@@ -207,6 +208,24 @@ CREATE TABLE pipegine_platform.application_user(
     is_enabled boolean default false
 );
 
+CREATE TABLE pipegine_platform.group_provider(
+    group_id uuid NOT NULL,
+    provider_id uuid NOT NULL
+);
+
+ALTER TABLE pipegine_platform.group_provider OWNER TO "pipegine";
+
+ALTER TABLE pipegine_platform.group_provider
+    ADD CONSTRAINT group_provider_pkey PRIMARY KEY (group_id, provider_id);
+
+ALTER TABLE pipegine_platform.group_provider
+    ADD CONSTRAINT group_provider_group_id_fkey FOREIGN KEY (group_id)
+        REFERENCES pipegine_platform.group(id) ON DELETE CASCADE;
+
+ALTER TABLE pipegine_platform.group_provider
+    ADD CONSTRAINT group_provider_provider_id_fkey FOREIGN KEY (provider_id)
+        REFERENCES pipegine_platform.provider(id) ON DELETE CASCADE;
+
 ALTER TABLE pipegine_platform.application_user OWNER TO "pipegine";
 
 ALTER TABLE pipegine_platform.application_user
@@ -230,3 +249,7 @@ ALTER TABLE pipegine_platform.group_participation
 ALTER TABLE pipegine_platform.group_participation
     ADD CONSTRAINT group_participation_submitter_user_id_fkey FOREIGN KEY (submitter_user_id)
         REFERENCES pipegine_platform.application_user(id) ON DELETE CASCADE;
+
+ALTER TABLE pipegine_platform.project
+    ADD CONSTRAINT project_group_id_fkey FOREIGN KEY (group_id)
+        REFERENCES pipegine_platform.group(id) ON DELETE CASCADE;

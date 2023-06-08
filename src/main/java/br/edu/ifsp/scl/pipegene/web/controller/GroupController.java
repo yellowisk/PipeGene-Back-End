@@ -9,7 +9,9 @@ import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/v1/groups")
@@ -31,6 +33,14 @@ public class GroupController {
                                                        UUID groupId){
         Group group = groupCRUD.findGroupById(groupId);
         return ResponseEntity.ok(GroupResponse.createFromGroup(group));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<GroupResponse>> findAllGroupsByUserId(){
+        List<Group> groups = groupCRUD.findAllGroupByUserId();
+        return ResponseEntity.ok(groups.stream()
+                .map(GroupResponse::createFromGroup)
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/addUser")

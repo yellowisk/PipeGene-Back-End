@@ -32,6 +32,10 @@ public class GroupParticipation {
         return new GroupParticipation(id, groupId, receiverId, status, submitterId, createdDate);
     }
 
+    public static GroupParticipation createWithGroupCreation(UUID id, UUID groupId, UUID userId, Timestamp createdDate){
+        return new GroupParticipation(id, groupId, userId, GroupParticipationStatusEnum.ACCEPTED, userId, createdDate);
+    }
+
     public UUID getId() {
         return id;
     }

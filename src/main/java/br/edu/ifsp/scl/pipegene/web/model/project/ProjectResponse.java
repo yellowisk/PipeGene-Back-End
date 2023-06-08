@@ -13,17 +13,20 @@ public class ProjectResponse {
     private UUID id;
     private String name;
     private String description;
+    private UUID groupId;
+
     private List<DatasetDTO> datasets;
     private List<PipelineResponse> pipelines;
 
     private ProjectResponse() {
     }
 
-    public ProjectResponse(UUID id, String name, String description, List<DatasetDTO> datasets,
+    public ProjectResponse(UUID id, String name, String description, UUID groupId, List<DatasetDTO> datasets,
                            List<PipelineResponse> pipelines) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.groupId = groupId;
         this.datasets = datasets;
         this.pipelines = pipelines;
     }
@@ -33,6 +36,7 @@ public class ProjectResponse {
                 project.getId(),
                 project.getName(),
                 project.getDescription(),
+                project.getGroupId(),
                 project.getDatasets().stream().map(DatasetDTO::createFromDataset).collect(Collectors.toList()),
                 project.getPipelines().stream()
                         .map(PipelineResponse::createFromPipelineWithoutProject).collect(Collectors.toList())
@@ -57,5 +61,9 @@ public class ProjectResponse {
 
     public List<PipelineResponse> getPipelines() {
         return pipelines;
+    }
+
+    public UUID getGroupId() {
+        return groupId;
     }
 }

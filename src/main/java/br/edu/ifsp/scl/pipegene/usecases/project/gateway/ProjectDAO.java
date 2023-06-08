@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface ProjectDAO {
 
-    Project saveNewProject(String name, String description, List<Dataset> datasets, UUID ownerId);
+    Project saveNewProject(String name, String description, UUID groupId, List<Dataset> datasets, UUID ownerId);
 
     Project updateProject(Project project);
 

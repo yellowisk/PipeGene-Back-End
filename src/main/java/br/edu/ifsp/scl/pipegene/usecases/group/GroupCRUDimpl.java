@@ -12,6 +12,7 @@ import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -33,8 +34,14 @@ public class GroupCRUDimpl implements GroupCRUD{
 
     @Override
     public Group addNewGroup() {
-        Group group = Group.createWithoutGroupParticipations(UUID.randomUUID(), authentication.getUserAuthenticatedId());
-        return groupDAO.saveGroup(group);
+        UUID groupId = UUID.randomUUID();
+        Group group = Group.createWithoutGroupParticipations(groupId, authentication.getUserAuthenticatedId());
+        GroupParticipation groupParticipation = GroupParticipation.createWithGroupCreation(
+                UUID.randomUUID(), groupId, authentication.getUserAuthenticatedId(), Timestamp.from(now())
+        );
+        groupDAO.saveGroup(group);
+        groupDAO.saveGroupParticipation(groupParticipation);
+        return Group.createWithOnlyId(groupId);
     }
 
     @Override
@@ -43,6 +50,12 @@ public class GroupCRUDimpl implements GroupCRUD{
                 () -> new ResourceNotFoundException("Not found group with id: " + id)
         );
     }
+
+    @Override
+    public List<Group> findAllGroupByUserId() {
+        return groupDAO.findAllGroupByUserId(authentication.getUserAuthenticatedId());
+    }
+
     @Override
     public GroupParticipation addToGroup(UUID groupId, String username) {
         GroupParticipation groupParticipation = null;

@@ -17,6 +17,15 @@ insert into pipegine_platform.application_user(id, name, username, password, is_
 values ('9780ed75-52db-4a4d-a0ad-13681a28e00a'::uuid, 'teste2', 'arthur',
         '$2a$10$XbQdgwykWtY7no9nNJTVO.97cSRNZx2b6MZ9AYnTNNtoDWX0Q9zxi', true, true, true, true);
 
+insert into pipegine_platform.group(id, owner_id)
+values ('cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid);
+
+insert into pipegine_platform.group_participation(id, group_id, receive_user_id,
+                                                  submitter_user_id, create_date, status)
+values ('ad76cd44-dc3c-4837-9c35-6bd0bd48bbc8'::uuid, 'cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid,
+        '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        CURRENT_DATE, 'ACCEPTED');
+
 
 -- cria provider para grafico pre processamento
 insert into pipegine_platform.provider(id, name, description, url, public, input_supported_types, output_supported_types,
@@ -40,9 +49,10 @@ insert into pipegine_platform.provider(id, name, description, url, public, input
 
 
 -- cria projeto que vai utilizar do provider de Grafico pré processamento
-insert into pipegine_platform.project(id, name, description, owner_id)
+insert into pipegine_platform.project(id, name, description, group_id, owner_id)
     values ('f2d6a949-8bb5-4df5-8ca7-e5b8d2292488'::uuid, 'Explorando pré processamentos MAF',
             'Analise de gráficos resultante de pre processamentos de arquivos MAF',
+            'cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid,
             '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid);
 
 -- cria dataset do projeto que servira de input para o Grafico pré processamento
@@ -103,9 +113,10 @@ values('49df4595-b8af-4e32-8791-65e583ae08a2'::uuid, 'Classificação de variant
 
 
 -- cria projeto que vai utilizar do provider de Pré processamento - Rodrigo e Classificação de variante - Rodrigo
-INSERT INTO pipegine_platform.project (id, name, description, owner_id)
+INSERT INTO pipegine_platform.project (id, name, description, group_id, owner_id)
 VALUES ('28559f11-0c41-4444-a087-c14efde8b482', 'Pré processamento - Rodrigo e Classificação de variante - Rodrigo',
         'Recebe um input e devolve um maf para ser utilizado como input em outro serviço',
+        'cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid,
         '78cec5db-6396-4fd9-803f-1fd469d76330');
 
 -- cria dataset do projeto que servira de input para o Pré processamento - Rodrigo

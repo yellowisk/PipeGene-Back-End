@@ -1,8 +1,10 @@
 package br.edu.ifsp.scl.pipegene.usecases.provider;
 
+import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.usecases.account.gateway.UserApplicationDAO;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
+import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
@@ -19,9 +21,12 @@ public class ProviderServiceImpl implements ProviderService {
 
     private final UserApplicationDAO userApplicationDAO;
 
-    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO) {
+    private final GroupCRUD groupCRUD;
+
+    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupCRUD groupCRUD) {
         this.providerDAO = providerDAO;
         this.userApplicationDAO = userApplicationDAO;
+        this.groupCRUD = groupCRUD;
     }
 
     @Override
