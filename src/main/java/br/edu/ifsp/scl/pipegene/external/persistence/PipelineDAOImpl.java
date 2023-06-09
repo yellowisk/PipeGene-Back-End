@@ -252,8 +252,6 @@ public class PipelineDAOImpl implements PipelineDAO {
         jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipelineId);
 
         List<PipelineStep> steps = pipeline.getSteps();
-
-        jdbcTemplate.update(deletePipelineStepsQuery, pipelineId);
         jdbcTemplate.batchUpdate(updateStepQuery, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {

@@ -190,7 +190,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 //
 //        return updatedPipeline;
 
-        return pipelineDAO.updatePipeline(pipeline);
+        return pipelineDAO.updatePipeline(pipeline.getNewInstanceWithId(pipelineId));
     }
 
 
