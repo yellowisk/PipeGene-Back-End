@@ -11,6 +11,7 @@ public class PipelineStepResponse {
     private String inputType;
     private String outputType;
     private Map<String, Object> params;
+    private Integer stepNumber;
 
     public static PipelineStepResponse createFromPipelineStep(PipelineStep step) {
         return new PipelineStepResponse(
@@ -19,6 +20,17 @@ public class PipelineStepResponse {
                 step.getInputType(),
                 step.getOutputType(),
                 step.getParams()
+        );
+    }
+
+    public static PipelineStepResponse createFromPipelineStepWithStepNumber(PipelineStep step) {
+        return new PipelineStepResponse(
+                step.getStepId(),
+                step.getProvider().getId(),
+                step.getInputType(),
+                step.getOutputType(),
+                step.getParams(),
+                step.getStepNumber()
         );
     }
 
@@ -32,6 +44,16 @@ public class PipelineStepResponse {
         this.inputType = inputType;
         this.outputType = outputType;
         this.params = params;
+    }
+
+    private PipelineStepResponse(UUID stepId, UUID providerId, String inputType, String outputType,
+                                 Map<String, Object> params, Integer stepNumber) {
+        this.stepId = stepId;
+        this.providerId = providerId;
+        this.inputType = inputType;
+        this.outputType = outputType;
+        this.params = params;
+        this.stepNumber = stepNumber;
     }
 
     public UUID getStepId() {

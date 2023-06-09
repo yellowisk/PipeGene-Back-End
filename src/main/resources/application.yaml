@@ -115,7 +115,6 @@ queries:
         pipeline-step: >
           INSERT INTO pipegine_platform.pipeline_step(step_id, pipeline_id, provider_id, input_type, output_type,
             params, step_number) VALUES(?, ?, ?, ?, ?, (to_json(?::jsonb)), ?)
-
       select:
         pipeline-all: >
           SELECT

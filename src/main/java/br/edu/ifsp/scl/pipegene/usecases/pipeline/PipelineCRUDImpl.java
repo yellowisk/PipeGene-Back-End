@@ -171,20 +171,26 @@ public class PipelineCRUDImpl implements PipelineCRUD {
             throw new ResourceNotFoundException("Not found pipeline with id: " + pipelineId);
         }
 
-        Pipeline pipeline = optionalPipeline.get();
+        Pipeline pipeline = request.convertToPipeline();
 
-        if (request.getDescription() != null) {
-            pipeline.setDescription(request.getDescription());
-        }
+//        pipeline.getSteps().addAll(mapToPipelineStep(request.getSteps()));
+//        System.out.println(pipeline.getSteps().get(0).getInputType());
 
-        List<PipelineStepRequest> steps = request.getSteps();
+//        if (request.getDescription() != null) {
+//            pipeline.setDescription(request.getDescription());
+//            pipeline.setPipelineSteps(mapToPipelineStep(request.getSteps()));
+//        }
 
-        List<PipelineStep> updatedSteps = mapToPipelineStep(steps);
-        pipeline.setPipelineSteps(updatedSteps);
+//        List<PipelineStepRequest> stepsRequest = request.getSteps();
+//
+//        List<PipelineStep> updatedSteps = mapToPipelineStep(stepsRequest);
+//        pipeline.setPipelineSteps(updatedSteps);
+//
+//        Pipeline updatedPipeline = pipelineDAO.savePipeline(pipeline);
+//
+//        return updatedPipeline;
 
-        Pipeline updatedPipeline = pipelineDAO.savePipeline(pipeline);
-
-        return updatedPipeline;
+        return pipelineDAO.updatePipeline(pipeline);
     }
 
 

@@ -80,7 +80,7 @@ public class PipelineController {
             @RequestBody @Valid UpdatePipelineRequest updatePipelineRequest) {
         Pipeline updatedPipeline = pipelineCRUD.updatePipeline(pipelineId, updatePipelineRequest);
 
-        return ResponseEntity.ok(PipelineResponse.createJustId(updatedPipeline.getId()));
+        return ResponseEntity.ok(PipelineResponse.createFromPipelineFull(updatedPipeline));
     }
 
 

@@ -56,12 +56,21 @@ public class Pipeline {
         steps.add(step);
     }
 
+    public Pipeline(String description, List<PipelineStep> steps) {
+        this.description = description;
+        this.steps = steps;
+    }
+
     public Pipeline getNewInstanceWithId(UUID uuid) {
         return new Pipeline(uuid, project, description, steps);
     }
 
     public static Pipeline getNewInstanceWithDescription(String description) {
         return new Pipeline(description);
+    }
+
+    public static Pipeline getNewInstanceWithDescriptionAndSteps(String description, List<PipelineStep> steps) {
+        return new Pipeline(description, steps);
     }
 
     public void setProject(Project project) {

@@ -57,6 +57,15 @@ public class PipelineResponse {
         );
     }
 
+    public static PipelineResponse createFromPipelineFull(Pipeline p) {
+        return new PipelineResponse(
+                p.getId(),
+                p.getProject(),
+                p.getDescription(),
+                p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStepWithStepNumber).collect(Collectors.toList())
+        );
+    }
+
     public static PipelineResponse createJustIdAndDescriptionFromPipeline(Pipeline p) {
         return new PipelineResponse(p.getId(), p.getDescription());
     }

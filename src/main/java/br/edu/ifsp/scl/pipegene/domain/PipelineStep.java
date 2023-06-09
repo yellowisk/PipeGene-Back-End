@@ -27,11 +27,26 @@ public class PipelineStep {
         this.pipeline = pipeline;
     }
 
+    private PipelineStep(String inputType, String outputType,
+                         Map<String, Object> params) {
+        this.inputType = inputType;
+        this.outputType = outputType;
+        this.params = Collections.unmodifiableMap(params);
+    }
+
     public PipelineStep(String inputType, String outputType, Map<String, Object> params, Integer stepNumber) {
         this.inputType = inputType;
         this.outputType = outputType;
         this.params = params;
         this.stepNumber = stepNumber;
+    }
+
+    public static PipelineStep of(String inputType, String outputType, Map<String, Object> params) {
+        return new PipelineStep(inputType, outputType, params);
+    }
+
+    public static PipelineStep of(String inputType, String outputType, Map<String, Object> params, Integer stepNumber) {
+        return new PipelineStep(inputType, outputType, params, stepNumber);
     }
 
     public PipelineStep(UUID stepId, Provider provider, String inputType, String outputType,

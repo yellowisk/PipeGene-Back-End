@@ -254,16 +254,14 @@ public class PipelineDAOImpl implements PipelineDAO {
         List<PipelineStep> steps = pipeline.getSteps();
 
         jdbcTemplate.update(deletePipelineStepsQuery, pipelineId);
-        jdbcTemplate.batchUpdate(insertPipelineStepQuery, new BatchPreparedStatementSetter() {
+        jdbcTemplate.batchUpdate(updateStepQuery, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                ps.setObject(1, steps.get(i).getStepId());
-                ps.setObject(2, pipelineId);
-                ps.setObject(3, steps.get(i).getProvider().getId());
-                ps.setString(4, steps.get(i).getInputType());
-                ps.setString(5, steps.get(i).getOutputType());
-                ps.setString(6, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
-                ps.setInt(7, steps.get(i).getStepNumber());
+                ps.setString(1, steps.get(i).getInputType());
+                ps.setString(2, steps.get(i).getOutputType());
+                ps.setString(3, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
+                ps.setInt(4, steps.get(i).getStepNumber());
+                ps.setObject(5, pipelineId);
             }
 
             @Override
