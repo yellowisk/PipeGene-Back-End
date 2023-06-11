@@ -20,4 +20,6 @@ public interface ProviderDAO {
     List<Provider> findAllProvidersByUserId(UUID userId);
     void createGroupProvider(UUID groupId, UUID providerId);
 
+    boolean existsGroupProvider(UUID groupId, UUID providerId);
+
 }

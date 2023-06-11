@@ -249,6 +249,10 @@ queries:
         group-id-by-provider-id: >
           SELECT group_id FROM pipegine_platform.provider WHERE id=?;
 
+      exists:
+        group-provider-by-group-id-and-provider-id: >
+          SELECT EXISTS(SELECT 1 FROM pipegine_platform.group_provider WHERE group_id=? AND provider_id=?)
+
 
     execution-dao:
       insert:

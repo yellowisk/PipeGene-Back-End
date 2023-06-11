@@ -46,7 +46,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         }
 
         List<PipelineStepRequest> steps = request.getSteps();
-        validatePipelineSteps(steps);
+        validatePipelineSteps(steps, projectId);
 
         Project project = optionalProject.get();
         List<PipelineStep> pipelineSteps = mapToPipelineStep(steps);
@@ -55,11 +55,17 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         return pipelineDAO.savePipeline(pipeline);
     }
 
-    private void validatePipelineSteps(List<PipelineStepRequest> steps) {
+    private void validatePipelineSteps(List<PipelineStepRequest> steps, UUID projectId) {
         Set<UUID> providersIds = steps.stream().map(PipelineStepRequest::getProviderId).collect(Collectors.toSet());
 
         Map<UUID, Provider> providersMap = providerDAO.findProvidersByIds(providersIds).stream()
                 .collect(Collectors.toMap(Provider::getId, Function.identity()));
+
+        Project project = projectDAO.findProjectById(projectId).orElseThrow(
+                () -> new ResourceNotFoundException("Not found project with id: " + projectId)
+        );
+
+        UUID projectGroupId = project.getGroupId();
 
         if (providersMap.size() < providersIds.size()) {
             throw new GenericResourceException("Please, verify provider id, inputType and outputType", "Invalid Pipeline Request");
@@ -69,6 +75,10 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
             PipelineStepRequest step = steps.get(i);
             Provider provider = providersMap.get(step.getProviderId());
+
+            if (!provider.getPublic() && !providerDAO.existsGroupProvider(projectGroupId, provider.getId())){
+                throw new GenericResourceException("Please, provider dont have permission to this project", "Invalid Pipeline Request");
+            }
 
             if ((i != 0) && !provider.isInputSupportedType(step.getInputType())) {
                 throw new GenericResourceException("Please, verify provider id, inputType and outputType", "Invalid Pipeline Request");

@@ -129,6 +129,9 @@ VALUES ('e1a8ba35-d029-4a7c-bb98-ae7e84c41a41',
 INSERT INTO pipegine_platform.pipeline (id, project_id, description)
 VALUES ('3677aa2e-6be8-43f9-ad8c-a0f1f71e2040', '28559f11-0c41-4444-a087-c14efde8b482', 'Realiza pre processamento e faz a classificação de variante - Rodrigo');
 
+INSERT INTO pipegine_platform.group_provider (group_id, provider_id)
+VALUES ('cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid, 'e8bf42e4-2ffc-4935-a546-ee5d9263f419'::uuid);
+
 
 -- cria steps para o Pré processamento - Rodrigo e Classificação de variante - Rodrigo
 INSERT INTO pipegine_platform.pipeline_step (step_id, pipeline_id, provider_id, input_type, output_type, params, step_number)

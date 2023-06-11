@@ -53,6 +53,9 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.group-provider-dao.select.group-id-by-provider-id}")
     private String selectGroupIdByProviderIdQuery;
 
+    @Value("${queries.sql.group-provider-dao.exists.group-provider-by-group-id-and-provider-id}")
+    private String existsGroupProviderByGroupAndProviderIdQuery;
+
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, GroupDAO groupDAO, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -161,5 +164,10 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Override
     public void createGroupProvider(UUID groupId, UUID providerId) {
         jdbcTemplate.update(insertGroupProviderQuery, groupId, providerId);
+    }
+
+    @Override
+    public boolean existsGroupProvider(UUID groupId, UUID providerId) {
+        return jdbcTemplate.queryForObject(existsGroupProviderByGroupAndProviderIdQuery, Boolean.class, groupId, providerId);
     }
 }
