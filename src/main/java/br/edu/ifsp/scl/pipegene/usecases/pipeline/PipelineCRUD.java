@@ -1,6 +1,7 @@
 package br.edu.ifsp.scl.pipegene.usecases.pipeline;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
+import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.CreatePipelineRequest;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.UpdatePipelineRequest;
@@ -22,9 +23,10 @@ public interface PipelineCRUD {
     PipelineStepDTO findPipelineStepById(UUID projectId, UUID pipelineId, UUID stepId);
     List<PipelineStepDTO> listAllPipelineStepsByPipelineId(UUID projectId, UUID pipelineId);
 
+    List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId);
 
-
-    //TODO: VERIFY PROJECT EDITING FUNCTIONALITIES
     Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request);
+    Pipeline deletePipeline(UUID pipelineId, UUID pipelineStepId);
+
 
 }

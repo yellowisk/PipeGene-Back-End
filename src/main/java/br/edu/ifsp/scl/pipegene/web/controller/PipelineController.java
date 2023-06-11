@@ -83,5 +83,14 @@ public class PipelineController {
         return ResponseEntity.ok(PipelineResponse.createFromPipelineFull(updatedPipeline));
     }
 
+    @DeleteMapping("/{pipelineId}/steps/{stepId}")
+    public ResponseEntity<PipelineResponse> deletePipelineStep(
+            @PathVariable UUID pipelineId,
+            @PathVariable UUID stepId) {
+        Pipeline updatedPipeline = pipelineCRUD.deletePipeline(pipelineId, stepId);
+
+        return ResponseEntity.ok(PipelineResponse.createFromPipelineFull(updatedPipeline));
+    }
+
 
 }

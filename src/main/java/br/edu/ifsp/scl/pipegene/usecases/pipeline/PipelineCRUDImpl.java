@@ -165,35 +165,50 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
     @Override
     public Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request) {
-        Optional<Pipeline> optionalPipeline = pipelineDAO.findPipelineById(pipelineId);
-
-        if (optionalPipeline.isEmpty()) {
-            throw new ResourceNotFoundException("Not found pipeline with id: " + pipelineId);
+        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
+        if (!pipelineExists) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
         }
 
         Pipeline pipeline = request.convertToPipeline();
 
-//        pipeline.getSteps().addAll(mapToPipelineStep(request.getSteps()));
-//        System.out.println(pipeline.getSteps().get(0).getInputType());
-
-//        if (request.getDescription() != null) {
-//            pipeline.setDescription(request.getDescription());
-//            pipeline.setPipelineSteps(mapToPipelineStep(request.getSteps()));
-//        }
-
-//        List<PipelineStepRequest> stepsRequest = request.getSteps();
-//
-//        List<PipelineStep> updatedSteps = mapToPipelineStep(stepsRequest);
-//        pipeline.setPipelineSteps(updatedSteps);
-//
-//        Pipeline updatedPipeline = pipelineDAO.savePipeline(pipeline);
-//
-//        return updatedPipeline;
-
         return pipelineDAO.updatePipeline(pipeline.getNewInstanceWithId(pipelineId));
     }
 
+    @Override
+    public List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId) {
+        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
+        if (!pipelineExists) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+
+        return pipelineDAO.findAllPipelineStepsByPipelineId(pipelineId);
+    }
+
+    @Override
+    public Pipeline deletePipeline(UUID pipelineId, UUID pipelineStepId) {
+        PipelineStep chosenStep = null;
+
+        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
+        if (!pipelineExists) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+
+        Pipeline pipeline = pipelineDAO.findPipelineById(pipelineId).get();
 
 
+        List<PipelineStepDTO> pipelineStepsDTO = findAllPipelineStepsByPipelineId(pipeline.getId());
+        List<PipelineStep> pipelineSteps = PipelineStepDTO.createListFromPipelineStepDTOList(pipelineStepsDTO);
 
+        if (pipelineSteps.size() != 0)
+            for (PipelineStep step : pipelineSteps) {
+                if (step.getStepId().equals(pipelineStepId)) {
+                    chosenStep = step;
+                    return pipelineDAO.deletePipeline(pipelineSteps, chosenStep.getStepId());
+                } else {
+                    throw new ResourceNotFoundException("Couldn't find pipeline step with id: " + pipelineStepId);
+                }
+            }
+        throw new IndexOutOfBoundsException("Pipeline "+pipelineId+" is empty");
+    }
 }

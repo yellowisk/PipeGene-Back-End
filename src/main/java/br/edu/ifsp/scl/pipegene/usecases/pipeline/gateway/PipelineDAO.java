@@ -30,6 +30,8 @@ public interface PipelineDAO {
 
     Pipeline updatePipeline(Pipeline pipeline);
 
+    Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId);
+
     Boolean pipelineExists(UUID pipelineId);
 
 }

@@ -66,6 +66,9 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.delete.pipeline-step-by-id}")
     private String deletePipelineStepsQuery;
 
+    @Value("${queries.sql.pipeline-dao.select.pipeline-all-data-w/-provider-id}")
+    private String selectPipelineStepsConnectionQuery;
+
 
     public PipelineDAOImpl(JdbcTemplate jdbcTemplate, JsonUtil jsonUtil) {
         this.jdbcTemplate = jdbcTemplate;
@@ -216,7 +219,7 @@ public class PipelineDAOImpl implements PipelineDAO {
         Pipeline pipeline = pipelineOptional.get();
 
         Map<UUID, PipelineStepDTO> pipelineStepMap = jdbcTemplate.query(
-                        selectPipelineStepsConnectionToProviderByPipelineIdQuery,
+                        selectPipelineStepsConnectionQuery,
                         ps -> ps.setObject(1, pipelineId),
                         this::shortMapperPipelineStepFromRs)
                 .stream()
@@ -261,13 +264,19 @@ public class PipelineDAOImpl implements PipelineDAO {
                 ps.setInt(4, steps.get(i).getStepNumber());
                 ps.setObject(5, pipelineId);
             }
-
             @Override
             public int getBatchSize() {
                 return steps.size();
             }
         });
+        return pipeline;
+    }
 
+    @Override
+    public Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId) {
+
+        jdbcTemplate.update(deletePipelineStepsQuery, stepId);
+        Pipeline pipeline = Pipeline.getNewInstanceWithDescriptionAndSteps(null, steps);
         return pipeline;
     }
 

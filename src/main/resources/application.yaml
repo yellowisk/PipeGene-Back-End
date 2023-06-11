@@ -165,6 +165,19 @@ queries:
           FROM pipegine_platform.pipeline_step ps
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=?
+        pipeline-all-data-w/-provider-id: >
+          SELECT
+            ps.step_id,
+            p.id as provider_id,
+            p.name as provider_name,
+            p.description as provider_description,
+            ps.input_type,
+            ps.output_type,
+            ps.params,
+            ps.step_number
+          FROM pipegine_platform.pipeline_step ps
+            INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
+          WHERE ps.pipeline_id=?
         pipeline-steps-by-pipeline-ids: >
           SELECT
             ps.*,
