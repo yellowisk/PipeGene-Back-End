@@ -192,13 +192,24 @@ public class PipelineCRUDImpl implements PipelineCRUD {
             throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
         }
 
+        UUID projectGroupId = projectDAO.findProjectById(projectId).get().getGroupId();
+
         Pipeline pipeline = pipelineDAO.findFullPipelineById(projectId, pipelineId).get();
         pipeline.setProject(projectDAO.findProjectById(projectId).get());
 
         Pipeline imported = Pipeline.createWithoutId(
                 pipeline.getProject(),
-                pipeline.getDescription(), pipeline.getSteps()
-        );
+                pipeline.getDescription(), pipeline.getSteps());
+
+        for (int i = 0; i < pipeline.getSteps().size(); i++) {
+
+            PipelineStep step = pipeline.getSteps().get(i);
+            Provider provider = providerDAO.findProviderById(step.getProvider().getId()).get();
+
+            if (!provider.getPublic() && !providerDAO.existsGroupProvider(projectGroupId, provider.getId())) {
+                providerDAO.createGroupProvider(projectGroupId, provider.getId());
+            }
+        }
 
         return pipelineDAO.clonePipeline(imported);
     }
