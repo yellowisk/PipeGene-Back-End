@@ -7,12 +7,13 @@ import java.util.UUID;
 public class ClonePipelineRequest {
     private UUID id;
 
-    public ClonePipelineRequest() {
-    }
+    private UUID projectId;
 
-    public ClonePipelineRequest(UUID id) {
-        this.id = id;
-    }
+    public ClonePipelineRequest() {}
+
+    public UUID getProjectId() {return projectId;}
+
+    public void setProjectId(UUID projectId) {this.projectId = projectId;}
 
     public UUID getId() {
         return id;

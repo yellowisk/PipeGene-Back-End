@@ -186,7 +186,9 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
-    public Pipeline clonePipeline(UUID projectId, UUID pipelineId, ClonePipelineRequest request) {
+    public Pipeline clonePipeline(UUID pipelineId, ClonePipelineRequest request) {
+        UUID projectId = request.getProjectId();
+
         Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
         if (!pipelineExists) {
             throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
@@ -199,7 +201,8 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         Pipeline imported = Pipeline.createWithoutId(
                 pipeline.getProject(),
-                pipeline.getDescription(), pipeline.getSteps());
+                pipeline.getDescription(), pipeline.getSteps()
+        );
 
         for (int i = 0; i < pipeline.getSteps().size(); i++) {
 

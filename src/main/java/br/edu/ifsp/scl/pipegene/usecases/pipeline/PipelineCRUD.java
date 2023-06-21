@@ -25,6 +25,6 @@ public interface PipelineCRUD {
     Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request);
     Pipeline deletePipeline(UUID pipelineId, UUID pipelineStepId);
 
-    Pipeline clonePipeline(UUID projectId, UUID pipelineId, ClonePipelineRequest request);
+    Pipeline clonePipeline(UUID pipelineId, ClonePipelineRequest request);
 
 }

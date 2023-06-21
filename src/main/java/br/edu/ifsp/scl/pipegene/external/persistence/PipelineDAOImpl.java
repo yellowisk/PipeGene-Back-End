@@ -249,18 +249,17 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Transactional
     @Override
     public Optional<Pipeline> findFullPipelineById(UUID projectId, UUID pipelineId) {
-        Optional<Pipeline> opt = findPipelineById(pipelineId);
         try {
             Pipeline pipeline = jdbcTemplate.queryForObject(selectPipelineByIdQuery, (rs, rowNum) -> {
                 UUID id = (UUID) rs.getObject("id");
                 String description = rs.getString("description");
 
-
                 return Pipeline.createWithoutProjectAndSteps(id, description);
             }, pipelineId);
 
             if (Objects.isNull(pipeline)) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Couldn't find pipeline with id: "
+                        + pipelineId + ". A null object was returned.");
             }
 
             jdbcTemplate.update(updateProjectByIdQuery, projectId, pipelineId);
