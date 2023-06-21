@@ -142,6 +142,9 @@ queries:
 
         pipeline-by-id: >
           SELECT p.id, p.description FROM pipegine_platform.pipeline p WHERE p.id=?
+        pipeline-with-project-id-by-id: >
+          SELECT p.id, p.project_id, p.description 
+          FROM pipegine_platform.pipeline p WHERE p.id=?
 
         pipeline-steps-by-pipeline-id: >
           SELECT
@@ -209,6 +212,10 @@ queries:
           FROM pipegine_platform.pipeline_step ps
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=?
+        project-id: >
+          UPDATE pipegine_platform.pipeline
+          SET project_id=? 
+          WHERE id=?
       delete:
         pipeline-step-by-id: >
           DELETE FROM pipegine_platform.pipeline_step WHERE step_id=?

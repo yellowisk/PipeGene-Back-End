@@ -2,11 +2,14 @@ package br.edu.ifsp.scl.pipegene.external.persistence;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
 import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
+import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.external.persistence.util.JsonUtil;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway.PipelineDAO;
+import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -14,6 +17,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.channels.Pipe;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,6 +49,9 @@ public class PipelineDAOImpl implements PipelineDAO {
 
     @Value("${queries.sql.pipeline-dao.select.pipeline-by-id}")
     private String selectPipelineByIdQuery;
+
+    @Value("${queries.sql.pipeline-dao.update.project-id}")
+    private String updateProjectByIdQuery;
 
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-by-pipeline-ids}")
     private String selectPipelineStepsByPipelineIdsQuery;
@@ -98,6 +106,36 @@ public class PipelineDAOImpl implements PipelineDAO {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setObject(1, steps.get(i).getStepId());
+                ps.setObject(2, pipelineId);
+                ps.setObject(3, steps.get(i).getProvider().getId());
+                ps.setString(4, steps.get(i).getInputType());
+                ps.setString(5, steps.get(i).getOutputType());
+                ps.setString(6, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
+                ps.setInt(7, steps.get(i).getStepNumber());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return steps.size();
+            }
+        });
+
+        return pipeline.getNewInstanceWithId(pipelineId);
+    }
+
+    @Transactional
+    @Override
+    public Pipeline clonePipeline(Pipeline pipeline) {
+        UUID pipelineId = UUID.randomUUID();
+        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription());
+
+        List<PipelineStep> steps = pipeline.getSteps();
+
+        jdbcTemplate.batchUpdate(insertPipelineStepQuery, new BatchPreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setObject(1, UUID.randomUUID());
                 ps.setObject(2, pipelineId);
                 ps.setObject(3, steps.get(i).getProvider().getId());
                 ps.setString(4, steps.get(i).getInputType());
@@ -208,6 +246,35 @@ public class PipelineDAOImpl implements PipelineDAO {
         }
     }
 
+    @Transactional
+    @Override
+    public Optional<Pipeline> findFullPipelineById(UUID projectId, UUID pipelineId) {
+        Optional<Pipeline> opt = findPipelineById(pipelineId);
+        try {
+            Pipeline pipeline = jdbcTemplate.queryForObject(selectPipelineByIdQuery, (rs, rowNum) -> {
+                UUID id = (UUID) rs.getObject("id");
+                String description = rs.getString("description");
+
+
+                return Pipeline.createWithoutProjectAndSteps(id, description);
+            }, pipelineId);
+
+            if (Objects.isNull(pipeline)) {
+                throw new IllegalStateException();
+            }
+
+            jdbcTemplate.update(updateProjectByIdQuery, projectId, pipelineId);
+
+            List<PipelineStep> steps = jdbcTemplate.query(selectPipelineStepsByPipelineIdQuery,
+                    this::mapperPipelineStepFromRs, pipelineId);
+            steps.forEach(pipeline::addStep);
+
+            return Optional.of(pipeline);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     @Override
     public List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId) {
         Optional<Pipeline> pipelineOptional = findPipelineById(pipelineId);
@@ -274,7 +341,6 @@ public class PipelineDAOImpl implements PipelineDAO {
 
     @Override
     public Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId) {
-
         jdbcTemplate.update(deletePipelineStepsQuery, stepId);
         Pipeline pipeline = Pipeline.getNewInstanceWithDescriptionAndSteps(null, steps);
         return pipeline;

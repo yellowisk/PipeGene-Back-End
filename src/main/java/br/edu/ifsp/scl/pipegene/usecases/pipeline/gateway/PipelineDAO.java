@@ -22,13 +22,15 @@ public interface PipelineDAO {
 
     Optional<Pipeline> findPipelineById(UUID pipelineId);
 
-
+    Optional<Pipeline> findFullPipelineById(UUID projectId, UUID pipelineId);
 
     List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId);
 
     PipelineStepDTO findPipelineStepById(UUID pipelineId);
 
     Pipeline updatePipeline(Pipeline pipeline);
+
+    Pipeline clonePipeline(Pipeline pipeline);
 
     Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId);
 

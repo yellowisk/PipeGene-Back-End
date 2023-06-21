@@ -29,6 +29,12 @@ public class PipelineResponse {
         this.steps = steps;
     }
 
+    public PipelineResponse(UUID id, String description, List<PipelineStepResponse> steps) {
+        this.id = id;
+        this.description = description;
+        this.steps = steps;
+    }
+
     public PipelineResponse() {
     }
 
@@ -54,6 +60,14 @@ public class PipelineResponse {
                 p.getProject(),
                 p.getDescription(),
                 p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStep).collect(Collectors.toList())
+        );
+    }
+
+    public static PipelineResponse createFromImportedPipeline(Pipeline p) {
+        return new PipelineResponse(
+                p.getId(),
+                p.getDescription(),
+                p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStepWithStepNumber).collect(Collectors.toList())
         );
     }
 
