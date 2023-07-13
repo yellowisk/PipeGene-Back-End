@@ -2,14 +2,11 @@ package br.edu.ifsp.scl.pipegene.external.persistence;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
 import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
-import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.external.persistence.util.JsonUtil;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway.PipelineDAO;
-import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
-import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -17,8 +14,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.channels.Pipe;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -318,6 +313,8 @@ public class PipelineDAOImpl implements PipelineDAO {
     public Pipeline updatePipeline(Pipeline pipeline) {
         UUID pipelineId = pipeline.getId();
 
+        System.out.println("ID ---> " + pipelineId);
+
         jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipelineId);
 
         List<PipelineStep> steps = pipeline.getSteps();
@@ -329,12 +326,15 @@ public class PipelineDAOImpl implements PipelineDAO {
                 ps.setString(3, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
                 ps.setInt(4, steps.get(i).getStepNumber());
                 ps.setObject(5, pipelineId);
+                System.out.println("DAO ---> " + steps.get(i).getStepNumber());
             }
             @Override
             public int getBatchSize() {
                 return steps.size();
             }
         });
+        System.out.println("DAO0 ---> " + pipeline.getSteps().get(0).getStepNumber());
+        System.out.println("DAO0 ---> " + pipeline.getSteps().get(1).getStepNumber());
         return pipeline;
     }
 

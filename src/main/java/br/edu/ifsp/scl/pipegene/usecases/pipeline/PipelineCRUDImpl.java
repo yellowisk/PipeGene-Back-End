@@ -182,6 +182,8 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         Pipeline pipeline = request.convertToPipeline();
 
+        System.out.println("CRUD ---> " + pipeline.getSteps().get(0).getStepNumber());
+
         return pipelineDAO.updatePipeline(pipeline.getNewInstanceWithId(pipelineId));
     }
 
@@ -228,7 +230,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
-    public Pipeline deletePipeline(UUID pipelineId, UUID pipelineStepId) {
+    public Pipeline deletePipelineStep(UUID pipelineId, UUID pipelineStepId) {
         PipelineStep chosenStep = null;
 
         Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);

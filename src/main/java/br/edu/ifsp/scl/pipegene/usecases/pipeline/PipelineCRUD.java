@@ -23,7 +23,7 @@ public interface PipelineCRUD {
     List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId);
 
     Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request);
-    Pipeline deletePipeline(UUID pipelineId, UUID pipelineStepId);
+    Pipeline deletePipelineStep(UUID pipelineId, UUID pipelineStepId);
 
     Pipeline clonePipeline(UUID pipelineId, ClonePipelineRequest request);
 
