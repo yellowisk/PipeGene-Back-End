@@ -244,15 +244,15 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         List<PipelineStepDTO> pipelineStepsDTO = findAllPipelineStepsByPipelineId(pipeline.getId());
         List<PipelineStep> pipelineSteps = PipelineStepDTO.createListFromPipelineStepDTOList(pipelineStepsDTO);
 
-        if (pipelineSteps.size() != 0)
+        if (pipelineSteps.size() != 0) {
             for (PipelineStep step : pipelineSteps) {
                 if (step.getStepId().equals(pipelineStepId)) {
                     chosenStep = step;
-                    return pipelineDAO.deletePipeline(pipelineSteps, chosenStep.getStepId());
-                } else {
-                    throw new ResourceNotFoundException("Couldn't find pipeline step with id: " + pipelineStepId);
                 }
             }
-        throw new IndexOutOfBoundsException("Pipeline "+pipelineId+" is empty");
+        } else {
+            throw new ResourceNotFoundException("Pipeline " + pipelineId + " is empty");
+        }
+        return pipelineDAO.deletePipeline(pipelineSteps, chosenStep.getStepId());
     }
 }
