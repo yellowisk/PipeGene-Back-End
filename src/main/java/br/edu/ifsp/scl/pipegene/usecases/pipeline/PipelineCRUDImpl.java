@@ -192,6 +192,12 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         Pipeline pipeline = request.convertToPipeline();
 
+        System.out.println(pipeline.getSteps());
+
+        if (pipeline.getSteps().isEmpty()) {
+            throw new GenericResourceException("Steps can't be null", "Invalid Pipeline Request");
+        }
+
         return pipelineDAO.updatePipeline(pipeline.getNewInstanceWithId(pipelineId));
     }
 
@@ -229,7 +235,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
     @Override
     public Pipeline deletePipelineStep(UUID pipelineId, UUID pipelineStepId) {
-        PipelineStep chosenStep = null;
 
         Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
         if (!pipelineExists) {
@@ -237,7 +242,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         }
 
         Pipeline pipeline = pipelineDAO.findPipelineById(pipelineId).get();
-
+        PipelineStep chosenStep = null;
 
         List<PipelineStepDTO> pipelineStepsDTO = findAllPipelineStepsByPipelineId(pipeline.getId());
         List<PipelineStep> pipelineSteps = PipelineStepDTO.createListFromPipelineStepDTOList(pipelineStepsDTO);
@@ -254,6 +259,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         } else {
             throw new ResourceNotFoundException("Pipeline " + pipelineId + " is empty");
         }
+
         return pipelineDAO.deletePipeline(pipelineStepsResponse, chosenStep.getStepId());
     }
 }
