@@ -8,7 +8,6 @@ import java.util.UUID;
 
 public class PipelineStepRequest {
     private UUID stepId;
-
     private UUID providerId;
     private String inputType;
     private String outputType;
@@ -46,20 +45,44 @@ public class PipelineStepRequest {
         return PipelineStep.of(stepId, Provider.createWithOnlyId(providerId), inputType, outputType, params, stepNumber);
     }
 
+    public UUID getStepId() {
+        return stepId;
+    }
+
+    public void setStepId(UUID stepId) {
+        this.stepId = stepId;
+    }
+
     public UUID getProviderId() {
         return providerId;
+    }
+
+    public void setProviderId(UUID providerId) {
+        this.providerId = providerId;
     }
 
     public String getInputType() {
         return inputType;
     }
 
+    public void setInputType(String inputType) {
+        this.inputType = inputType;
+    }
+
     public String getOutputType() {
         return outputType;
     }
 
+    public void setOutputType(String outputType) {
+        this.outputType = outputType;
+    }
+
     public Map<String, Object> getParams() {
         return params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
     }
 
     public Integer getStepNumber() {

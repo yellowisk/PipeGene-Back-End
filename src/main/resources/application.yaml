@@ -209,9 +209,7 @@ queries:
             output_type = ?,
             params = ?::jsonb,
             step_number = ?
-          FROM pipegine_platform.pipeline_step ps
-            INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
-          WHERE ps.pipeline_id=?
+          WHERE step_id=?
         project-id: >
           UPDATE pipegine_platform.pipeline
           SET project_id=? 

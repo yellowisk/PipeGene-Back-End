@@ -325,16 +325,17 @@ public class PipelineDAOImpl implements PipelineDAO {
                 ps.setString(2, steps.get(i).getOutputType());
                 ps.setString(3, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
                 ps.setInt(4, steps.get(i).getStepNumber());
-                ps.setObject(5, pipelineId);
+                ps.setObject(5, steps.get(i).getStepId());
                 System.out.println("DAO ---> " + steps.get(i).getStepNumber());
+                System.out.println("DAO ---> " + steps.get(i).getStepId());
             }
             @Override
             public int getBatchSize() {
                 return steps.size();
             }
         });
-        System.out.println("DAO0 ---> " + pipeline.getSteps().get(0).getStepNumber());
-        System.out.println("DAO0 ---> " + pipeline.getSteps().get(1).getStepNumber());
+        System.out.println("PipelineStep ID ---> " + pipeline.getSteps().get(0).getStepId());
+        System.out.println("DAO ---> " + pipeline.getSteps().get(0).getStepNumber());
         return pipeline;
     }
 

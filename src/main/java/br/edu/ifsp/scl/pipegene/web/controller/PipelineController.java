@@ -5,8 +5,6 @@ import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.PipelineCRUD;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.*;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.PipelineResponse;
-import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.UpdatePipelineResponse;
-import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.UpdatePipelineStepResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,7 +78,7 @@ public class PipelineController {
             @RequestBody @Valid UpdatePipelineRequest updatePipelineRequest) {
         Pipeline updatedPipeline = pipelineCRUD.updatePipeline(pipelineId, updatePipelineRequest);
 
-        return ResponseEntity.ok(PipelineResponse.createFromPipelineFull(updatedPipeline));
+        return ResponseEntity.ok(PipelineResponse.createFromPipeline(updatedPipeline));
     }
 
     @DeleteMapping("/{pipelineId}/steps/{stepId}")

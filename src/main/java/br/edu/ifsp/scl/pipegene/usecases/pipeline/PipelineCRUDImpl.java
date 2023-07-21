@@ -174,6 +174,16 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
+    public List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId) {
+        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
+        if (!pipelineExists) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+
+        return pipelineDAO.findAllPipelineStepsByPipelineId(pipelineId);
+    }
+
+    @Override
     public Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request) {
         Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
         if (!pipelineExists) {
@@ -181,8 +191,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         }
 
         Pipeline pipeline = request.convertToPipeline();
-
-        System.out.println("CRUD ---> " + pipeline.getSteps().get(0).getStepNumber());
 
         return pipelineDAO.updatePipeline(pipeline.getNewInstanceWithId(pipelineId));
     }
@@ -217,16 +225,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         }
 
         return pipelineDAO.clonePipeline(imported);
-    }
-
-    @Override
-    public List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId) {
-        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
-        if (!pipelineExists) {
-            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
-        }
-
-        return pipelineDAO.findAllPipelineStepsByPipelineId(pipelineId);
     }
 
     @Override

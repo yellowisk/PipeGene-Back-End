@@ -7,6 +7,7 @@ import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
 import java.util.List;
 
 public class UpdatePipelineStepResponse {
+    private String description;
 
     private List<PipelineStep> pipelineSteps;
 
