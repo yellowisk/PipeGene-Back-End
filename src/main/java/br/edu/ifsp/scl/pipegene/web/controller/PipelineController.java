@@ -4,6 +4,7 @@ import br.edu.ifsp.scl.pipegene.domain.Pipeline;
 import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.PipelineCRUD;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.*;
+import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.CreateStepRequest;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.PipelineResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,15 @@ public class PipelineController {
             @PathVariable UUID projectId,
             @RequestBody @Valid CreatePipelineRequest createPipelineRequest) {
         Pipeline pipeline = pipelineCRUD.addNewPipeline(projectId, createPipelineRequest);
+
+        return ResponseEntity.ok(PipelineResponse.createJustId(pipeline.getId()));
+    }
+
+    @PostMapping("/{pipelineId}")
+    public ResponseEntity<PipelineResponse> addNewStep(
+            @PathVariable UUID pipelineId,
+            @RequestBody @Valid CreateStepRequest request) {
+        Pipeline pipeline = pipelineCRUD.addNewPipelineStep(pipelineId, request);
 
         return ResponseEntity.ok(PipelineResponse.createJustId(pipeline.getId()));
     }

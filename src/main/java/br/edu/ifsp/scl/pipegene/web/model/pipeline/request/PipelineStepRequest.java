@@ -11,7 +11,6 @@ public class PipelineStepRequest {
     private UUID providerId;
     private String inputType;
     private String outputType;
-
     private Map<String, Object> params;
     private Integer stepNumber;
 

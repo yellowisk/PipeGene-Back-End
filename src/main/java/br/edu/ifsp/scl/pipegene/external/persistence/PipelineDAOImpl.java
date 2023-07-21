@@ -305,6 +305,9 @@ public class PipelineDAOImpl implements PipelineDAO {
             throw new IllegalStateException("Couldn't find pipeline step with id: " + pipelineId);
         }
 
+        System.out.println(pipelineSteps.size());
+        System.out.println(pipelineSteps.get(0).getStepId());
+
         return pipelineSteps.get(0);
     }
 
@@ -332,6 +335,20 @@ public class PipelineDAOImpl implements PipelineDAO {
         });
 
         return pipeline;
+    }
+
+    @Override
+    public Pipeline addPipelineStep(UUID pipelineId, PipelineStep pipelineStep) {
+        jdbcTemplate.update(insertPipelineStepQuery,
+                UUID.randomUUID(),
+                pipelineId,
+                pipelineStep.getProvider().getId(),
+                pipelineStep.getInputType(),
+                pipelineStep.getOutputType(),
+                jsonUtil.writeMapStringObjectAsJsonString(pipelineStep.getParams()),
+                pipelineStep.getStepNumber());
+
+        return findPipelineById(pipelineId).orElseThrow(() -> new IllegalStateException("Couldn't find pipeline with id: " + pipelineId));
     }
 
     @Override
