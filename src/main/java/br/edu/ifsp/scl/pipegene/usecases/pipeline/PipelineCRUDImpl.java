@@ -190,15 +190,14 @@ public class PipelineCRUDImpl implements PipelineCRUD {
             throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
         }
 
-        Pipeline pipeline = request.convertToPipeline();
+        Pipeline reqPipeline = request.convertToPipeline();
+        Pipeline dbPipeline = pipelineDAO.findPipelineById(pipelineId).get();
 
-        System.out.println(pipeline.getSteps());
-
-        if (pipeline.getSteps().isEmpty()) {
-            throw new GenericResourceException("Steps can't be null", "Invalid Pipeline Request");
+        if (reqPipeline.getSteps().size() != dbPipeline.getSteps().size()) {
+            throw new GenericResourceException("Different number of steps", "Invalid Pipeline Request");
         }
 
-        return pipelineDAO.updatePipeline(pipeline.getNewInstanceWithId(pipelineId));
+        return pipelineDAO.updatePipeline(reqPipeline.getNewInstanceWithId(pipelineId));
     }
 
     @Override
