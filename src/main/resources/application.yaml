@@ -48,6 +48,9 @@ queries:
       select:
         application-user-by-username: >
           SELECT * FROM pipegine_platform.application_user where username=?
+        application-user-by-username-or-name: >
+          SELECT * FROM pipegine_platform.application_user WHERE username LIKE '%' || ? || '%' OR name LIKE '%' || ? || '%';
+
         application-user-by-id: >
           SELECT * FROM pipegine_platform.application_user where id=?
       update:

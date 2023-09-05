@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -37,6 +38,18 @@ public class UserRegisterController {
         ApplicationUser applicationUser = applicationUserCRUD.findUserById(userId);
 
         return ResponseEntity.ok(applicationUser);
+    }
+
+    @GetMapping("/UsersByUsernameOrName/{usernameOrName}")
+    public ResponseEntity<List<ApplicationUserResponse>> findUserByNameOrEmail(@PathVariable String usernameOrName) {
+        System.out.println(usernameOrName);
+        List<ApplicationUser> applicationUser = applicationUserCRUD.findUsersByUsernameOrName(usernameOrName);
+
+        return ResponseEntity.ok(
+                applicationUser.stream()
+                        .map(ApplicationUserResponse::createFromApplicationUser)
+                        .toList()
+        );
     }
 
     @PatchMapping("/{userId}")

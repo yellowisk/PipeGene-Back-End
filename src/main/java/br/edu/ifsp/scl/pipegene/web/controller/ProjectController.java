@@ -1,7 +1,9 @@
 package br.edu.ifsp.scl.pipegene.web.controller;
 
 import br.edu.ifsp.scl.pipegene.domain.Project;
+import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.project.ProjectCRUD;
+import br.edu.ifsp.scl.pipegene.web.model.account.request.CreateUserRequest;
 import br.edu.ifsp.scl.pipegene.web.model.project.ProjectResponse;
 import br.edu.ifsp.scl.pipegene.web.model.project.ProjectUpdateRequest;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +29,10 @@ public class ProjectController {
     public ResponseEntity<ProjectResponse> createNewProject(
             @RequestParam String name,
             @RequestParam String description,
-            @RequestParam List<MultipartFile> files) {
+            @RequestParam List<MultipartFile> files,
+            @RequestParam List<String> usernameList) {
         System.out.println(name);
-        Project project = projectCRUD.createNewProject(name, description, files);
+        Project project = projectCRUD.createNewProject(name, description, files, usernameList);
 
         return ResponseEntity.ok(ProjectResponse.createFromProject(project));
     }

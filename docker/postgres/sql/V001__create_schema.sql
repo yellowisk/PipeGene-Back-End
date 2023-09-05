@@ -1,4 +1,4 @@
---\connect "pipegine"
+-- \connect "pipegine"
 
 CREATE SCHEMA pipegine_platform;
 

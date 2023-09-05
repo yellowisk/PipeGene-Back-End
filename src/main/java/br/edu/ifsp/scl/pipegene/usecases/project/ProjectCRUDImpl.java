@@ -4,12 +4,15 @@ import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
 import br.edu.ifsp.scl.pipegene.domain.Dataset;
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Project;
+import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserCRUD;
+import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ObjectStorageService;
 import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceForbiddenException;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
+import br.edu.ifsp.scl.pipegene.web.model.account.request.CreateUserRequest;
 import br.edu.ifsp.scl.pipegene.web.model.project.ProjectUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +26,6 @@ import java.util.stream.Collectors;
 public class ProjectCRUDImpl implements ProjectCRUD {
 
     private final ProjectDAO projectDAO;
-
     private final GroupCRUD groupCRUD;
     private final ObjectStorageService objectStorageService;
     private final IAuthenticationFacade authentication;
@@ -36,11 +38,12 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     }
 
     @Override
-    public Project createNewProject(String name, String description, List<MultipartFile> files) {
+    public Project createNewProject(String name, String description, List<MultipartFile> files, List<String> usersUsername) {
         List<Dataset> datasets = files.stream()
                 .map(objectStorageService::putObject)
                 .collect(Collectors.toList());
         Group group = groupCRUD.addNewGroup();
+        usersUsername.forEach(username -> groupCRUD.addToGroup(group.getId(), username));
         return projectDAO.saveNewProject(name, description, group.getId(), datasets, authentication.getUserAuthenticatedId());
     }
 

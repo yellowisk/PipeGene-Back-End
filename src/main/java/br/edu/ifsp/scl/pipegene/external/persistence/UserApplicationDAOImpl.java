@@ -31,6 +31,9 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
     @Value("${queries.sql.application-user-dao.update.application-user}")
     private String updateApplicationUserQuery;
 
+    @Value("${queries.sql.application-user-dao.select.application-user-by-username-or-name}")
+    private String selectUsersByNameOrEmailQuery;
+
     public UserApplicationDAOImpl(PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
@@ -86,6 +89,13 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
 
 
         return user;
+    }
+
+    @Override
+    public List<ApplicationUser> findUsersByUsernameOrName(String UsernameOrName) {
+        return jdbcTemplate.query(selectUsersByNameOrEmailQuery,
+                this::mapperApplicationUserFromRs,
+                UsernameOrName, UsernameOrName);
     }
 
     @Transactional
