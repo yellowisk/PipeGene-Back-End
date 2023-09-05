@@ -77,7 +77,9 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
 
         Optional<ApplicationUser> optionalUser = findUserById(user.getId());
 
-
+        if (optionalUser.isEmpty()) {
+            throw new IllegalStateException("Couldn't find user with id: " + user.getId());
+        }
 
         jdbcTemplate.update(updateApplicationUserQuery, rs -> {
             rs.setString(1, user.getName());
@@ -86,7 +88,6 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
             rs.setString(4, user.getGithub());
             rs.setObject(5, user.getId());
         });
-
 
         return user;
     }

@@ -15,7 +15,6 @@ public class UpdatePipelineRequest {
     public UpdatePipelineRequest() { }
 
     public Pipeline convertToPipeline() {
-        System.out.println(steps.get(0).getStepNumber());
         return Pipeline.getNewInstanceWithDescriptionAndSteps(description, steps == null ? new ArrayList<>() : steps.stream()
                 .map(PipelineStepRequest::convertToPipelineStep)
                 .toList());

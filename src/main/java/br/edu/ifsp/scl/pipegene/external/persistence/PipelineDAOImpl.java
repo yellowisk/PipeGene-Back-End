@@ -5,8 +5,8 @@ import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.external.persistence.util.JsonUtil;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway.PipelineDAO;
-import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -45,6 +45,9 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.select.pipeline-by-id}")
     private String selectPipelineByIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.update.project-id}")
+    private String updateProjectByIdQuery;
+
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-by-pipeline-ids}")
     private String selectPipelineStepsByPipelineIdsQuery;
 
@@ -65,6 +68,9 @@ public class PipelineDAOImpl implements PipelineDAO {
 
     @Value("${queries.sql.pipeline-dao.delete.pipeline-step-by-id}")
     private String deletePipelineStepsQuery;
+
+    @Value("${queries.sql.pipeline-dao.select.pipeline-all-data-w/-provider-id}")
+    private String selectPipelineStepsConnectionQuery;
 
 
     public PipelineDAOImpl(JdbcTemplate jdbcTemplate, JsonUtil jsonUtil) {
@@ -95,6 +101,36 @@ public class PipelineDAOImpl implements PipelineDAO {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setObject(1, steps.get(i).getStepId());
+                ps.setObject(2, pipelineId);
+                ps.setObject(3, steps.get(i).getProvider().getId());
+                ps.setString(4, steps.get(i).getInputType());
+                ps.setString(5, steps.get(i).getOutputType());
+                ps.setString(6, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
+                ps.setInt(7, steps.get(i).getStepNumber());
+            }
+
+            @Override
+            public int getBatchSize() {
+                return steps.size();
+            }
+        });
+
+        return pipeline.getNewInstanceWithId(pipelineId);
+    }
+
+    @Transactional
+    @Override
+    public Pipeline clonePipeline(Pipeline pipeline) {
+        UUID pipelineId = UUID.randomUUID();
+        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription());
+
+        List<PipelineStep> steps = pipeline.getSteps();
+
+        jdbcTemplate.batchUpdate(insertPipelineStepQuery, new BatchPreparedStatementSetter() {
+
+            @Override
+            public void setValues(PreparedStatement ps, int i) throws SQLException {
+                ps.setObject(1, UUID.randomUUID());
                 ps.setObject(2, pipelineId);
                 ps.setObject(3, steps.get(i).getProvider().getId());
                 ps.setString(4, steps.get(i).getInputType());
@@ -205,6 +241,34 @@ public class PipelineDAOImpl implements PipelineDAO {
         }
     }
 
+    @Transactional
+    @Override
+    public Optional<Pipeline> findFullPipelineById(UUID projectId, UUID pipelineId) {
+        try {
+            Pipeline pipeline = jdbcTemplate.queryForObject(selectPipelineByIdQuery, (rs, rowNum) -> {
+                UUID id = (UUID) rs.getObject("id");
+                String description = rs.getString("description");
+
+                return Pipeline.createWithoutProjectAndSteps(id, description);
+            }, pipelineId);
+
+            if (Objects.isNull(pipeline)) {
+                throw new IllegalStateException("Couldn't find pipeline with id: "
+                        + pipelineId + ". A null object was returned.");
+            }
+
+            jdbcTemplate.update(updateProjectByIdQuery, projectId, pipelineId);
+
+            List<PipelineStep> steps = jdbcTemplate.query(selectPipelineStepsByPipelineIdQuery,
+                    this::mapperPipelineStepFromRs, pipelineId);
+            steps.forEach(pipeline::addStep);
+
+            return Optional.of(pipeline);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     @Override
     public List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId) {
         Optional<Pipeline> pipelineOptional = findPipelineById(pipelineId);
@@ -216,7 +280,7 @@ public class PipelineDAOImpl implements PipelineDAO {
         Pipeline pipeline = pipelineOptional.get();
 
         Map<UUID, PipelineStepDTO> pipelineStepMap = jdbcTemplate.query(
-                        selectPipelineStepsConnectionToProviderByPipelineIdQuery,
+                        selectPipelineStepsConnectionQuery,
                         ps -> ps.setObject(1, pipelineId),
                         this::shortMapperPipelineStepFromRs)
                 .stream()
@@ -241,6 +305,9 @@ public class PipelineDAOImpl implements PipelineDAO {
             throw new IllegalStateException("Couldn't find pipeline step with id: " + pipelineId);
         }
 
+        System.out.println(pipelineSteps.size());
+        System.out.println(pipelineSteps.get(0).getStepId());
+
         return pipelineSteps.get(0);
     }
 
@@ -259,15 +326,35 @@ public class PipelineDAOImpl implements PipelineDAO {
                 ps.setString(2, steps.get(i).getOutputType());
                 ps.setString(3, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
                 ps.setInt(4, steps.get(i).getStepNumber());
-                ps.setObject(5, pipelineId);
+                ps.setObject(5, steps.get(i).getStepId());
             }
-
             @Override
             public int getBatchSize() {
                 return steps.size();
             }
         });
 
+        return pipeline;
+    }
+
+    @Override
+    public Pipeline addPipelineStep(UUID pipelineId, PipelineStep pipelineStep) {
+        jdbcTemplate.update(insertPipelineStepQuery,
+                UUID.randomUUID(),
+                pipelineId,
+                pipelineStep.getProvider().getId(),
+                pipelineStep.getInputType(),
+                pipelineStep.getOutputType(),
+                jsonUtil.writeMapStringObjectAsJsonString(pipelineStep.getParams()),
+                pipelineStep.getStepNumber());
+
+        return findPipelineById(pipelineId).orElseThrow(() -> new IllegalStateException("Couldn't find pipeline with id: " + pipelineId));
+    }
+
+    @Override
+    public Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId) {
+        jdbcTemplate.update(deletePipelineStepsQuery, stepId);
+        Pipeline pipeline = Pipeline.getNewInstanceWithDescriptionAndSteps(null, steps);
         return pipeline;
     }
 

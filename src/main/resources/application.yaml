@@ -145,6 +145,9 @@ queries:
 
         pipeline-by-id: >
           SELECT p.id, p.description FROM pipegine_platform.pipeline p WHERE p.id=?
+        pipeline-with-project-id-by-id: >
+          SELECT p.id, p.project_id, p.description 
+          FROM pipegine_platform.pipeline p WHERE p.id=?
 
         pipeline-steps-by-pipeline-id: >
           SELECT
@@ -161,6 +164,19 @@ queries:
             ps.step_id,
             p.name provider_name,
             p.description provider_description,
+            ps.input_type,
+            ps.output_type,
+            ps.params,
+            ps.step_number
+          FROM pipegine_platform.pipeline_step ps
+            INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
+          WHERE ps.pipeline_id=?
+        pipeline-all-data-w/-provider-id: >
+          SELECT
+            ps.step_id,
+            p.id as provider_id,
+            p.name as provider_name,
+            p.description as provider_description,
             ps.input_type,
             ps.output_type,
             ps.params,
@@ -196,9 +212,11 @@ queries:
             output_type = ?,
             params = ?::jsonb,
             step_number = ?
-          FROM pipegine_platform.pipeline_step ps
-            INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
-          WHERE ps.pipeline_id=?
+          WHERE step_id=?
+        project-id: >
+          UPDATE pipegine_platform.pipeline
+          SET project_id=? 
+          WHERE id=?
       delete:
         pipeline-step-by-id: >
           DELETE FROM pipegine_platform.pipeline_step WHERE step_id=?

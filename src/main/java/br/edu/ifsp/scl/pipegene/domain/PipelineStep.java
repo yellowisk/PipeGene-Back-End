@@ -1,9 +1,6 @@
 package br.edu.ifsp.scl.pipegene.domain;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class PipelineStep {
 
@@ -57,6 +54,11 @@ public class PipelineStep {
         this.outputType = outputType;
         this.params = Collections.unmodifiableMap(params);
         this.stepNumber = stepNumber;
+    }
+
+    public PipelineStep getNewInstanceWithOnlyId(UUID stepId) {
+        return new PipelineStep(stepId, provider, inputType, outputType,
+                params, stepNumber, pipeline);
     }
 
     public static PipelineStep of(UUID stepId, Provider providerId, String inputType, String outputType,
