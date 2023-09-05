@@ -18,7 +18,7 @@ spring:
   application:
     name: pipegine-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/pipegine?prepareThreshold=0
+    url: jdbc:postgresql://pipegine-postgres:5432/pipegine?prepareThreshold=0
     username: pipegine-app
     password: pipegine-app
     driver-class-name: org.postgresql.Driver
@@ -30,6 +30,8 @@ spring:
       connectionTimeout: 5000
       maximumPoolSize: 10
       max-lifetime: 600000
+    init:
+      always
 
   servlet:
     multipart:
