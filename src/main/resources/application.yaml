@@ -81,6 +81,17 @@ queries:
           INNER JOIN pipegine_platform.group_participation gp ON gp.group_id = g.id
           WHERE gp.receive_user_id = ? AND gp.status='ACCEPTED'
 
+        project-by-pipeline-id:
+            SELECT
+                p.id,
+                p.name,
+                p.description,
+                p.group_id,
+                p.owner_id
+            FROM pipegine_platform.project p
+                INNER JOIN pipegine_platform.pipeline pl ON pl.project_id=p.id
+            WHERE pl.id=?;
+
       exists:
         project-id: >
           SELECT EXISTS(SELECT 1 FROM pipegine_platform.project p WHERE p.id=?)

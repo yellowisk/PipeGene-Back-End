@@ -62,6 +62,20 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     }
 
     @Override
+    public Project findProjectByPipelineId(UUID pipelineId) {
+        Optional<Project> optional = projectDAO.findByPipelineId(pipelineId);
+
+        if (optional.isEmpty()) {
+            throw new ResourceNotFoundException("Not found project with pipeline id: " + pipelineId);
+        }
+
+        Project project = optional.get();
+        verifyAccess(project.getOwnerId());
+
+        return project;
+    }
+
+    @Override
     public Project updateProjectById(UUID projectId, ProjectUpdateRequest request) {
         Optional<Project> optional = projectDAO.findProjectById(projectId);
 

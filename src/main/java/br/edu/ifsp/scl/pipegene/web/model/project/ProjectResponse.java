@@ -31,6 +31,13 @@ public class ProjectResponse {
         this.pipelines = pipelines;
     }
 
+    public ProjectResponse(UUID id, String name, String description, UUID groupId) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.groupId = groupId;
+    }
+
     public static ProjectResponse createFromProject(Project project) {
         return new ProjectResponse(
                 project.getId(),

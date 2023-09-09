@@ -18,6 +18,8 @@ public interface ProjectDAO {
 
     List<Project> findAllProjects();
 
+    Optional<Project> findByPipelineId(UUID pipelineId);
+
     List<Project> findAllProjectsByUser(UUID userId);
 
     Boolean projectExists(UUID id);

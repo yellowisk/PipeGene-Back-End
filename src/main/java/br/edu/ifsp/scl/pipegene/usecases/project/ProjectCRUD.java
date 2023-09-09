@@ -15,6 +15,8 @@ public interface ProjectCRUD {
 
     Project findProjectById(UUID projectId);
 
+    Project findProjectByPipelineId(UUID pipelineId);
+
     Project updateProjectById(UUID projectId, ProjectUpdateRequest request);
 
     List<Project> findAllProjects();

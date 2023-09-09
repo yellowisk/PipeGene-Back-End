@@ -55,6 +55,13 @@ public class ProjectController {
         return ResponseEntity.ok(ProjectResponse.createFromProject(project));
     }
 
+    @GetMapping("/pipelines/{pipelineId}")
+    public ResponseEntity<ProjectResponse> findProjectByPipelineId(@PathVariable UUID pipelineId) {
+        Project project = projectCRUD.findProjectByPipelineId(pipelineId);
+
+        return ResponseEntity.ok(ProjectResponse.createFromProject(project));
+    }
+
     @PutMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> updateProjectById(@PathVariable UUID projectId,
                                                              @RequestBody @Valid ProjectUpdateRequest request) {

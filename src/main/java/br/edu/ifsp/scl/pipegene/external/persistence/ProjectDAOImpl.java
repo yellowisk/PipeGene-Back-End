@@ -44,6 +44,9 @@ public class ProjectDAOImpl implements ProjectDAO {
     @Value("${queries.sql.project-dao.select.project-all-by-user}")
     private String selectAllProjectByUserQuery;
 
+    @Value("${queries.sql.project-dao.select.project-by-pipeline-id}")
+    private String selectProjectByPipelineIdQuery;
+
     @Value("${queries.sql.project-dao.exists.project-id}")
     private String existsProjectIdQuery;
 
@@ -122,6 +125,29 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
+    public List<Project> findAllProjectsByUser(UUID userId) {
+        Map<UUID, Project> projects = jdbcTemplate.query(selectAllProjectByUserQuery, this::mapperProjectFromRs, userId).stream()
+                .distinct().collect(Collectors.toMap(Project::getId, Function.identity()));
+
+        return findPipelines(projects);
+    }
+
+    @Override
+    public Optional<Project> findByPipelineId(UUID pipelineId) {
+        Project project = jdbcTemplate.queryForObject(selectProjectByPipelineIdQuery, this::mapperProjectFromRs, pipelineId);
+
+        datasetDAO.findDatasetsByProjectId(project.getId()).forEach(project::addDataset);
+
+
+        List<Pipeline> pipelines = pipelineDAO.findPipelinesByProjectId(project.getId())
+                .stream().peek(pipeline -> pipeline.setProject(project))
+                .collect(Collectors.toList());
+        project.addPipeline(pipelines);
+
+        return Optional.of(project);
+    }
+
+    @Override
     public Boolean projectExists(UUID projectId) {
         Boolean exists = jdbcTemplate.queryForObject(existsProjectIdQuery, Boolean.class, projectId);
         return Objects.nonNull(exists) && exists;
@@ -131,14 +157,6 @@ public class ProjectDAOImpl implements ProjectDAO {
     public List<Project> findAllProjects() {
         Map<UUID, Project> projects = jdbcTemplate.query(selectAllProjectQuery, this::mapperProjectFromRs).stream()
                 .collect(Collectors.toMap(Project::getId, Function.identity()));
-
-        return findPipelines(projects);
-    }
-
-    @Override
-    public List<Project> findAllProjectsByUser(UUID userId) {
-        Map<UUID, Project> projects = jdbcTemplate.query(selectAllProjectByUserQuery, this::mapperProjectFromRs, userId).stream()
-                .distinct().collect(Collectors.toMap(Project::getId, Function.identity()));
 
         return findPipelines(projects);
     }
