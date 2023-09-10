@@ -221,6 +221,7 @@ queries:
           UPDATE pipegine_platform.pipeline_step
             SET input_type = ?,
             output_type = ?,
+            provider_id = ?,
             params = ?::jsonb,
             step_number = ?
           WHERE step_id=?

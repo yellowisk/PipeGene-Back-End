@@ -75,10 +75,6 @@ public class Pipeline {
         return new Pipeline(uuid, project, description, steps);
     }
 
-    public static Pipeline getNewInstanceWithDescription(String description) {
-        return new Pipeline(description);
-    }
-
     public static Pipeline getNewInstanceWithDescriptionAndSteps(String description, List<PipelineStep> steps) {
         return new Pipeline(description, steps);
     }
@@ -150,7 +146,4 @@ public class Pipeline {
         updatedPipelineSteps.forEach(this::addStepDTO);
     }
 
-    public void setPipelineSteps(List<PipelineStep> pipelineSteps) {
-        this.steps = pipelineSteps;
-    }
 }

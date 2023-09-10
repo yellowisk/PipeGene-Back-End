@@ -194,7 +194,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         Pipeline dbPipeline = pipelineDAO.findPipelineById(pipelineId).get();
 
         System.out.println(pipelineId);
-        System.out.println(request.getSteps().get(0));
+        System.out.println(request.getSteps().get(0).getStepId());
         System.out.println(reqPipeline.getSteps().size());
         System.out.println(dbPipeline.getSteps().size());
 

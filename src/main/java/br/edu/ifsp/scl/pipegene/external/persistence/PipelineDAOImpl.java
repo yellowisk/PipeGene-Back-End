@@ -57,6 +57,9 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-all-data-and-service-data-by-pipeline-id}")
     private String selectPipelineStepsConnectionToProviderByPipelineIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.select.pipeline-all-data-w/-provider-id}")
+    private String selectPipelineStepsConnectionQuery;
+
     @Value("${queries.sql.pipeline-dao.update.pipeline-by-id}")
     private String updatePipelineByIdQuery;
 
@@ -68,9 +71,6 @@ public class PipelineDAOImpl implements PipelineDAO {
 
     @Value("${queries.sql.pipeline-dao.delete.pipeline-step-by-id}")
     private String deletePipelineStepsQuery;
-
-    @Value("${queries.sql.pipeline-dao.select.pipeline-all-data-w/-provider-id}")
-    private String selectPipelineStepsConnectionQuery;
 
 
     public PipelineDAOImpl(JdbcTemplate jdbcTemplate, JsonUtil jsonUtil) {
@@ -324,9 +324,10 @@ public class PipelineDAOImpl implements PipelineDAO {
             public void setValues(PreparedStatement ps, int i) throws SQLException {
                 ps.setString(1, steps.get(i).getInputType());
                 ps.setString(2, steps.get(i).getOutputType());
-                ps.setString(3, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
-                ps.setInt(4, steps.get(i).getStepNumber());
-                ps.setObject(5, steps.get(i).getStepId());
+                ps.setObject(3, steps.get(i).getProvider().getId());
+                ps.setString(4, jsonUtil.writeMapStringObjectAsJsonString(steps.get(i).getParams()));
+                ps.setInt(5, steps.get(i).getStepNumber());
+                ps.setObject(6, steps.get(i).getStepId());
             }
             @Override
             public int getBatchSize() {
