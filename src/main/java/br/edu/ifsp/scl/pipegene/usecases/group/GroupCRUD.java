@@ -14,6 +14,8 @@ public interface GroupCRUD {
 
     GroupParticipation addToGroup(UUID groupId, String username);
 
+
+
     GroupParticipation acceptGroupParticipation(UUID groupParticipationId);
 
     GroupParticipation denyGroupParticipation(UUID groupParticipationId);

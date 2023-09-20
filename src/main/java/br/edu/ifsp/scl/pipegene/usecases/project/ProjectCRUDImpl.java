@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 public class ProjectCRUDImpl implements ProjectCRUD {
 
     private final ProjectDAO projectDAO;
-    private final GroupCRUD groupCRUD;
     private final ObjectStorageService objectStorageService;
     private final IAuthenticationFacade authentication;
 
+    private final GroupCRUD groupCRUD;
     public ProjectCRUDImpl(ProjectDAO projectDAO, GroupCRUD groupCRUD, ObjectStorageService objectStorageService, IAuthenticationFacade authentication) {
         this.projectDAO = projectDAO;
         this.groupCRUD = groupCRUD;

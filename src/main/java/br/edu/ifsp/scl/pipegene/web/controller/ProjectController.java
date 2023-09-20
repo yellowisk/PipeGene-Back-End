@@ -30,10 +30,8 @@ public class ProjectController {
             @RequestParam String name,
             @RequestParam String description,
             @RequestParam List<MultipartFile> files,
-            @RequestParam List<String> usernameList) {
-        System.out.println(name);
-        Project project = projectCRUD.createNewProject(name, description, files, usernameList);
-
+            @RequestParam List<String> userList) {
+        Project project = projectCRUD.createNewProject(name, description, files, userList);
         return ResponseEntity.ok(ProjectResponse.createFromProject(project));
     }
 

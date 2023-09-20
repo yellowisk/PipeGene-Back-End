@@ -18,7 +18,7 @@ spring:
   application:
     name: pipegine-service
   datasource:
-    url: jdbc:postgresql://pipegine-postgres:5432/pipegine?prepareThreshold=0
+    url: jdbc:postgresql://localhost:5432/pipegine?prepareThreshold=0
     username: pipegine-app
     password: pipegine-app
     driver-class-name: org.postgresql.Driver

@@ -14,7 +14,7 @@ public class ApplicationUserResponse {
 
     public static ApplicationUserResponse createFromApplicationUser(ApplicationUser user) {
         return new ApplicationUserResponse(
-               user.getId(),
+                user.getId(),
                 user.getUsername(),
                 user.getName(),
                 user.getOrcid(),

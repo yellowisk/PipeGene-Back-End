@@ -1,5 +1,6 @@
 package br.edu.ifsp.scl.pipegene.usecases.account;
 
+import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.external.persistence.UserApplicationDAOImpl;
 import br.edu.ifsp.scl.pipegene.usecases.account.gateway.UserApplicationDAO;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ApplicationUserService implements UserDetailsService, ApplicationUserCRUD {
@@ -23,9 +25,12 @@ public class ApplicationUserService implements UserDetailsService, ApplicationUs
     private final UserApplicationDAO userApplicationDAO;
     private final JdbcTemplate jdbcTemplate;
 
-    public ApplicationUserService(UserApplicationDAO userApplicationDAO) {
+    private final IAuthenticationFacade authentication;
+
+    public ApplicationUserService(UserApplicationDAO userApplicationDAO, JdbcTemplate jdbcTemplate, IAuthenticationFacade authentication) {
         this.userApplicationDAO = userApplicationDAO;
-        this.jdbcTemplate = new JdbcTemplate();
+        this.jdbcTemplate = jdbcTemplate;
+        this.authentication = authentication;
     }
 
     @Override
@@ -60,6 +65,9 @@ public class ApplicationUserService implements UserDetailsService, ApplicationUs
 
     @Override
     public List<ApplicationUser> findUsersByUsernameOrName(String UsernameOrName) {
-        return userApplicationDAO.findUsersByUsernameOrName(UsernameOrName);
+        return userApplicationDAO.findUsersByUsernameOrName(UsernameOrName)
+                .stream().filter(user -> !user.getId()
+                        .equals(authentication.getUserAuthenticatedId()))
+                .collect(Collectors.toList());
     }
 }

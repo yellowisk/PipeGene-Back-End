@@ -131,7 +131,7 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
         boolean isCredentialsNonExpired = rs.getBoolean("is_credentials_non_expired");
         boolean isEnabled = rs.getBoolean("is_enabled");
 
-        return new ApplicationUser(id, name, username, orcid, github, password, isAccountNonExpired,
+        return new ApplicationUser(id, username, name, orcid, github, password, isAccountNonExpired,
                 isAccountNonLocked, isCredentialsNonExpired, isEnabled);
     }
 }

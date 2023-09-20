@@ -63,7 +63,7 @@ public class GroupCRUDimpl implements GroupCRUD{
         ApplicationUser applicationUser = userApplicationDAO.findUserByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found user with username: " + username));
 
-        Group group = groupDAO.findGroupById(groupId)
+        groupDAO.findGroupById(groupId)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found group with id: " + groupId));
 
         Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationByGroupIdAndReceiverId(groupId, applicationUser.getId());
