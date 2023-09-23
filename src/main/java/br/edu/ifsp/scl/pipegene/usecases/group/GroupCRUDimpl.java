@@ -57,6 +57,11 @@ public class GroupCRUDimpl implements GroupCRUD{
     }
 
     @Override
+    public List<GroupParticipation> getAllGroupParticipationsByGroupId(UUID groupId) {
+        return groupDAO.findAllGroupParticipationByGroupId(groupId);
+    }
+
+    @Override
     public GroupParticipation addToGroup(UUID groupId, String username) {
         GroupParticipation groupParticipation = null;
 
@@ -110,10 +115,13 @@ public class GroupCRUDimpl implements GroupCRUD{
 
         var groupParticipation = groupParticipationOptional.get();
 
-        if (userId != groupParticipation.getSubmitterId())
-            throw new PermissionDeniedDataAccessException("You don't have permission to deny this group participation", null);
-
         return groupDAO.deleteGroupParticipation(groupParticipation.getId());
+    }
+
+    @Override
+    public GroupParticipation findGroupParticipationByGroupAndReceiverId(UUID groupId, UUID receiverId) {
+        return groupDAO.findGroupParticipationByGroupIdAndReceiverId(groupId, receiverId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found group participation with group id: " + groupId + " and receiver id: " + receiverId));
     }
 
     @Override

@@ -3,6 +3,7 @@ package br.edu.ifsp.scl.pipegene.usecases.project;
 import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
 import br.edu.ifsp.scl.pipegene.domain.Dataset;
 import br.edu.ifsp.scl.pipegene.domain.Group;
+import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserService;
@@ -47,7 +48,9 @@ public class ProjectCRUDImpl implements ProjectCRUD {
                 .map(objectStorageService::putObject)
                 .collect(Collectors.toList());
         Group group = groupCRUD.addNewGroup();
-        usersUsername.forEach(username -> groupCRUD.addToGroup(group.getId(), username));
+        if (usersUsername != null)
+            usersUsername.forEach(username -> groupCRUD.addToGroup(group.getId(), username));
+
         return projectDAO.saveNewProject(name, description, group.getId(), datasets, authentication.getUserAuthenticatedId());
     }
 
@@ -87,6 +90,28 @@ public class ProjectCRUDImpl implements ProjectCRUD {
             throw new ResourceNotFoundException("Not found project with id: " + projectId);
         }
 
+        Group group = groupCRUD.findGroupByProjectId(projectId);
+        List<GroupParticipation> groupParticipationList = groupCRUD.getAllGroupParticipationsByGroupId(group.getId());
+        List<UUID> usersIds = groupParticipationList.stream().map(GroupParticipation::getReceiverId).collect(Collectors.toList());
+        List<UUID> requestUsersId = request.getUsersId();
+        List<UUID> newUsersIds;
+        List<UUID> deleteUsersIds;
+
+        newUsersIds = requestUsersId.stream().filter(userId -> !usersIds.contains(userId)).collect(Collectors.toList());
+        deleteUsersIds = usersIds.stream().filter(userId -> !requestUsersId.contains(userId)).collect(Collectors.toList());
+
+        deleteUsersIds.stream().forEach(userid -> {
+            if (!userid.equals(authentication.getUserAuthenticatedId())){
+                GroupParticipation gp = groupCRUD.findGroupParticipationByGroupAndReceiverId(group.getId(), userid);
+                groupCRUD.deleteGroupParticipation(gp.getId());
+            }
+        });
+
+
+        newUsersIds.stream().forEach(userid -> {
+            groupCRUD.addToGroup(group.getId(), applicationUserService.findUserById(userid).getUsername());
+        });
+
         Project project = optional.get();
         verifyAccess(project.getOwnerId());
         return projectDAO.updateProject(
@@ -100,8 +125,8 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     }
 
     @Override
-    public List<ApplicationUser> findAllUsersByProjectId(UUID projectId) {
-        return applicationUserService.getUsersByGroupId(groupCRUD.findGroupByProjectId(projectId).getId());
+    public List<ApplicationUser> findAllUsersByProjectId(UUID groupId) {
+        return applicationUserService.getUsersByGroupId(groupId);
     }
 
 
@@ -119,6 +144,15 @@ public class ProjectCRUDImpl implements ProjectCRUD {
             throw new GenericResourceException("The project cannot be deleted because exists process still using him", "Delete project not allowed");
         }
 
+    }
+
+    @Override
+    public void deleteAllUsersParticipationByProjectId(UUID projectId, List<UUID> usersIds) {
+        Group group = groupCRUD.findGroupByProjectId(projectId);
+        List<GroupParticipation> groupParticipationList = usersIds
+                .stream().map(userId -> groupCRUD.findGroupParticipationByGroupAndReceiverId(group.getId(), userId))
+                .collect(Collectors.toList());
+        groupParticipationList.forEach(groupParticipation -> groupCRUD.deleteGroupParticipation(groupParticipation.getId()));
     }
 
     private void verifyAccess(UUID projectOwnerId) {

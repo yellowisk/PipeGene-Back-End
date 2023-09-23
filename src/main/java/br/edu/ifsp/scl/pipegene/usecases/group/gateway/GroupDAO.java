@@ -29,4 +29,6 @@ public interface GroupDAO {
 
     Optional<Group> findGroupByProjectId(UUID projectId);
 
+    List<GroupParticipation> findAllGroupParticipationByGroupId(UUID groupId);
+
 }

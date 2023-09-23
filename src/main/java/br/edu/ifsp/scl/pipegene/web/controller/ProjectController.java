@@ -7,7 +7,9 @@ import br.edu.ifsp.scl.pipegene.web.model.account.request.CreateUserRequest;
 import br.edu.ifsp.scl.pipegene.web.model.account.response.ApplicationUserResponse;
 import br.edu.ifsp.scl.pipegene.web.model.project.ProjectResponse;
 import br.edu.ifsp.scl.pipegene.web.model.project.ProjectUpdateRequest;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +33,7 @@ public class ProjectController {
             @RequestParam String name,
             @RequestParam String description,
             @RequestParam List<MultipartFile> files,
-            @RequestParam List<String> userList) {
+            @RequestParam @Nullable List<String> userList ) {
         Project project = projectCRUD.createNewProject(name, description, files, userList);
         return ResponseEntity.ok(ProjectResponse.createFromProject(project));
     }
@@ -47,9 +49,9 @@ public class ProjectController {
         );
     }
 
-    @GetMapping("/{projectId}/users")
-    public ResponseEntity<List<ApplicationUserResponse>> findAllUsersByProjectId(@PathVariable UUID projectId) {
-        List<ApplicationUser> users = projectCRUD.findAllUsersByProjectId(projectId);
+    @GetMapping("/{groupId}/users")
+    public ResponseEntity<List<ApplicationUserResponse>> findAllUsersByProjectId(@PathVariable UUID groupId) {
+        List<ApplicationUser> users = projectCRUD.findAllUsersByProjectId(groupId);
 
         return ResponseEntity.ok(
                 users.stream()
@@ -86,5 +88,4 @@ public class ProjectController {
 
         return ResponseEntity.ok().build();
     }
-
 }
