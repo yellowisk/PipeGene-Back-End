@@ -116,6 +116,12 @@ public class GroupCRUDimpl implements GroupCRUD{
         return groupDAO.deleteGroupParticipation(groupParticipation.getId());
     }
 
+    @Override
+    public Group findGroupByProjectId(UUID projectId) {
+        return groupDAO.findGroupByProjectId(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found group with project id: " + projectId));
+    }
+
     private GroupParticipation getParticionOrThrow(UUID groupParticipationId) {
         Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationById(groupParticipationId);
         if (groupParticipationOptional.isEmpty())

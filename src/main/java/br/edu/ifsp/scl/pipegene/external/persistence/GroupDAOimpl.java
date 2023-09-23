@@ -48,6 +48,9 @@ public class GroupDAOimpl implements GroupDAO {
     @Value("${queries.sql.group-dao.select.group-all-owner-or-member}")
     private String selectAllGroupByUserId;
 
+    @Value("${queries.sql.group-dao.select.group-by-project-id}")
+    private String selectGroupByProjectIdQuery;
+
     private final JdbcTemplate jdbcTemplate;
 
     public GroupDAOimpl(JdbcTemplate jdbcTemplate) {
@@ -141,6 +144,17 @@ public class GroupDAOimpl implements GroupDAO {
             throw new IllegalStateException();
 
         return Optional.of(groupParticipation);
+    }
+
+    @Override
+    public Optional<Group> findGroupByProjectId(UUID projectId) {
+        Group group;
+        try {
+            group = jdbcTemplate.queryForObject(selectGroupByProjectIdQuery, this::mapperGroupFromRs, projectId);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+        return Optional.of(group);
     }
 
     private GroupParticipation mapperGroupParticipainFromRs(ResultSet rs, int rowNum) throws SQLException {

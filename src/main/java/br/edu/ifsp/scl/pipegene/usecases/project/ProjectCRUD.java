@@ -21,5 +21,7 @@ public interface ProjectCRUD {
 
     List<Project> findAllProjects();
 
+    List<ApplicationUser> findAllUsersByProjectId(UUID projectId);
+
     void deleteProjectById(UUID projectId);
 }

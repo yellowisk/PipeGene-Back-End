@@ -18,4 +18,6 @@ public interface ApplicationUserCRUD {
 
     List<ApplicationUser> findUsersByUsernameOrName(String UsernameOrName);
 
+    List<ApplicationUser> getUsersByGroupId(UUID groupId);
+
 }

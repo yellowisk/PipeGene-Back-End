@@ -5,6 +5,7 @@ import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipationStatusEnum;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 
+import javax.swing.text.html.Option;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -25,5 +26,7 @@ public interface GroupDAO {
 
     GroupParticipation deleteGroupParticipation(UUID id);
     Optional<GroupParticipation> findGroupParticipationByGroupIdAndReceiverId(UUID groupId, UUID receiverId);
+
+    Optional<Group> findGroupByProjectId(UUID projectId);
 
 }

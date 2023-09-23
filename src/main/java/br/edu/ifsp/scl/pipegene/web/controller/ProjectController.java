@@ -4,6 +4,7 @@ import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.project.ProjectCRUD;
 import br.edu.ifsp.scl.pipegene.web.model.account.request.CreateUserRequest;
+import br.edu.ifsp.scl.pipegene.web.model.account.response.ApplicationUserResponse;
 import br.edu.ifsp.scl.pipegene.web.model.project.ProjectResponse;
 import br.edu.ifsp.scl.pipegene.web.model.project.ProjectUpdateRequest;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,17 @@ public class ProjectController {
         return ResponseEntity.ok(
                 projects.stream()
                         .map(ProjectResponse::createFromProject)
+                        .collect(Collectors.toList())
+        );
+    }
+
+    @GetMapping("/{projectId}/users")
+    public ResponseEntity<List<ApplicationUserResponse>> findAllUsersByProjectId(@PathVariable UUID projectId) {
+        List<ApplicationUser> users = projectCRUD.findAllUsersByProjectId(projectId);
+
+        return ResponseEntity.ok(
+                users.stream()
+                        .map(ApplicationUserResponse::createFromApplicationUser)
                         .collect(Collectors.toList())
         );
     }

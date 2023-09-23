@@ -5,6 +5,7 @@ import br.edu.ifsp.scl.pipegene.domain.Dataset;
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserCRUD;
+import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserService;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ObjectStorageService;
@@ -28,13 +29,16 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     private final ProjectDAO projectDAO;
     private final ObjectStorageService objectStorageService;
     private final IAuthenticationFacade authentication;
-
     private final GroupCRUD groupCRUD;
-    public ProjectCRUDImpl(ProjectDAO projectDAO, GroupCRUD groupCRUD, ObjectStorageService objectStorageService, IAuthenticationFacade authentication) {
+
+    private final ApplicationUserService applicationUserService;
+
+    public ProjectCRUDImpl(ProjectDAO projectDAO, ObjectStorageService objectStorageService, IAuthenticationFacade authentication, GroupCRUD groupCRUD, ApplicationUserService applicationUserService) {
         this.projectDAO = projectDAO;
-        this.groupCRUD = groupCRUD;
         this.objectStorageService = objectStorageService;
         this.authentication = authentication;
+        this.groupCRUD = groupCRUD;
+        this.applicationUserService = applicationUserService;
     }
 
     @Override
@@ -93,6 +97,11 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     @Override
     public List<Project> findAllProjects() {
         return projectDAO.findAllProjectsByUser(authentication.getUserAuthenticatedId());
+    }
+
+    @Override
+    public List<ApplicationUser> findAllUsersByProjectId(UUID projectId) {
+        return applicationUserService.getUsersByGroupId(groupCRUD.findGroupByProjectId(projectId).getId());
     }
 
 

@@ -70,4 +70,12 @@ public class ApplicationUserService implements UserDetailsService, ApplicationUs
                         .equals(authentication.getUserAuthenticatedId()))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<ApplicationUser> getUsersByGroupId(UUID groupId) {
+        return userApplicationDAO.findAllUsersByGroupId(groupId)
+                .stream().filter(user -> !user.getId()
+                        .equals(authentication.getUserAuthenticatedId()))
+                .collect(Collectors.toList());
+    }
 }
