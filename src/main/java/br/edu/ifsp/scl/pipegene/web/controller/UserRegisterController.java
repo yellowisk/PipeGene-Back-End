@@ -42,7 +42,6 @@ public class UserRegisterController {
 
     @GetMapping("/UsersByUsernameOrName/{usernameOrName}")
     public ResponseEntity<List<ApplicationUserResponse>> findUserByNameOrEmail(@PathVariable String usernameOrName) {
-        System.out.println(usernameOrName);
         List<ApplicationUser> applicationUser = applicationUserCRUD.findUsersByUsernameOrName(usernameOrName);
 
         return ResponseEntity.ok(

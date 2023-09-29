@@ -34,6 +34,9 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
     @Value("${queries.sql.application-user-dao.select.application-user-by-username-or-name}")
     private String selectUsersByNameOrEmailQuery;
 
+    @Value("${queries.sql.application-user-dao.select.all-application-user-by-group-id:}")
+    private String selectUsersByGroupIdQuery;
+
     public UserApplicationDAOImpl(PasswordEncoder passwordEncoder, JdbcTemplate jdbcTemplate) {
         this.passwordEncoder = passwordEncoder;
         this.jdbcTemplate = jdbcTemplate;
@@ -99,6 +102,13 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
                 UsernameOrName, UsernameOrName);
     }
 
+    @Override
+    public List<ApplicationUser> findAllUsersByGroupId(UUID groupId) {
+        return jdbcTemplate.query(selectUsersByGroupIdQuery,
+                this::mapperApplicationUserFromRs,
+                groupId);
+    }
+
     @Transactional
     @Override
     public ApplicationUser saveNewUser(ApplicationUser user) {
@@ -131,7 +141,7 @@ public class UserApplicationDAOImpl implements UserApplicationDAO {
         boolean isCredentialsNonExpired = rs.getBoolean("is_credentials_non_expired");
         boolean isEnabled = rs.getBoolean("is_enabled");
 
-        return new ApplicationUser(id, name, username, orcid, github, password, isAccountNonExpired,
+        return new ApplicationUser(id, username, name, orcid, github, password, isAccountNonExpired,
                 isAccountNonLocked, isCredentialsNonExpired, isEnabled);
     }
 }

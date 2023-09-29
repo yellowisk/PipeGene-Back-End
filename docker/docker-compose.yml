@@ -2,15 +2,14 @@ version: "3.8"
 
 services:
   pipegine-postgres:
-    build:
-      context: ./postgres
-      dockerfile: Dockerfile
+    build: ./postgres
     container_name: pipegine-postgres
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=password
+      - POSTGRES_USER=pipegine-app
+      - POSTGRES_PASSWORD=pipegine-app
+      - POSTGRES_DB=pipegine
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s

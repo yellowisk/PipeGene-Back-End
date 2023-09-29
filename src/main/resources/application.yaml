@@ -30,6 +30,8 @@ spring:
       connectionTimeout: 5000
       maximumPoolSize: 10
       max-lifetime: 600000
+    init:
+      always
 
   servlet:
     multipart:
@@ -50,6 +52,10 @@ queries:
           SELECT * FROM pipegine_platform.application_user where username=?
         application-user-by-username-or-name: >
           SELECT * FROM pipegine_platform.application_user WHERE username LIKE '%' || ? || '%' OR name LIKE '%' || ? || '%';
+        all-application-user-by-group-id: >
+          SELECT * FROM pipegine_platform.application_user au
+            INNER JOIN pipegine_platform.group_participation gp ON gp.receive_user_id = au.id
+          WHERE gp.group_id = ? AND (gp.status='ACCEPTED' OR gp.status='PENDING')
 
         application-user-by-id: >
           SELECT * FROM pipegine_platform.application_user where id=?
@@ -398,6 +404,11 @@ queries:
           INSERT INTO pipegine_platform.group(id, owner_id) VALUES(?, ?)
 
       select:
+        group-by-project-id: >
+          SELECT g.* FROM pipegine_platform.group g
+            INNER JOIN pipegine_platform.project p ON p.group_id=g.id
+          WHERE p.id=?
+
         group-by-id: >
           SELECT * FROM pipegine_platform.group g WHERE g.id=?
 

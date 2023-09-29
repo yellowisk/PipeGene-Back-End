@@ -18,8 +18,8 @@ public interface ProjectCRUD {
     Project findProjectByPipelineId(UUID pipelineId);
 
     Project updateProjectById(UUID projectId, ProjectUpdateRequest request);
-
     List<Project> findAllProjects();
-
+    List<ApplicationUser> findAllUsersByProjectId(UUID projectId);
     void deleteProjectById(UUID projectId);
+    void deleteAllUsersParticipationByProjectId(UUID projectId, List<UUID> usersIds);
 }

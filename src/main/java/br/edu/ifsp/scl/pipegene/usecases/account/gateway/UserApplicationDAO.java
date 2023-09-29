@@ -18,4 +18,6 @@ public interface UserApplicationDAO {
 
     List<ApplicationUser> findUsersByUsernameOrName(String UsernameOrName);
 
+    List<ApplicationUser> findAllUsersByGroupId(UUID groupId);
+
 }
