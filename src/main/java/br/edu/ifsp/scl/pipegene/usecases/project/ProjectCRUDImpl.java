@@ -19,6 +19,7 @@ import br.edu.ifsp.scl.pipegene.web.model.project.ProjectUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +32,6 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     private final ObjectStorageService objectStorageService;
     private final IAuthenticationFacade authentication;
     private final GroupCRUD groupCRUD;
-
     private final ApplicationUserService applicationUserService;
 
     public ProjectCRUDImpl(ProjectDAO projectDAO, ObjectStorageService objectStorageService, IAuthenticationFacade authentication, GroupCRUD groupCRUD, ApplicationUserService applicationUserService) {
@@ -153,6 +153,17 @@ public class ProjectCRUDImpl implements ProjectCRUD {
                 .stream().map(userId -> groupCRUD.findGroupParticipationByGroupAndReceiverId(group.getId(), userId))
                 .collect(Collectors.toList());
         groupParticipationList.forEach(groupParticipation -> groupCRUD.deleteGroupParticipation(groupParticipation.getId()));
+    }
+
+    @Override
+    public List<ApplicationUser> getAllUsersWithAcceptedStatusByProjectId(UUID projectId) {
+        Group group = groupCRUD.findGroupByProjectId(projectId);
+        List<GroupParticipation> groupParticipationList = groupCRUD.getAllGroupParticipationsWithAcceptedStatusByGroupId(group.getId());
+        List<ApplicationUser> users = new ArrayList<>();
+        groupParticipationList.stream().forEach(groupParticipation -> {
+            users.add(applicationUserService.findUserById(groupParticipation.getReceiverId()));
+        });
+        return users;
     }
 
     private void verifyAccess(UUID projectOwnerId) {

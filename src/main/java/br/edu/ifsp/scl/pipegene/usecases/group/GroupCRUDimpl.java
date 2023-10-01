@@ -130,6 +130,18 @@ public class GroupCRUDimpl implements GroupCRUD{
                 .orElseThrow(() -> new ResourceNotFoundException("Not found group with project id: " + projectId));
     }
 
+    @Override
+    public List<GroupParticipation> getAllGroupParticipationsWithAcceptedStatusByGroupId(UUID groupId) {
+        groupDAO.findGroupById(groupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found group with id: " + groupId));
+        return groupDAO.findAllAcceptedGroupParticipationByGroupId(groupId);
+    }
+
+    @Override
+    public List<GroupParticipation> getAllPedingGroupParticipationsByReceiverId() {
+        return groupDAO.findAllPendingGroupParticipationByReceiverId(authentication.getUserAuthenticatedId());
+    }
+
     private GroupParticipation getParticionOrThrow(UUID groupParticipationId) {
         Optional<GroupParticipation> groupParticipationOptional = groupDAO.findGroupParticipationById(groupParticipationId);
         if (groupParticipationOptional.isEmpty())

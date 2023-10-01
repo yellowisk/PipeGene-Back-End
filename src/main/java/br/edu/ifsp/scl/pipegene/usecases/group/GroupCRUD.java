@@ -11,7 +11,6 @@ public interface GroupCRUD {
     Group addNewGroup();
     Group findGroupById(UUID id);
     List<Group> findAllGroupByUserId();
-
     List<GroupParticipation> getAllGroupParticipationsByGroupId(UUID groupId);
     GroupParticipation addToGroup(UUID groupId, String username);
     GroupParticipation acceptGroupParticipation(UUID groupParticipationId);
@@ -20,5 +19,7 @@ public interface GroupCRUD {
     GroupParticipation deleteGroupParticipation(UUID groupParticipationId);
     GroupParticipation findGroupParticipationByGroupAndReceiverId(UUID groupId, UUID receiverId);
     Group findGroupByProjectId(UUID projectId);
+    List<GroupParticipation> getAllGroupParticipationsWithAcceptedStatusByGroupId(UUID groupId);
+    List<GroupParticipation> getAllPedingGroupParticipationsByReceiverId();
 
 }

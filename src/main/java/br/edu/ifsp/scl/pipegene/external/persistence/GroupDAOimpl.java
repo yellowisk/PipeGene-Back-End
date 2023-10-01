@@ -7,13 +7,10 @@ import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.GenericResourceException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.transform.Result;
-import java.awt.*;
 import java.sql.*;
 import java.util.*;
 import java.util.List;
@@ -52,7 +49,13 @@ public class GroupDAOimpl implements GroupDAO {
     private String selectGroupByProjectIdQuery;
 
     @Value("${queries.sql.group-participation-dao.select.group-participation-by-group-id}")
-    private String SelectAllGroupParticipationByGroupIdQuery;
+    private String selectAllGroupParticipationByGroupIdQuery;
+
+    @Value("${queries.sql.group-participation-dao.select.group-participation-by-group-id-and-status-accepted}")
+    private String selectAllGroupParticipationByGroupIdWithAcceptedStatus;
+
+    @Value("${queries.sql.group-participation-dao.select.group-participation-by-receiver-id-and-status-peding}")
+    private String selectAllPendingGroupParticipationByReceiverIdQuery;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -162,8 +165,20 @@ public class GroupDAOimpl implements GroupDAO {
 
     @Override
     public List<GroupParticipation> findAllGroupParticipationByGroupId(UUID groupId) {
-        return jdbcTemplate.query(SelectAllGroupParticipationByGroupIdQuery,
+        return jdbcTemplate.query(selectAllGroupParticipationByGroupIdQuery,
                 this::mapperGroupParticipainFromRs, groupId);
+    }
+
+    @Override
+    public List<GroupParticipation> findAllAcceptedGroupParticipationByGroupId(UUID groupId) {
+        return jdbcTemplate.query(selectAllGroupParticipationByGroupIdWithAcceptedStatus,
+                this::mapperGroupParticipainFromRs, groupId);
+    }
+
+    @Override
+    public List<GroupParticipation> findAllPendingGroupParticipationByReceiverId(UUID receiverId) {
+        return jdbcTemplate.query(selectAllPendingGroupParticipationByReceiverIdQuery,
+                this::mapperGroupParticipainFromRs, receiverId);
     }
 
     private GroupParticipation mapperGroupParticipainFromRs(ResultSet rs, int rowNum) throws SQLException {

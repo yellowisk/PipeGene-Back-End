@@ -15,20 +15,15 @@ public interface GroupDAO {
 
     Group saveGroup(Group group);
     GroupParticipation saveGroupParticipation(GroupParticipation groupParticipation);
-
     void updateGroupParticipation(GroupParticipation groupParticipation);
-
     Optional<GroupParticipation> findGroupParticipationById(UUID groupParticipationId);
-
     Optional<Group> findGroupById(UUID groupId);
-
     List<Group> findAllGroupByUserId(UUID userId);
-
     GroupParticipation deleteGroupParticipation(UUID id);
     Optional<GroupParticipation> findGroupParticipationByGroupIdAndReceiverId(UUID groupId, UUID receiverId);
-
     Optional<Group> findGroupByProjectId(UUID projectId);
-
     List<GroupParticipation> findAllGroupParticipationByGroupId(UUID groupId);
+    List<GroupParticipation> findAllAcceptedGroupParticipationByGroupId(UUID groupId);
+    List<GroupParticipation> findAllPendingGroupParticipationByReceiverId(UUID receiverId);
 
 }
