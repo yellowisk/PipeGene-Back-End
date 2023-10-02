@@ -110,6 +110,8 @@ queries:
                   p.project_id=?
                   AND (e.status = 'WAITING' OR e.status = 'IN_PROGRESS')
           )
+        is-owner: >
+          SELECT EXISTS(SELECT 1 FROM pipegine_platform.project p WHERE p.id=? AND p.owner_id=?
 
       delete:
         project-by-id: >
@@ -447,6 +449,11 @@ queries:
           SELECT * FROM pipegine_platform.group_participation gp WHERE gp.id=?
         group-participation-by-group-id-and-receiver-id: >
           SELECT * FROM pipegine_platform.group_participation gp WHERE gp.group_id=? AND gp.receive_user_id=?
+        group-participation-by-group-id-and-status-accepted: >
+          SELECT * FROM pipegine_platform.group_participation gp WHERE gp.group_id=? AND gp.status='ACCEPTED'
+        group-participation-by-receiver-id-and-status-peding: >
+          SELECT * FROM pipegine_platform.group_participation gp WHERE gp.group_id=? AND gp.receive_user_id=? AND gp.status='PENDING'
+
       delete:
         group-participation-by-id: >
           DELETE FROM pipegine_platform.group_participation WHERE id=?

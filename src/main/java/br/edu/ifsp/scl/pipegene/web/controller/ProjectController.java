@@ -74,6 +74,17 @@ public class ProjectController {
         return ResponseEntity.ok(ProjectResponse.createFromProject(project));
     }
 
+    @GetMapping("/{projectId}/accepted-users")
+    public ResponseEntity<List<ApplicationUserResponse>> getAllGroupParticipationsWithAcceptedStatusByProjectId(@PathVariable UUID projectId) {
+        List<ApplicationUser> users = projectCRUD.getAllUsersWithAcceptedStatusByProjectId(projectId);
+
+        return ResponseEntity.ok(
+                users.stream()
+                        .map(ApplicationUserResponse::createFromApplicationUser)
+                        .collect(Collectors.toList())
+        );
+    }
+
     @PutMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> updateProjectById(@PathVariable UUID projectId,
                                                              @RequestBody @Valid ProjectUpdateRequest request) {
@@ -87,5 +98,11 @@ public class ProjectController {
         projectCRUD.deleteProjectById(projectId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{projectId}/isOwner")
+    public ResponseEntity<Boolean> isOwner(@PathVariable UUID projectId) {
+        System.out.println(projectCRUD.isOwner(projectId));
+        return ResponseEntity.ok(projectCRUD.isOwner(projectId));
     }
 }
