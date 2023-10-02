@@ -110,6 +110,8 @@ queries:
                   p.project_id=?
                   AND (e.status = 'WAITING' OR e.status = 'IN_PROGRESS')
           )
+        is-owner: >
+          SELECT EXISTS(SELECT 1 FROM pipegine_platform.project p WHERE p.id=? AND p.owner_id=?
 
       delete:
         project-by-id: >

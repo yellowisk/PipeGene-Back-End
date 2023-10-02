@@ -25,4 +25,6 @@ public interface ProjectDAO {
     Boolean projectExists(UUID id);
 
     boolean deleteProjectById(UUID id);
+
+    boolean isOwner(UUID projectId, UUID userId);
 }

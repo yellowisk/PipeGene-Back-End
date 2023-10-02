@@ -59,6 +59,9 @@ public class ProjectDAOImpl implements ProjectDAO {
     @Value("${queries.sql.project-dao.delete.project-by-id}")
     private String deleteProjectByIdQuery;
 
+    @Value("${queries.sql.project-dao.exists.is-owner}")
+    private String isOwnerQuery;
+
     public ProjectDAOImpl(JdbcTemplate jdbcTemplate, PipelineDAO pipelineDAO, DatasetDAO datasetDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.pipelineDAO = pipelineDAO;
@@ -191,6 +194,11 @@ public class ProjectDAOImpl implements ProjectDAO {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isOwner(UUID projectId, UUID userId) {
+        return jdbcTemplate.queryForObject(isOwnerQuery, Boolean.class, projectId, userId);
     }
 
     private Project mapperProjectFromRs(ResultSet rs, int rowNum) throws SQLException {

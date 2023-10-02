@@ -156,6 +156,11 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     }
 
     @Override
+    public boolean isOwner(UUID projectId) {
+        return projectDAO.isOwner(projectId, authentication.getUserAuthenticatedId());
+    }
+
+    @Override
     public List<ApplicationUser> getAllUsersWithAcceptedStatusByProjectId(UUID projectId) {
         Group group = groupCRUD.findGroupByProjectId(projectId);
         List<GroupParticipation> groupParticipationList = groupCRUD.getAllGroupParticipationsWithAcceptedStatusByGroupId(group.getId());

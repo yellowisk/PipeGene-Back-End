@@ -21,4 +21,6 @@ public interface ProjectCRUD {
     List<ApplicationUser> getAllUsersWithAcceptedStatusByProjectId(UUID projectId);
     void deleteProjectById(UUID projectId);
     void deleteAllUsersParticipationByProjectId(UUID projectId, List<UUID> usersIds);
+
+    boolean isOwner(UUID projectId);
 }

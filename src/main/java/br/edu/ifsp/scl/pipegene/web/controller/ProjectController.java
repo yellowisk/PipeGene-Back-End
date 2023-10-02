@@ -99,4 +99,10 @@ public class ProjectController {
 
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/{projectId}/isOwner")
+    public ResponseEntity<Boolean> isOwner(@PathVariable UUID projectId) {
+        System.out.println(projectCRUD.isOwner(projectId));
+        return ResponseEntity.ok(projectCRUD.isOwner(projectId));
+    }
 }
