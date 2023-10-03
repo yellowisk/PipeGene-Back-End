@@ -69,6 +69,12 @@ public class GroupController {
         return ResponseEntity.ok(GroupParticipationResponse.createFromGroupParticipation(groupParticipation));
     }
 
+    @PatchMapping("/leaveProject/{projectId}")
+    public ResponseEntity<GroupParticipationResponse> leaveGroupByProjectId(@PathVariable("projectId") UUID projectId) {
+        GroupParticipation groupParticipation = groupCRUD.exitGroupByProjectId(projectId);
+        return ResponseEntity.ok(GroupParticipationResponse.createFromGroupParticipation(groupParticipation));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<GroupParticipationResponse> deleteGroupParticipation(@PathVariable("id") UUID groupParticipationId){
         GroupParticipation groupParticipation = groupCRUD.deleteGroupParticipation(groupParticipationId);
