@@ -116,8 +116,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         return pipelineDAO.findAll(projectId);
     }
 
-
-
     @Override
     public List<Pipeline> listAllPipelinesByUserId(UUID userId) {
         if (!userId.equals(authenticationFacade.getUserAuthenticatedId())) {
@@ -245,27 +243,37 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
-    public Pipeline clonePipeline(UUID pipelineId, ClonePipelineRequest request) {
-        UUID projectId = request.getProjectId();
+    public Pipeline clonePipeline(UUID exportProjectId, UUID pipelineId, ClonePipelineRequest request) {
+        UUID importProjectId = request.getProjectId();
 
         Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
         if (!pipelineExists) {
             throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
         }
 
-        UUID projectGroupId = projectDAO.findProjectById(projectId).get().getGroupId();
+        if (!projectDAO.projectExists(exportProjectId)) {
+            throw new ResourceNotFoundException("Couldn't find project with id: " + exportProjectId);
+        }
 
-        Pipeline pipeline = pipelineDAO.findFullPipelineById(projectId, pipelineId).get();
-        pipeline.setProject(projectDAO.findProjectById(projectId).get());
+        if (!projectDAO.projectExists(importProjectId)) {
+            throw new ResourceNotFoundException("Couldn't find project with id: " + importProjectId);
+        }
+
+        UUID projectGroupId = projectDAO.findProjectById(importProjectId).get().getGroupId();
+
+        //Pipeline that will be copied and exported
+        Pipeline pipeline = pipelineDAO.findFullPipelineById(exportProjectId, pipelineId).get();
 
         Pipeline imported = Pipeline.createWithoutId(
-                pipeline.getProject(),
-                pipeline.getDescription(), pipeline.getSteps()
+                Project.createWithId(importProjectId),
+                pipeline.getDescription()  + " [Importado]", pipeline.getSteps()
         );
 
-        for (int i = 0; i < pipeline.getSteps().size(); i++) {
+        /*Verifying connection between providers and the group of the project that's importing
+        the pipeline*/
+        for (int i = 0; i < imported.getSteps().size(); i++) {
 
-            PipelineStep step = pipeline.getSteps().get(i);
+            PipelineStep step = imported.getSteps().get(i);
             Provider provider = providerDAO.findProviderById(step.getProvider().getId()).get();
 
             if (!provider.getPublic() && !providerDAO.existsGroupProvider(projectGroupId, provider.getId())) {

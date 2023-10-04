@@ -102,9 +102,10 @@ public class PipelineController {
 
     @PostMapping("/{pipelineId}/clone")
     public ResponseEntity<PipelineResponse> clonePipeline(
+            @PathVariable UUID projectId,
             @PathVariable UUID pipelineId,
             @RequestBody @Valid ClonePipelineRequest clonePipelineRequest) {
-        Pipeline clonedPipeline = pipelineCRUD.clonePipeline(pipelineId, clonePipelineRequest);
+        Pipeline clonedPipeline = pipelineCRUD.clonePipeline(projectId, pipelineId, clonePipelineRequest);
 
         return ResponseEntity.ok(PipelineResponse.createFromImportedPipeline(clonedPipeline));
     }

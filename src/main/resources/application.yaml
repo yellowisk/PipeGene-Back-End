@@ -233,10 +233,6 @@ queries:
             params = ?::jsonb,
             step_number = ?
           WHERE step_id=?
-        project-id: >
-          UPDATE pipegine_platform.pipeline
-          SET project_id=? 
-          WHERE id=?
       delete:
         pipeline-step-by-id: >
           DELETE FROM pipegine_platform.pipeline_step WHERE step_id=?

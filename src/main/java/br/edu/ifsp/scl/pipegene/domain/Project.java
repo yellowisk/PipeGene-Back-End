@@ -56,6 +56,10 @@ public class Project {
         datasets.forEach(d -> d.setProject(this));
     }
 
+    public static Project createWithId(UUID id) {
+        return new Project(id);
+    }
+
     public static Project createWithoutPipelines(UUID id, List<Dataset> datasets, String name, UUID groupId, String description,
                                                  UUID ownerId) {
         List<Dataset> datasetList = Objects.isNull(datasets) ? new ArrayList<>() : new ArrayList<>(datasets);

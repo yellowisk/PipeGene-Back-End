@@ -2,6 +2,7 @@ package br.edu.ifsp.scl.pipegene.external.persistence;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
 import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
+import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.external.persistence.util.JsonUtil;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway.PipelineDAO;
@@ -45,8 +46,8 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.select.pipeline-by-id}")
     private String selectPipelineByIdQuery;
 
-    @Value("${queries.sql.pipeline-dao.update.project-id}")
-    private String updateProjectByIdQuery;
+    @Value("${queries.sql.pipeline-dao.select.pipeline-with-project-id-by-id}")
+    private String selectPipelineWithProjectIdByIdQuery;
 
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-by-pipeline-ids}")
     private String selectPipelineStepsByPipelineIdsQuery;
@@ -245,19 +246,24 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Override
     public Optional<Pipeline> findFullPipelineById(UUID projectId, UUID pipelineId) {
         try {
-            Pipeline pipeline = jdbcTemplate.queryForObject(selectPipelineByIdQuery, (rs, rowNum) -> {
+            Pipeline pipeline = jdbcTemplate.queryForObject(selectPipelineWithProjectIdByIdQuery, (rs, rowNum) -> {
                 UUID id = (UUID) rs.getObject("id");
+                UUID queryProjectId = (UUID) rs.getObject("project_id");
                 String description = rs.getString("description");
 
-                return Pipeline.createWithoutProjectAndSteps(id, description);
+                return Pipeline.createWithoutSteps(id, Project.createWithId(queryProjectId), description);
             }, pipelineId);
 
             if (Objects.isNull(pipeline)) {
-                throw new IllegalStateException("Couldn't find pipeline with id: "
-                        + pipelineId + ". A null object was returned.");
+                throw new IllegalStateException(
+                        "Couldn't find pipeline with id: " + pipelineId + ".");
             }
 
-            jdbcTemplate.update(updateProjectByIdQuery, projectId, pipelineId);
+            if (!projectId.equals(pipeline.getProjectId())) {
+                throw new IllegalStateException(
+                        "Couldn't find pipeline: " + pipelineId + " in the project: " + projectId +
+                                ". Actual pipeline's project is " + pipeline.getProjectId() + ".");
+            }
 
             List<PipelineStep> steps = jdbcTemplate.query(selectPipelineStepsByPipelineIdQuery,
                     this::mapperPipelineStepFromRs, pipelineId);
