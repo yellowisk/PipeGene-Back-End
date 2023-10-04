@@ -1,10 +1,7 @@
 package br.edu.ifsp.scl.pipegene.usecases.project;
 
 import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
-import br.edu.ifsp.scl.pipegene.domain.Dataset;
-import br.edu.ifsp.scl.pipegene.domain.Group;
-import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
-import br.edu.ifsp.scl.pipegene.domain.Project;
+import br.edu.ifsp.scl.pipegene.domain.*;
 import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.account.ApplicationUserService;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
@@ -92,7 +89,11 @@ public class ProjectCRUDImpl implements ProjectCRUD {
 
         Group group = groupCRUD.findGroupByProjectId(projectId);
         List<GroupParticipation> groupParticipationList = groupCRUD.getAllGroupParticipationsByGroupId(group.getId());
-        List<UUID> usersIds = groupParticipationList.stream().map(GroupParticipation::getReceiverId).collect(Collectors.toList());
+        List<UUID> usersIds = groupParticipationList.stream()
+                .filter(groupParticipation -> groupParticipation.getStatus().equals(GroupParticipationStatusEnum.ACCEPTED) ||
+                        groupParticipation.getStatus().equals(GroupParticipationStatusEnum.PENDING))
+                .map(GroupParticipation::getReceiverId)
+                .collect(Collectors.toList());
         List<UUID> requestUsersId = request.getUsersId();
         List<UUID> newUsersIds;
         List<UUID> deleteUsersIds;

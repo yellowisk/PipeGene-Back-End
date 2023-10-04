@@ -83,7 +83,6 @@ public class GroupCRUDimpl implements GroupCRUD{
             groupDAO.updateGroupParticipation(groupParticipation);
             return groupParticipation;
         }
-
         groupParticipation = GroupParticipation.createWithAllFields(UUID.randomUUID(), groupId, applicationUser.getId(), GroupParticipationStatusEnum.PENDING, authentication.getUserAuthenticatedId(), Timestamp.from(now()));
         return groupDAO.saveGroupParticipation(groupParticipation);
     }
@@ -122,6 +121,14 @@ public class GroupCRUDimpl implements GroupCRUD{
     public GroupParticipation findGroupParticipationByGroupAndReceiverId(UUID groupId, UUID receiverId) {
         return groupDAO.findGroupParticipationByGroupIdAndReceiverId(groupId, receiverId)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found group participation with group id: " + groupId + " and receiver id: " + receiverId));
+    }
+
+    @Override
+    public GroupParticipation exitGroupByProjectId(UUID projectId) {
+        Group group = groupDAO.findGroupByProjectId(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found group with project id: " + projectId));
+        GroupParticipation groupParticipation = findGroupParticipationByGroupAndReceiverId(group.getId(), authentication.getUserAuthenticatedId());
+        return updateGroupStatus(groupParticipation, GroupParticipation::quitGroup);
     }
 
     @Override
