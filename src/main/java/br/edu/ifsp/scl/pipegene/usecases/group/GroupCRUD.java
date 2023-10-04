@@ -21,6 +21,7 @@ public interface GroupCRUD {
     GroupParticipation exitGroupByProjectId(UUID projectId);
     Group findGroupByProjectId(UUID projectId);
     List<GroupParticipation> getAllGroupParticipationsWithAcceptedStatusByGroupId(UUID groupId);
+    List<GroupParticipation> findAllGroupParticipationsByUserId();
     List<GroupParticipation> getAllPedingGroupParticipationsByReceiverId();
 
 }

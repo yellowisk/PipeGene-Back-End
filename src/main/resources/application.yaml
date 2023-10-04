@@ -450,8 +450,11 @@ queries:
           SELECT * FROM pipegine_platform.group_participation gp WHERE gp.group_id=? AND gp.receive_user_id=?
         group-participation-by-group-id-and-status-accepted: >
           SELECT * FROM pipegine_platform.group_participation gp WHERE gp.group_id=? AND gp.status='ACCEPTED'
-        group-participation-by-receiver-id-and-status-peding: >
+        group-participation-by-receiver-id-and-group-id-and-status-peding: >
           SELECT * FROM pipegine_platform.group_participation gp WHERE gp.group_id=? AND gp.receive_user_id=? AND gp.status='PENDING'
+        group-participation-by-receiver-id-and-status-pending: >
+            SELECT * FROM pipegine_platform.group_participation gp WHERE gp.receive_user_id=? AND gp.status='PENDING'
+          
 
       delete:
         group-participation-by-id: >

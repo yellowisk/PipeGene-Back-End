@@ -3,7 +3,7 @@ package br.edu.ifsp.scl.pipegene.domain;
 import java.sql.Timestamp;
 import java.util.UUID;
 
-public class GroupParticipation {
+public class    GroupParticipation {
 
     private UUID id;
     private UUID groupId;

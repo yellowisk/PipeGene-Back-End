@@ -54,8 +54,11 @@ public class GroupDAOimpl implements GroupDAO {
     @Value("${queries.sql.group-participation-dao.select.group-participation-by-group-id-and-status-accepted}")
     private String selectAllGroupParticipationByGroupIdWithAcceptedStatus;
 
-    @Value("${queries.sql.group-participation-dao.select.group-participation-by-receiver-id-and-status-peding}")
-    private String selectAllPendingGroupParticipationByReceiverIdQuery;
+    @Value("${queries.sql.group-participation-dao.select.group-participation-by-receiver-id-and-group-id-and-status-peding}")
+    private String selectAllPendingGroupParticipationByReceiverIdAndGroupIdQuery;
+
+    @Value("${queries.sql.group-participation-dao.select.group-participation-by-receiver-id-and-status-pending}")
+    private String getSelectAllPendingGroupParticipationByReceiverIdQuery;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -177,8 +180,14 @@ public class GroupDAOimpl implements GroupDAO {
 
     @Override
     public List<GroupParticipation> findAllPendingGroupParticipationByReceiverId(UUID receiverId) {
-        return jdbcTemplate.query(selectAllPendingGroupParticipationByReceiverIdQuery,
+        return jdbcTemplate.query(selectAllPendingGroupParticipationByReceiverIdAndGroupIdQuery,
                 this::mapperGroupParticipainFromRs, receiverId);
+    }
+
+    @Override
+    public List<GroupParticipation> findAllGroupParticipationsByUserId(UUID userId) {
+        return jdbcTemplate.query(getSelectAllPendingGroupParticipationByReceiverIdQuery,
+                this::mapperGroupParticipainFromRs, userId);
     }
 
     private GroupParticipation mapperGroupParticipainFromRs(ResultSet rs, int rowNum) throws SQLException {

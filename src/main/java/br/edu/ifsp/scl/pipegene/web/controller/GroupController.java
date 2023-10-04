@@ -43,6 +43,14 @@ public class GroupController {
                 .collect(Collectors.toList()));
     }
 
+    @GetMapping("/participations")
+    public ResponseEntity<List<GroupParticipationResponse>> findAllGroupParticipationsByUserId(){
+        List<GroupParticipation> groupParticipations = groupCRUD.findAllGroupParticipationsByUserId();
+        return ResponseEntity.ok(groupParticipations.stream()
+                .map(GroupParticipationResponse::createFromGroupParticipation)
+                .collect(Collectors.toList()));
+    }
+
     @PostMapping("/addUser")
     public ResponseEntity<GroupParticipationResponse> addToGroup(@RequestBody CreateInviteRequest request){
         GroupParticipation groupParticipation = groupCRUD.addToGroup(request.getGroupId(), request.getUsername());
