@@ -145,6 +145,11 @@ public class GroupCRUDimpl implements GroupCRUD{
     }
 
     @Override
+    public List<GroupParticipation> findAllGroupParticipationsByUserId() {
+        return groupDAO.findAllGroupParticipationsByUserId(authentication.getUserAuthenticatedId());
+    }
+
+    @Override
     public List<GroupParticipation> getAllPedingGroupParticipationsByReceiverId() {
         return groupDAO.findAllPendingGroupParticipationByReceiverId(authentication.getUserAuthenticatedId());
     }

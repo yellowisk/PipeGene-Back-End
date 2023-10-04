@@ -25,5 +25,6 @@ public interface GroupDAO {
     List<GroupParticipation> findAllGroupParticipationByGroupId(UUID groupId);
     List<GroupParticipation> findAllAcceptedGroupParticipationByGroupId(UUID groupId);
     List<GroupParticipation> findAllPendingGroupParticipationByReceiverId(UUID receiverId);
+    List<GroupParticipation> findAllGroupParticipationsByUserId(UUID userId);
 
 }
