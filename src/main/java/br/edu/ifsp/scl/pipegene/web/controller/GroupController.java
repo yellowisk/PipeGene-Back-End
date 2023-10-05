@@ -2,9 +2,12 @@ package br.edu.ifsp.scl.pipegene.web.controller;
 
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
+import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
+import br.edu.ifsp.scl.pipegene.web.model.account.response.ApplicationUserResponse;
 import br.edu.ifsp.scl.pipegene.web.model.group.request.CreateInviteRequest;
 import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupParticipationResponse;
+import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupParticipationView;
 import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,12 +46,16 @@ public class GroupController {
                 .collect(Collectors.toList()));
     }
 
+    @GetMapping("/{groupParticipationId}/user")
+    public ResponseEntity<ApplicationUserResponse> findApplicationUserBySubmitterId(@PathVariable("groupParticipationId") UUID groupParticipationId){
+        ApplicationUser applicationUser = groupCRUD.findUserByGroupParticipationId(groupParticipationId);
+        return ResponseEntity.ok(ApplicationUserResponse.createFromApplicationUser(applicationUser));
+    }
+
     @GetMapping("/participations")
-    public ResponseEntity<List<GroupParticipationResponse>> findAllGroupParticipationsByUserId(){
-        List<GroupParticipation> groupParticipations = groupCRUD.findAllGroupParticipationsByUserId();
-        return ResponseEntity.ok(groupParticipations.stream()
-                .map(GroupParticipationResponse::createFromGroupParticipation)
-                .collect(Collectors.toList()));
+    public ResponseEntity<List<GroupParticipationView>> findAllGroupParticipationsByUserId(){
+        List<GroupParticipationView> groupParticipations = groupCRUD.findAllGroupParticipationsByUserId();
+        return ResponseEntity.ok(groupParticipations);
     }
 
     @PostMapping("/addUser")
@@ -58,14 +65,14 @@ public class GroupController {
     }
 
     @PatchMapping("/acceptParticipation/{id}")
-    public ResponseEntity<GroupParticipationResponse> acceptGroupParticipation(@PathVariable("id")
-                                                                                   UUID groupParticipationId){
-        GroupParticipation groupParticipation = groupCRUD.acceptGroupParticipation(groupParticipationId);
+    public ResponseEntity<GroupParticipationResponse> acceptGroupParticipation(@PathVariable UUID id){
+        System.out.println("ENTREI NO ACEITAR");
+        GroupParticipation groupParticipation = groupCRUD.acceptGroupParticipation(id);
         return ResponseEntity.ok(GroupParticipationResponse.createFromGroupParticipation(groupParticipation));
     }
 
     @PatchMapping("/denyParticipation/{id}")
-    public ResponseEntity<GroupParticipationResponse> denyGroupParticipation(@PathVariable UUID id){
+    public ResponseEntity<GroupParticipationResponse> denyGroupParticipation(@PathVariable("id") UUID id){
         System.out.println(id);
         GroupParticipation groupParticipation = groupCRUD.denyGroupParticipation(id);
         return ResponseEntity.ok(GroupParticipationResponse.createFromGroupParticipation(groupParticipation));

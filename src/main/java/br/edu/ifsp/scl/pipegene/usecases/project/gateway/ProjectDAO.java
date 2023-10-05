@@ -20,6 +20,8 @@ public interface ProjectDAO {
 
     Optional<Project> findByPipelineId(UUID pipelineId);
 
+    Optional<Project> findProjectByGroupParticipantId(UUID groupParticipantId);
+
     List<Project> findAllProjectsByUser(UUID userId);
 
     Boolean projectExists(UUID id);

@@ -4,10 +4,13 @@ import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipationStatusEnum;
+import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.usecases.account.gateway.UserApplicationDAO;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
+import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
+import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupParticipationView;
 import org.springframework.dao.PermissionDeniedDataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static java.time.Instant.now;
 
@@ -24,11 +28,14 @@ public class GroupCRUDimpl implements GroupCRUD{
 
     private final GroupDAO groupDAO;
     private final UserApplicationDAO userApplicationDAO;
+
+    private final ProjectDAO projectDAO;
     private final IAuthenticationFacade authentication;
 
-    public GroupCRUDimpl(GroupDAO groupDAO, UserApplicationDAO userApplicationDAO, IAuthenticationFacade authentication) {
+    public GroupCRUDimpl(GroupDAO groupDAO, UserApplicationDAO userApplicationDAO, ProjectDAO projectDAO, IAuthenticationFacade authentication) {
         this.groupDAO = groupDAO;
         this.userApplicationDAO = userApplicationDAO;
+        this.projectDAO = projectDAO;
         this.authentication = authentication;
     }
 
@@ -145,13 +152,34 @@ public class GroupCRUDimpl implements GroupCRUD{
     }
 
     @Override
-    public List<GroupParticipation> findAllGroupParticipationsByUserId() {
-        return groupDAO.findAllGroupParticipationsByUserId(authentication.getUserAuthenticatedId());
+    public List<GroupParticipationView> findAllGroupParticipationsByUserId() {
+        List<GroupParticipation> groupParticipations = groupDAO.findAllGroupParticipationsByUserId(authentication.getUserAuthenticatedId());
+
+        List<GroupParticipationView> participationViews = groupParticipations.stream().map((groupParticipation -> {
+           Project project = projectDAO.findProjectByGroupParticipantId(groupParticipation.getId()).orElseThrow(
+                     () -> new ResourceNotFoundException("Not found project with group participation id: " + groupParticipation.getId())
+              );
+           ApplicationUser submitterUser = userApplicationDAO.findUserById(groupParticipation.getSubmitterId()).orElseThrow(
+                   () -> new ResourceNotFoundException("Not found user with id: " + groupParticipation.getSubmitterId())
+           );
+           return GroupParticipationView.createFromGroupParticipation(groupParticipation, submitterUser.getUsername(), project.getName());
+        })).collect(Collectors.toList());
+        return participationViews;
     }
 
     @Override
     public List<GroupParticipation> getAllPedingGroupParticipationsByReceiverId() {
         return groupDAO.findAllPendingGroupParticipationByReceiverId(authentication.getUserAuthenticatedId());
+    }
+
+    @Override
+    public ApplicationUser findUserByGroupParticipationId(UUID groupParticipationId) {
+        GroupParticipation groupParticipation = groupDAO.findGroupParticipationById(groupParticipationId).orElseThrow(
+                () -> new ResourceNotFoundException("Not found group participation with id: " + groupParticipationId)
+        );
+
+        return userApplicationDAO.findUserById(groupParticipation.getSubmitterId())
+                .orElseThrow(() -> new ResourceNotFoundException("Not found user with id: " + groupParticipation.getSubmitterId()));
     }
 
     private GroupParticipation getParticionOrThrow(UUID groupParticipationId) {

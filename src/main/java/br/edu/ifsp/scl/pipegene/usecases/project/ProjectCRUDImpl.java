@@ -172,6 +172,13 @@ public class ProjectCRUDImpl implements ProjectCRUD {
         return users;
     }
 
+    @Override
+    public Project findProjectByGroupParticipationId(UUID groupParticipationId) {
+        return projectDAO.findProjectByGroupParticipantId(groupParticipationId).orElseThrow(
+                () -> new ResourceNotFoundException("Not found project with group participation id: " + groupParticipationId)
+        );
+    }
+
     private void verifyAccess(UUID projectOwnerId) {
         if (!projectOwnerId.equals(authentication.getUserAuthenticatedId())) {
             throw new ResourceForbiddenException("You don't have access for this resource");

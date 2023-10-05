@@ -44,6 +44,9 @@ public class ProjectDAOImpl implements ProjectDAO {
     @Value("${queries.sql.project-dao.select.project-all-by-user}")
     private String selectAllProjectByUserQuery;
 
+    @Value("${queries.sql.project-dao.select.project-by-group-participation-id}")
+    private String selectProjectByGroupParticipantIdQuery;
+
     @Value("${queries.sql.project-dao.select.project-by-pipeline-id}")
     private String selectProjectByPipelineIdQuery;
 
@@ -148,6 +151,24 @@ public class ProjectDAOImpl implements ProjectDAO {
         project.addPipeline(pipelines);
 
         return Optional.of(project);
+    }
+
+    @Override
+    public Optional<Project> findProjectByGroupParticipantId(UUID groupParticipantId) {
+        try {
+            Project project = jdbcTemplate.queryForObject(selectProjectByGroupParticipantIdQuery, (rs, rowNum) -> {
+                UUID id = (UUID) rs.getObject("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                UUID groupId = (UUID) rs.getObject("group_id");
+                UUID ownerId = (UUID) rs.getObject("owner_id");
+
+                return Project.createWithoutDatasetsAndPipelines(id, name, description, groupId, ownerId);
+            }, groupParticipantId);
+            return Optional.of(project);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

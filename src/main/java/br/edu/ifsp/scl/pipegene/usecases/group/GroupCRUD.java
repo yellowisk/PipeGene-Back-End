@@ -2,6 +2,8 @@ package br.edu.ifsp.scl.pipegene.usecases.group;
 
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.GroupParticipation;
+import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
+import br.edu.ifsp.scl.pipegene.web.model.group.response.GroupParticipationView;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +23,9 @@ public interface GroupCRUD {
     GroupParticipation exitGroupByProjectId(UUID projectId);
     Group findGroupByProjectId(UUID projectId);
     List<GroupParticipation> getAllGroupParticipationsWithAcceptedStatusByGroupId(UUID groupId);
-    List<GroupParticipation> findAllGroupParticipationsByUserId();
+    List<GroupParticipationView> findAllGroupParticipationsByUserId();
     List<GroupParticipation> getAllPedingGroupParticipationsByReceiverId();
+
+    ApplicationUser findUserByGroupParticipationId(UUID groupParticipationId);
 
 }

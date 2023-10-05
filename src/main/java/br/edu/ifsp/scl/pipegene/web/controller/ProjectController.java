@@ -63,7 +63,12 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public ResponseEntity<ProjectResponse> findProjectById(@PathVariable UUID projectId) {
         Project project = projectCRUD.findProjectById(projectId);
+        return ResponseEntity.ok(ProjectResponse.createFromProject(project));
+    }
 
+    @GetMapping("/{groupParticipationId}/group-participation")
+    public ResponseEntity<ProjectResponse> findProjectByGroupParticipationId(@PathVariable UUID groupParticipationId) {
+        Project project = projectCRUD.findProjectByGroupParticipationId(groupParticipationId);
         return ResponseEntity.ok(ProjectResponse.createFromProject(project));
     }
 
