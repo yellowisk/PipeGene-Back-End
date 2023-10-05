@@ -183,22 +183,27 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
     @Override
     public Pipeline updatePipeline(UUID pipelineId, UpdatePipelineRequest request) {
-        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
-        if (!pipelineExists) {
+
+        if (!pipelineDAO.pipelineExists(pipelineId)) {
             throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
         }
 
         Pipeline reqPipeline = request.convertToPipeline();
         Pipeline dbPipeline = pipelineDAO.findPipelineById(pipelineId).get();
 
-        System.out.println(pipelineId);
-        System.out.println(request.getSteps().get(0).getStepId());
-        System.out.println(reqPipeline.getSteps().size());
-        System.out.println(dbPipeline.getSteps().size());
+        reqPipeline.getSteps().forEach(step -> System.out.println("requisition: " + step.getStepNumber() + " " + step.getStepId()));
+        dbPipeline.getSteps().forEach(step -> System.out.println("database: " + step.getStepNumber() + " " + step.getStepId()));
 
-        if (reqPipeline.getSteps().size() != dbPipeline.getSteps().size()) {
-            throw new GenericResourceException("Different number of steps", "Invalid Pipeline Request");
+        if(reqPipeline.getSteps().size() != dbPipeline.getSteps().size()) {
+            for (int i = 0; i < reqPipeline.getSteps().size(); i++) {
+                if (reqPipeline.getSteps().get(i).getStepId() != (dbPipeline.getSteps().get(i).getStepId())) {
+                    deletePipelineStep(pipelineId, dbPipeline.getSteps().get(i).getStepId());
+                    dbPipeline.getSteps().remove(i);
+                }
+            }
         }
+
+        dbPipeline.getSteps().forEach(step -> System.out.println(step.getStepNumber() + " " + step.getStepId()));
 
         List<Provider> providers = providerDAO.findAllProviders();
         for (Provider provider : providers) {

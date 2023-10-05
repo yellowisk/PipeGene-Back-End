@@ -1,10 +1,8 @@
 package br.edu.ifsp.scl.pipegene.web.model.pipeline.request;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
-import br.edu.ifsp.scl.pipegene.domain.Project;
 
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class UpdatePipelineRequest {
 
