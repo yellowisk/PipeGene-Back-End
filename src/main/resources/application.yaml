@@ -108,7 +108,7 @@ queries:
             FROM pipegine_platform.project p
                 INNER JOIN pipegine_platform.group g ON g.id=p.group_id
                 INNER JOIN pipegine_platform.group_participation gp ON gp.group_id=g.id
-            WHERE gp.id=?;
+            WHERE gp.id=? LIMIT 1;
 
       exists:
         project-id: >
