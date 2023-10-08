@@ -59,7 +59,7 @@ public class PipelineResponse {
                 p.getId(),
                 p.getProject(),
                 p.getDescription(),
-                p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStep).collect(Collectors.toList())
+                p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStepWithStepNumber).collect(Collectors.toList())
         );
     }
 

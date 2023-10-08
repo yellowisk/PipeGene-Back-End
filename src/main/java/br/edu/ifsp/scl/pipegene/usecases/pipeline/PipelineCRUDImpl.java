@@ -78,7 +78,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
             Provider provider = providersMap.get(step.getProviderId());
 
             if (!provider.getPublic() && !providerDAO.existsGroupProvider(projectGroupId, provider.getId())){
-                throw new GenericResourceException("Please, provider dont have permission to this project", "Invalid Pipeline Request");
+                throw new GenericResourceException("Please, provider doesn't have permission to this project", "Invalid Pipeline Request");
             }
 
             if ((i != 0) && !provider.isInputSupportedType(step.getInputType())) {
@@ -194,7 +194,8 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         reqPipeline.getSteps().forEach(step -> System.out.println("requisition: " + step.getStepNumber() + " " + step.getStepId()));
         dbPipeline.getSteps().forEach(step -> System.out.println("database: " + step.getStepNumber() + " " + step.getStepId()));
 
-        if(reqPipeline.getSteps().size() != dbPipeline.getSteps().size()) {
+        if(reqPipeline.getSteps().size() != dbPipeline.getSteps().size()
+                && reqPipeline.getSteps().size() < dbPipeline.getSteps().size()) {
             for (int i = 0; i < reqPipeline.getSteps().size(); i++) {
                 if (reqPipeline.getSteps().get(i).getStepId() != (dbPipeline.getSteps().get(i).getStepId())) {
                     deletePipelineStep(pipelineId, dbPipeline.getSteps().get(i).getStepId());
