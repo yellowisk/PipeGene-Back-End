@@ -11,7 +11,7 @@ public class ProviderEntity {
     private String name;
     private String description;
     private String url;
-
+    private String urlSource;
     private Boolean isPublic;
 
     private List<Group> groups;
@@ -20,12 +20,13 @@ public class ProviderEntity {
     private Set<ProviderOperation> operations;
 
 
-    private ProviderEntity(UUID id, String name, String description, String url, Boolean isPublic, List<Group> groups, Collection<String> inputSupportedTypes,
+    private ProviderEntity(UUID id, String name, String description, String url, String urlSource, Boolean isPublic, List<Group> groups, Collection<String> inputSupportedTypes,
                            Collection<String> outputSupportedTypes, Collection<ProviderOperation> operations) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
+        this.urlSource = urlSource;
         this.isPublic = isPublic;
         this.groups = groups;
         this.inputSupportedTypes = new HashSet<>(inputSupportedTypes);
@@ -33,20 +34,20 @@ public class ProviderEntity {
         this.operations = new HashSet<>(operations);
     }
 
-    public static ProviderEntity of(UUID id, String name, String description, String url, Boolean isPublic, List<Group> groups,
+    public static ProviderEntity of(UUID id, String name, String description, String url, String urlSource, Boolean isPublic, List<Group> groups,
                                     Collection<String> inputSupportedTypes, Collection<String> outputSupportedTypes,
                                     Collection<ProviderOperation> operations) {
-        return new ProviderEntity(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
+        return new ProviderEntity(id, name, description, url, urlSource, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public static ProviderEntity createFromProviderWithoutId(Provider provider) {
         return new ProviderEntity(UUID.randomUUID(), provider.getName(), provider.getDescription(), provider.getUrl(),
-                provider.getPublic(), null, provider.getInputSupportedTypes(),
+                provider.getUrlSource(), provider.getPublic(), null, provider.getInputSupportedTypes(),
                 provider.getOutputSupportedTypes(), provider.getOperations());
     }
 
     public Provider convertToProvider() {
-        return Provider.createWithAllValues(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
+        return Provider.createWithAllValues(id, name, description, url, urlSource, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public UUID getId() {
@@ -95,6 +96,14 @@ public class ProviderEntity {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getUrlSource() {
+        return urlSource;
+    }
+
+    public void setUrlSource(String urlSource) {
+        this.urlSource = urlSource;
     }
 
     public Set<ProviderOperation> getOperations() {

@@ -14,6 +14,7 @@ public class ProviderResponse {
     private String name;
     private String description;
     private String url;
+    private String urlSource;
     private Boolean isPublic;
     private List<Group> groups;
     private Collection<String> inputSupportedTypes;
@@ -26,6 +27,7 @@ public class ProviderResponse {
                 p.getName(),
                 p.getDescription(),
                 p.getUrl(),
+                p.getUrlSource(),
                 p.getPublic(),
                 p.getGroups(),
                 p.getInputSupportedTypes(),
@@ -38,13 +40,14 @@ public class ProviderResponse {
 
     private ProviderResponse() { }
 
-    private ProviderResponse(UUID id, String name, String description, String url, Boolean isPublic,
-                             List<Group> groups, Collection<String> inputSupportedTypes,
+    private ProviderResponse(UUID id, String name, String description, String url, String urlSource,
+                             Boolean isPublic, List<Group> groups, Collection<String> inputSupportedTypes,
                              Collection<String> outputSupportedTypes, Collection<ProviderOperationDTO> operations) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
+        this.urlSource = urlSource;
         this.isPublic = isPublic;
         this.groups = groups;
         this.inputSupportedTypes = Collections.unmodifiableCollection(inputSupportedTypes);
@@ -76,6 +79,10 @@ public class ProviderResponse {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getUrlSource() {
+        return urlSource;
     }
 
     public Boolean getPublic() {

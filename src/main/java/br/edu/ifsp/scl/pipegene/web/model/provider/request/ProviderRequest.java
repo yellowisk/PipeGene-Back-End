@@ -19,6 +19,8 @@ public class ProviderRequest {
     //@URL
     private String url;
 
+    private String urlSource;
+
     @NotNull
     private Boolean isPublic;
 
@@ -35,7 +37,7 @@ public class ProviderRequest {
     }
 
     public Provider convertToProvider() {
-        return Provider.createWithoutIdAndGroups(name, description, url, isPublic, inputSupportedTypes, outputSupportedTypes,
+        return Provider.createWithoutIdAndGroups(name, description, url, urlSource, isPublic, inputSupportedTypes, outputSupportedTypes,
                 operations.stream()
                         .map(ProviderOperationDTO::convertToProviderOperation)
                         .collect(Collectors.toList())
@@ -64,6 +66,14 @@ public class ProviderRequest {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getUrlSource() {
+        return urlSource;
+    }
+
+    public void setUrlSource(String urlSource) {
+        this.urlSource = urlSource;
     }
 
     public Set<String> getInputSupportedTypes() {

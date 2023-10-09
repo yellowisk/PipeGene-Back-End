@@ -8,24 +8,25 @@ public class Provider {
     private String name;
     private String description;
     private String url;
+    private String urlSource;
     private Boolean isPublic;
     private List<Group> groups;
     private List<String> inputSupportedTypes;
     private List<String> outputSupportedTypes;
     private List<ProviderOperation> operations;
 
-    public static Provider createWithAllValues(UUID id, String name, String description, String url, Boolean isPublic, List<Group> groups,
+    public static Provider createWithAllValues(UUID id, String name, String description, String url, String urlSource, Boolean isPublic, List<Group> groups,
                                                Collection<String> inputSupportedTypes, Collection<String> outputSupportedTypes,
                                                Collection<ProviderOperation> operations) {
-        return new Provider(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(id, name, description, url, urlSource, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public static Provider createWithoutIdAndGroups(String name, String description, String url,
-                                                    boolean isPublic,
+                                                    String urlSource, boolean isPublic,
                                                     Collection<String> inputSupportedTypes,
                                                     Collection<String> outputSupportedTypes,
                                                     Collection<ProviderOperation> operations) {
-        return new Provider(null, name, description, url, isPublic, null, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(null, name, description, url, urlSource, isPublic, null, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public static Provider createWithIdAndInputOutputSupportedTypes(UUID id, String inputSupportedType, String outputSupportedType) {
@@ -84,13 +85,14 @@ public class Provider {
         this.outputSupportedTypes = outputSupportedType;
     }
 
-    private Provider(UUID id, String name, String description, String url, Boolean isPublic,
+    private Provider(UUID id, String name, String description, String url, String urlSource, Boolean isPublic,
                      List<Group> groups, Collection<String> inputSupportedTypes,
                      Collection<String> outputSupportedTypes, Collection<ProviderOperation> operations) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.url = url;
+        this.urlSource = urlSource;
         this.isPublic = isPublic;
         this.groups = groups;
         this.inputSupportedTypes = Objects.requireNonNull(List.copyOf(inputSupportedTypes));
@@ -103,11 +105,15 @@ public class Provider {
     }
 
     public Provider getNewInstanceWithId(UUID id) {
-        return new Provider(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
+        return new Provider(id, name, description, url, urlSource, isPublic, groups, inputSupportedTypes, outputSupportedTypes, operations);
     }
 
     public String getUrl() {
         return url;
+    }
+
+    public String getUrlSource() {
+        return urlSource;
     }
 
     public String getName() {
@@ -152,5 +158,21 @@ public class Provider {
 
     public void addListToGroup(List<Group> groups){
         this.groups.addAll(groups);
+    }
+
+    @Override
+    public String toString() {
+        return "Provider{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", url='" + url + '\'' +
+                ", urlSource='" + urlSource + '\'' +
+                ", isPublic=" + isPublic +
+                ", groups=" + groups +
+                ", inputSupportedTypes=" + inputSupportedTypes +
+                ", outputSupportedTypes=" + outputSupportedTypes +
+                ", operations=" + operations +
+                '}';
     }
 }

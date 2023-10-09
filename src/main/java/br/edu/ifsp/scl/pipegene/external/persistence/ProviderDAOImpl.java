@@ -82,44 +82,6 @@ public class ProviderDAOImpl implements ProviderDAO {
         return jdbcTemplate.query(selectAllProvidersQuery, this::mapperToProvider);
     }
 
-    private Provider mapperToProvider(ResultSet rs, int rowNum) throws SQLException {
-        UUID id = (UUID) rs.getObject("id");
-        String name = rs.getString("name");
-        String description = rs.getString("description");
-        String url = rs.getString("url");
-        Boolean isPublic = rs.getBoolean("public");
-
-        String inputSupported = rs.getString("input_supported_types");
-        List<String> inputSupportedTypes = Objects.isNull(inputSupported) ? Collections.emptyList()
-                : Arrays.asList(inputSupported.split(","));
-
-        String outputSupported = rs.getString("output_supported_types");
-        List<String> outputSupportedTypes = Objects.isNull(outputSupported) ? Collections.emptyList()
-                : Arrays.asList(outputSupported.split(","));
-
-        List<UUID> groupsIds = jdbcTemplate.query(selectGroupIdByProviderIdQuery, ps -> ps.setObject(1, id),
-                    (rs1, rowNum1) -> (UUID) rs1.getObject("group_id"));
-
-        List<Group> groups = groupsIds.stream().map(groupDAO::findGroupById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .toList();
-
-
-        try {
-            String operationStr = rs.getString("operations");
-            List<ProviderOperation> operations = Objects.isNull(operationStr) ? Collections.emptyList()
-                    : objectMapper.readValue(operationStr, new TypeReference<>() {
-            });
-
-            return Provider.createWithAllValues(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes,
-                    operations);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new SQLDataException();
-        }
-    }
-
     @Override
     public Provider saveNewProvider(Provider provider) {
         UUID providerId = UUID.randomUUID();
@@ -131,7 +93,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(insertProviderQuery, providerId, provider.getName(), provider.getDescription(),
-                provider.getUrl(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
+                provider.getUrl(), provider.getUrlSource(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, authentication.getUserAuthenticatedId());
 
         return provider.getNewInstanceWithId(providerId);
@@ -149,8 +111,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(updateProviderQuery, provider.getName(), provider.getDescription(), provider.getUrl(),
-                provider.getPublic(),
-                String.join(",", provider.getInputSupportedTypes()),
+                provider.getUrlSource(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
         return provider;
@@ -170,4 +131,44 @@ public class ProviderDAOImpl implements ProviderDAO {
     public boolean existsGroupProvider(UUID groupId, UUID providerId) {
         return jdbcTemplate.queryForObject(existsGroupProviderByGroupAndProviderIdQuery, Boolean.class, groupId, providerId);
     }
+
+    private Provider mapperToProvider(ResultSet rs, int rowNum) throws SQLException {
+        UUID id = (UUID) rs.getObject("id");
+        String name = rs.getString("name");
+        String description = rs.getString("description");
+        String url = rs.getString("url");
+        String urlSource = rs.getString("url_source");
+        Boolean isPublic = rs.getBoolean("public");
+
+        String inputSupported = rs.getString("input_supported_types");
+        List<String> inputSupportedTypes = Objects.isNull(inputSupported) ? Collections.emptyList()
+                : Arrays.asList(inputSupported.split(","));
+
+        String outputSupported = rs.getString("output_supported_types");
+        List<String> outputSupportedTypes = Objects.isNull(outputSupported) ? Collections.emptyList()
+                : Arrays.asList(outputSupported.split(","));
+
+        List<UUID> groupsIds = jdbcTemplate.query(selectGroupIdByProviderIdQuery, ps -> ps.setObject(1, id),
+                (rs1, rowNum1) -> (UUID) rs1.getObject("group_id"));
+
+        List<Group> groups = groupsIds.stream().map(groupDAO::findGroupById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
+
+
+        try {
+            String operationStr = rs.getString("operations");
+            List<ProviderOperation> operations = Objects.isNull(operationStr) ? Collections.emptyList()
+                    : objectMapper.readValue(operationStr, new TypeReference<>() {
+            });
+
+            return Provider.createWithAllValues(id, name, description, url, urlSource, isPublic, groups, inputSupportedTypes, outputSupportedTypes,
+                    operations);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new SQLDataException();
+        }
+    }
+
 }

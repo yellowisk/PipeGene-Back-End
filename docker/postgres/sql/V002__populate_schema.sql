@@ -28,11 +28,11 @@ values ('ad76cd44-dc3c-4837-9c35-6bd0bd48bbc8'::uuid, 'cdcb7005-6387-4184-b9a1-e
 
 
 -- cria provider para grafico pre processamento
-insert into pipegine_platform.provider(id, name, description, url, public, input_supported_types, output_supported_types,
+insert into pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types,
                                        owner_id, operations)
     values('78cec5db-6396-4fd9-803f-1fd469d76312'::uuid, 'Grafico pré processamento',
            'Exporta grafico do resultante do preprocessamento', 'http://localhost:5011',
-           true,
+           'https://github.com/lucas-ifsp/pipegene-services.git', true,
            'maf','png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
            to_json('[{
             "type": "column",
@@ -74,11 +74,12 @@ INSERT INTO pipegine_platform.pipeline_step(step_id, pipeline_id, provider_id, i
 
 
 -- cria novo provider que realiza o pre processamento exportando um maf que sera utilizado de input
-insert into pipegine_platform.provider(id, name, description, url, public, input_supported_types, output_supported_types,
+insert into pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types,
                                        owner_id, operations)
 values('e8bf42e4-2ffc-4935-a546-ee5d9263f419'::uuid, 'Pré processamento - Rodrigo',
        'Realiza o pré processamento de arquivos maf e txt para maf', 'http://localhost:5001',
-       false, 'txt,maf','maf', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+       'https://github.com/lucas-ifsp/pipegene-services.git', false,
+       'txt,maf','maf', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
        to_json('[{
             "type": "column",
             "description": "Pré processamento de arquivo maf e txt",
@@ -93,11 +94,12 @@ values('e8bf42e4-2ffc-4935-a546-ee5d9263f419'::uuid, 'Pré processamento - Rodri
         }]'::jsonb));
 
 -- cria novo provider que recebera como input o maf resultando do pre processamento e fara a classificação da variante
-insert into pipegine_platform.provider(id, name, description, url, public, input_supported_types, output_supported_types,
+insert into pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types,
                                        owner_id, operations)
 values('49df4595-b8af-4e32-8791-65e583ae08a2'::uuid, 'Classificação de variante - Rodrigo',
        'Partindo de um maf pré processado realiza a classificação de variante', 'http://localhost:5002',
-       true, 'maf','png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+       'https://github.com/lucas-ifsp/pipegene-services.git', true,
+       'maf','png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
        to_json('[{
             "type": "column",
             "description": "Classificação de variante",

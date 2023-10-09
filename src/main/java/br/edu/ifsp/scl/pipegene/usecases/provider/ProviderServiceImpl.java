@@ -60,6 +60,7 @@ public class ProviderServiceImpl implements ProviderService {
         }
 
         Provider provider = providerRequest.convertToProvider();
+        System.out.println(provider);
 
         return providerDAO.updateProvider(provider.getNewInstanceWithId(providerId));
     }
