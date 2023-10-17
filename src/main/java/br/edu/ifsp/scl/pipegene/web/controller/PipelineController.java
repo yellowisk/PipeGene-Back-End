@@ -1,10 +1,9 @@
 package br.edu.ifsp.scl.pipegene.web.controller;
 
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
-import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.PipelineCRUD;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.*;
-import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.CreateStepRequest;
+import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.CreateStepRequest;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.response.PipelineResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,9 +83,10 @@ public class PipelineController {
 
     @PatchMapping("/{pipelineId}")
     public ResponseEntity<PipelineResponse> updatePipeline(
+            @PathVariable UUID projectId,
             @PathVariable UUID pipelineId,
             @RequestBody @Valid UpdatePipelineRequest updatePipelineRequest) {
-        Pipeline updatedPipeline = pipelineCRUD.updatePipeline(pipelineId, updatePipelineRequest);
+        Pipeline updatedPipeline = pipelineCRUD.updatePipeline(projectId, pipelineId, updatePipelineRequest);
 
         return ResponseEntity.ok(PipelineResponse.createFromPipeline(updatedPipeline));
     }

@@ -75,4 +75,12 @@ public class PipelineStepResponse {
     public Map<String, Object> getParams() {
         return params;
     }
+
+    public Integer getStepNumber() {
+        return stepNumber;
+    }
+
+    public void setStepNumber(Integer stepNumber) {
+        this.stepNumber = stepNumber;
+    }
 }

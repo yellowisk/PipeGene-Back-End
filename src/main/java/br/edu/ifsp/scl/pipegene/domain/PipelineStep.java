@@ -123,4 +123,12 @@ public class PipelineStep {
     public void setInputType(String type) {
         inputType = type;
     }
+
+    @Override
+    public String toString() {
+        return "PipelineStep{" +
+                "stepId=" + stepId +
+                ", stepNumber=" + stepNumber +
+                '}';
+    }
 }

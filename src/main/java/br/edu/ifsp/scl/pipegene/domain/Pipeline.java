@@ -11,12 +11,6 @@ public class Pipeline {
     private String description;
     private List<PipelineStep> steps;
 
-
-    public void addStep(PipelineStep step) {
-        step.setPipeline(this);
-        steps.add(step);
-    }
-
     public Pipeline(UUID id, Project project, String description, List<PipelineStep> steps) {
         this.id = id;
         this.project = project;
@@ -79,26 +73,6 @@ public class Pipeline {
         return new Pipeline(description, steps);
     }
 
-    public void setProject(Project project) {
-        if (Objects.isNull(this.project)) {
-            this.project = project;
-        }
-    }
-
-    public void addStepDTO(PipelineStepDTO stepDTO) {
-        Provider provider = stepDTO.getProvider();
-        PipelineStep step = PipelineStep.of(
-                stepDTO.getStepId(),
-                provider,
-                stepDTO.getInputType(),
-                stepDTO.getOutputType(),
-                stepDTO.getParams(),
-                stepDTO.getStepNumber(),
-                this
-        );
-        addStep(step);
-    }
-
     public static Pipeline createWithoutId(Project project, String description, List<PipelineStep> steps) {
         return new Pipeline(null, project, description, steps);
     }
@@ -141,9 +115,34 @@ public class Pipeline {
         step.setInputType(fileType);
     }
 
-    public void setSteps(List<PipelineStepDTO> updatedPipelineSteps) {
-        steps.clear();
-        updatedPipelineSteps.forEach(this::addStepDTO);
+    public void setProject(Project project) {
+        if (Objects.isNull(this.project)) {
+            this.project = project;
+        }
+    }
+
+    public void addStep(PipelineStep step) {
+        step.setPipeline(this);
+        steps.add(step);
+    }
+
+    public void addStepDTO(PipelineStepDTO stepDTO) {
+        Provider provider = stepDTO.getProvider();
+        PipelineStep step = PipelineStep.of(
+                stepDTO.getStepId(),
+                provider,
+                stepDTO.getInputType(),
+                stepDTO.getOutputType(),
+                stepDTO.getParams(),
+                stepDTO.getStepNumber(),
+                this
+        );
+        addStep(step);
+    }
+
+    public void setSteps(List<PipelineStep> updatedPipelineSteps) {
+        steps = Collections.emptyList();
+        steps = Collections.unmodifiableList(updatedPipelineSteps);
     }
 
 }

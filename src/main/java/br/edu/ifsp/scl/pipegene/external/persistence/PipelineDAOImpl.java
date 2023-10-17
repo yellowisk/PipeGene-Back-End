@@ -311,9 +311,6 @@ public class PipelineDAOImpl implements PipelineDAO {
             throw new IllegalStateException("Couldn't find pipeline step with id: " + pipelineId);
         }
 
-        System.out.println(pipelineSteps.size());
-        System.out.println(pipelineSteps.get(0).getStepId());
-
         return pipelineSteps.get(0);
     }
 

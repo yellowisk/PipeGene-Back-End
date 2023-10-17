@@ -81,7 +81,6 @@ public class ProviderController {
             @PathVariable UUID stepId,
             @RequestBody ProviderExecutionResultRequest providerExecutionResultRequest
     ) {
-
         executionTransaction.validateNotificationFromProvider(providerId, executionId, stepId);
         executionTransaction.processAsyncExecutionResult(providerId, executionId, stepId, providerExecutionResultRequest);
 
