@@ -102,6 +102,25 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         }
     }
 
+    public void validatePipelineStepsFromUpdate(List<PipelineStep> steps) {
+
+        List<Integer> reqStepNumbers = steps.stream()
+                .map(PipelineStep::getStepNumber).sorted()
+                .toList();
+
+        steps.forEach(step -> {
+            if (reqStepNumbers.stream().filter(stepNumber -> stepNumber.equals(step.getStepNumber())).count() > 1) {
+                throw new GenericResourceException("Please, verify step numbers", "Invalid Pipeline Request");
+            }
+        });
+
+        for (int i = 1; i < reqStepNumbers.size(); i++) {
+            if (reqStepNumbers.get(i) != reqStepNumbers.get(i - 1) + 1) {
+                throw new GenericResourceException("Please, verify step numbers", "Invalid Pipeline Request");
+            }
+        }
+    }
+
     private List<PipelineStep> mapToPipelineStep(List<PipelineStepRequest> pipelineStepRequest) {
         AtomicInteger atomicInteger = new AtomicInteger(1);
         return pipelineStepRequest
@@ -198,31 +217,27 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         validatePipelineSteps(request.getSteps(), projectId);
         Pipeline reqPipeline = request.convertToPipeline();
+        validatePipelineStepsFromUpdate(reqPipeline.getSteps());
 
         List<UUID> reqStepIds = reqPipeline.getSteps().stream()
                 .map(PipelineStep::getStepId)
-                .collect(Collectors.toList());
+                .toList();
 
         List<UUID> dbStepIds = pipelineDAO.findPipelineById(pipelineId).get()
                 .getSteps().stream().map(PipelineStep::getStepId)
-                .collect(Collectors.toList());
+                .toList();
 
         List<UUID> stepsToRemove = dbStepIds.stream()
                 .filter(stepId -> !reqStepIds.contains(stepId))
-                .collect(Collectors.toList());
+                .toList();
 
         for (UUID stepId : stepsToRemove) {
             deletePipelineStep(pipelineId, stepId);
         }
 
-        List<PipelineStep> stepsAdded = new ArrayList<>();
+        List<PipelineStep> stepsAdded = reqPipeline.getSteps().stream()
+                .filter(step -> step.getStepId() == null).toList();
         List<PipelineStep> newSteps = new ArrayList<>(reqPipeline.getSteps());
-
-        for (PipelineStep stepToAdd : reqPipeline.getSteps()) {
-            if (stepToAdd.getStepId() == null) {
-                stepsAdded.add(stepToAdd);
-            }
-        }
 
         newSteps.removeAll(stepsAdded);
         reqPipeline.setSteps(newSteps);
