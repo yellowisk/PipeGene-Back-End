@@ -95,5 +95,11 @@ public class ProviderController {
                 .map(ProviderResponse::createFromProvider)
                 .collect(Collectors.toList()));
     }
+
+    @GetMapping("/projects/{providerId}")
+    public ResponseEntity<List<UUID>> getProjectsIdByProviderId(@PathVariable UUID providerId){
+        List<UUID> groupsId = providerService.findProjectsIdByProviderId(providerId);
+        return ResponseEntity.ok(groupsId);
+    }
 }
 

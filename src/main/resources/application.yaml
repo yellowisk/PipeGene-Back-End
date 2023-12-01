@@ -70,6 +70,8 @@ queries:
           INSERT INTO pipegine_platform.dataset(id, filename, project_id) VALUES(?, ?, ?)
 
       select:
+        project-by-group-id: >
+          SELECT * FROM pipegine_platform.project p WHERE p.group_id=?
         project-by-id: >
           SELECT p.id,
             p.name,
@@ -111,6 +113,7 @@ queries:
             WHERE gp.id=? LIMIT 1;
 
       exists:
+
         project-id: >
           SELECT EXISTS(SELECT 1 FROM pipegine_platform.project p WHERE p.id=?)
 
@@ -283,7 +286,7 @@ queries:
 
       select:
         group-id-by-provider-id: >
-          SELECT group_id FROM pipegine_platform.provider WHERE id=?;
+          SELECT group_id FROM pipegine_platform.group_provider WHERE provider_id=?;
 
       exists:
         group-provider-by-group-id-and-provider-id: >

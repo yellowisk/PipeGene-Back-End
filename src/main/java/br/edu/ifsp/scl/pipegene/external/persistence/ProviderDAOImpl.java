@@ -56,6 +56,9 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.group-provider-dao.exists.group-provider-by-group-id-and-provider-id}")
     private String existsGroupProviderByGroupAndProviderIdQuery;
 
+    @Value("${queries.sql.group-provider-dao.select.group-id-by-provider-id}")
+    private String selectAllGroupIdByProviderIdQuery;
+
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, GroupDAO groupDAO, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -87,6 +90,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         String name = rs.getString("name");
         String description = rs.getString("description");
         String url = rs.getString("url");
+        String urlSource = rs.getString("url_source");
         Boolean isPublic = rs.getBoolean("public");
 
         String inputSupported = rs.getString("input_supported_types");
@@ -112,7 +116,7 @@ public class ProviderDAOImpl implements ProviderDAO {
                     : objectMapper.readValue(operationStr, new TypeReference<>() {
             });
 
-            return Provider.createWithAllValues(id, name, description, url, isPublic, groups, inputSupportedTypes, outputSupportedTypes,
+            return Provider.createWithAllValues(id, name, description, url, urlSource, isPublic, groups, inputSupportedTypes, outputSupportedTypes,
                     operations);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -130,7 +134,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(insertProviderQuery, provider.getId(), provider.getName(), provider.getDescription(),
-                provider.getUrl(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
+                provider.getUrl(), provider.getUrlSource(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, authentication.getUserAuthenticatedId());
 
         return provider;
@@ -163,6 +167,12 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Override
     public void createGroupProvider(UUID groupId, UUID providerId) {
         jdbcTemplate.update(insertGroupProviderQuery, groupId, providerId);
+    }
+
+    @Override
+    public List<UUID> findAllGroupsByProviderId(UUID providerId) {
+        return jdbcTemplate.query(selectAllGroupIdByProviderIdQuery, ps -> ps.setObject(1, providerId),
+                (rs, rowNum) -> (UUID) rs.getObject("group_id"));
     }
 
     @Override

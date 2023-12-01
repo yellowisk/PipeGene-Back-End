@@ -16,9 +16,10 @@ public interface ProviderDAO {
     Provider saveNewProvider(Provider provider);
 
     Provider updateProvider(Provider provider);
-
     List<Provider> findAllProvidersByUserId(UUID userId);
     void createGroupProvider(UUID groupId, UUID providerId);
+
+    List<UUID> findAllGroupsByProviderId(UUID providerId);
 
     boolean existsGroupProvider(UUID groupId, UUID providerId);
 

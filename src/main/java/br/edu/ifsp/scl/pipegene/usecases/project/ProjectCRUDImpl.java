@@ -173,6 +173,13 @@ public class ProjectCRUDImpl implements ProjectCRUD {
     }
 
     @Override
+    public Project findProjectByGroupId(UUID groupId) {
+        return projectDAO.findProjectByGroupId(groupId).orElseThrow(
+                () -> new ResourceNotFoundException("Not found project with group id: " + groupId)
+        );
+    }
+
+    @Override
     public Project findProjectByGroupParticipationId(UUID groupParticipationId) {
         return projectDAO.findProjectByGroupParticipantId(groupParticipationId).orElseThrow(
                 () -> new ResourceNotFoundException("Not found project with group participation id: " + groupParticipationId)

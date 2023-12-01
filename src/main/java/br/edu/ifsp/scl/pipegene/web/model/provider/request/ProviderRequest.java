@@ -41,7 +41,7 @@ public class ProviderRequest {
     }
 
     public Provider convertToProvider() {
-        return Provider.createWithoutIdAndGroups(name, description, url, isPublic, inputSupportedTypes, outputSupportedTypes,
+        return Provider.createWithoutIdAndGroups(name, description, url, urlSource, isPublic, inputSupportedTypes, outputSupportedTypes,
                 operations.stream()
                         .map(ProviderOperationDTO::convertToProviderOperation)
                         .collect(Collectors.toList())

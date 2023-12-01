@@ -45,7 +45,6 @@ CREATE TABLE pipegine_platform.provider(
     url varchar NOT NULL,
     url_source varchar,
     public boolean NOT NULL,
-    group_id uuid,
     input_supported_types text,
     output_supported_types text,
     operations jsonb,
@@ -260,10 +259,6 @@ ALTER TABLE pipegine_platform.project
 
 ALTER TABLE pipegine_platform.provider
     ADD CONSTRAINT provider_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES pipegine_platform.application_user(id);
-
-Alter TABLE pipegine_platform.provider
-    ADD CONSTRAINT provider_group_id_fkey FOREIGN KEY (group_id)
-        REFERENCES pipegine_platform.group(id) ON DELETE CASCADE;
 
 ALTER TABLE pipegine_platform.group_participation
     ADD CONSTRAINT group_participation_receive_user_id_fkey FOREIGN KEY (receive_user_id)

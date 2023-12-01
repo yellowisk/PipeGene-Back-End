@@ -1,11 +1,13 @@
 package br.edu.ifsp.scl.pipegene.usecases.provider;
 
 import br.edu.ifsp.scl.pipegene.domain.Group;
+import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.usecases.account.gateway.UserApplicationDAO;
 import br.edu.ifsp.scl.pipegene.usecases.account.model.ApplicationUser;
 import br.edu.ifsp.scl.pipegene.usecases.group.GroupCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.group.gateway.GroupDAO;
+import br.edu.ifsp.scl.pipegene.usecases.project.ProjectCRUD;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
 import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
@@ -15,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class ProviderServiceImpl implements ProviderService {
@@ -27,11 +30,14 @@ public class ProviderServiceImpl implements ProviderService {
 
     private final GroupCRUD groupCRUD;
 
-    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupDAO groupDAO, GroupCRUD groupCRUD) {
+    private final ProjectCRUD projectCRUD;
+
+    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupDAO groupDAO, GroupCRUD groupCRUD, ProjectCRUD projectCRUD) {
         this.providerDAO = providerDAO;
         this.userApplicationDAO = userApplicationDAO;
         this.groupDAO = groupDAO;
         this.groupCRUD = groupCRUD;
+        this.projectCRUD = projectCRUD;
     }
 
     @Override
@@ -47,15 +53,23 @@ public class ProviderServiceImpl implements ProviderService {
 
         providerDAO.saveNewProvider(provider);
 
+
         if (providerRequest.getSelectedProjectIds() != null) {
-            List<Group> groups = new ArrayList<>();
             providerRequest.getSelectedProjectIds().forEach(projectId -> {
-                Group group = groupCRUD.findGroupByProjectId(projectId);
-                groups.add(group);
+                this.insertIntoGroup(groupCRUD.findGroupByProjectId(projectId).getId(), providerId);
             });
-            groups.forEach(group -> this.insertIntoGroup(group.getId(), providerId));
         }
         return provider;
+    }
+
+    @Override
+    public List<UUID> findProjectsIdByProviderId(UUID providerId) {
+        List<UUID> groupsId = providerDAO.findAllGroupsByProviderId(providerId);
+        List<UUID> projectsId = groupsId.stream()
+                .map(projectCRUD::findProjectByGroupId)
+                .map(Project::getId)
+                .collect(Collectors.toList());
+        return projectsId;
     }
 
     @Override
@@ -66,6 +80,10 @@ public class ProviderServiceImpl implements ProviderService {
         providerDAO.findProviderById(providerId).orElseThrow(
                 () -> new ResourceNotFoundException("Not found provider with id: " + providerId)
         );
+        if (providerDAO.existsGroupProvider(groupId, providerId)) {
+            throw new IllegalArgumentException("Provider already exists in group");
+        }
+
         providerDAO.createGroupProvider(groupId, providerId);
     }
 
