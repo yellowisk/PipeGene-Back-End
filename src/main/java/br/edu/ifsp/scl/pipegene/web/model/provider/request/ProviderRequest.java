@@ -1,8 +1,12 @@
 package br.edu.ifsp.scl.pipegene.web.model.provider.request;
 
 import br.edu.ifsp.scl.pipegene.domain.Provider;
+import br.edu.ifsp.scl.pipegene.web.model.project.ProjectUpdateRequest;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -19,25 +23,25 @@ public class ProviderRequest {
     //@URL
     private String url;
 
-    private String urlSource;
-
-    @NotNull
+    @JsonProperty("isPublic")
     private Boolean isPublic;
+
+    private String urlSource;
 
     @NotNull
     private Set<String> inputSupportedTypes;
 
     @NotNull
     private Set<String> outputSupportedTypes;
-
     @NotNull
     private Set<ProviderOperationDTO> operations;
 
+    private List<UUID> selectedProjectIds;
     public ProviderRequest() {
     }
 
     public Provider convertToProvider() {
-        return Provider.createWithoutIdAndGroups(name, description, url, urlSource, isPublic, inputSupportedTypes, outputSupportedTypes,
+        return Provider.createWithoutIdAndGroups(name, description, url, isPublic, inputSupportedTypes, outputSupportedTypes,
                 operations.stream()
                         .map(ProviderOperationDTO::convertToProviderOperation)
                         .collect(Collectors.toList())
@@ -66,14 +70,6 @@ public class ProviderRequest {
 
     public void setUrl(String url) {
         this.url = url;
-    }
-
-    public String getUrlSource() {
-        return urlSource;
-    }
-
-    public void setUrlSource(String urlSource) {
-        this.urlSource = urlSource;
     }
 
     public Set<String> getInputSupportedTypes() {
@@ -108,4 +104,19 @@ public class ProviderRequest {
         isPublic = aPublic;
     }
 
+    public String getUrlSource() {
+        return urlSource;
+    }
+
+    public void setUrlSource(String urlSource) {
+        this.urlSource = urlSource;
+    }
+
+    public List<UUID> getSelectedProjectIds() {
+        return selectedProjectIds;
+    }
+
+    public void setSelectedProjectIds(List<UUID> selectedProjectIds) {
+        this.selectedProjectIds = selectedProjectIds;
+    }
 }

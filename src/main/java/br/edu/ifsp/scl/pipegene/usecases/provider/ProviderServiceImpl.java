@@ -11,6 +11,7 @@ import br.edu.ifsp.scl.pipegene.web.exception.ResourceNotFoundException;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,10 +25,13 @@ public class ProviderServiceImpl implements ProviderService {
 
     private final GroupDAO groupDAO;
 
-    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupDAO groupDAO) {
+    private final GroupCRUD groupCRUD;
+
+    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupDAO groupDAO, GroupCRUD groupCRUD) {
         this.providerDAO = providerDAO;
         this.userApplicationDAO = userApplicationDAO;
         this.groupDAO = groupDAO;
+        this.groupCRUD = groupCRUD;
     }
 
     @Override
@@ -37,7 +41,21 @@ public class ProviderServiceImpl implements ProviderService {
 
     @Override
     public Provider createNewProvider(ProviderRequest providerRequest) {
-        return providerDAO.saveNewProvider(providerRequest.convertToProvider());
+        Provider provider = providerRequest.convertToProvider();
+        UUID providerId = UUID.randomUUID();
+        provider.setId(providerId);
+
+        providerDAO.saveNewProvider(provider);
+
+        if (providerRequest.getSelectedProjectIds() != null) {
+            List<Group> groups = new ArrayList<>();
+            providerRequest.getSelectedProjectIds().forEach(projectId -> {
+                Group group = groupCRUD.findGroupByProjectId(projectId);
+                groups.add(group);
+            });
+            groups.forEach(group -> this.insertIntoGroup(group.getId(), providerId));
+        }
+        return provider;
     }
 
     @Override

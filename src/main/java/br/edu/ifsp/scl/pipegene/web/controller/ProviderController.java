@@ -36,7 +36,6 @@ public class ProviderController {
     @PostMapping
     public ResponseEntity<ProviderResponse> addNewProvider(@RequestBody @Valid ProviderRequest providerRequest) {
         Provider provider = providerService.createNewProvider(providerRequest);
-
         return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
     }
 
