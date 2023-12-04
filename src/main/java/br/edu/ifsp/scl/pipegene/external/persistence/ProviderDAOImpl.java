@@ -59,6 +59,9 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.group-provider-dao.select.group-id-by-provider-id}")
     private String selectAllGroupIdByProviderIdQuery;
 
+    @Value("${queries.sql.provider-dao.select.provider-all-by-user-and-project-id}")
+    private String selectAllProviderByUserAndProjectIdQuery;
+
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, GroupDAO groupDAO, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -162,6 +165,11 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Override
     public List<Provider> findAllProvidersByUserId(UUID userId) {
         return jdbcTemplate.query(selectAllProvidersByUserIdQuery, this::mapperToProvider, userId, userId);
+    }
+
+    @Override
+    public List<Provider> findAllProvidersByUserAndProjectId(UUID userId, UUID projectId) {
+        return jdbcTemplate.query(selectAllProviderByUserAndProjectIdQuery, this::mapperToProvider, userId, projectId);
     }
 
     @Override

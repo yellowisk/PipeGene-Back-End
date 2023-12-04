@@ -1,5 +1,6 @@
 package br.edu.ifsp.scl.pipegene.usecases.provider;
 
+import br.edu.ifsp.scl.pipegene.configuration.security.AuthenticationFacade;
 import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Project;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
@@ -29,15 +30,17 @@ public class ProviderServiceImpl implements ProviderService {
     private final GroupDAO groupDAO;
 
     private final GroupCRUD groupCRUD;
-
     private final ProjectCRUD projectCRUD;
 
-    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupDAO groupDAO, GroupCRUD groupCRUD, ProjectCRUD projectCRUD) {
+    private final AuthenticationFacade authenticationFacade;
+
+    public ProviderServiceImpl(ProviderDAO providerDAO, UserApplicationDAO userApplicationDAO, GroupDAO groupDAO, GroupCRUD groupCRUD, ProjectCRUD projectCRUD, AuthenticationFacade authenticationFacade) {
         this.providerDAO = providerDAO;
         this.userApplicationDAO = userApplicationDAO;
         this.groupDAO = groupDAO;
         this.groupCRUD = groupCRUD;
         this.projectCRUD = projectCRUD;
+        this.authenticationFacade = authenticationFacade;
     }
 
     @Override
@@ -70,6 +73,11 @@ public class ProviderServiceImpl implements ProviderService {
                 .map(Project::getId)
                 .collect(Collectors.toList());
         return projectsId;
+    }
+
+    @Override
+    public List<Provider> findProjectsByProjectIdAndUserId(UUID projectId) {
+        return providerDAO.findAllProvidersByUserAndProjectId(authenticationFacade.getUserAuthenticatedId(), projectId);
     }
 
     @Override
