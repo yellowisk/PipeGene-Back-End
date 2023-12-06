@@ -1,4 +1,4 @@
-FROM postgres:latest
+FROM postgres:14.2
 
 RUN echo "Building Dockerfile..."
 
@@ -12,3 +12,5 @@ ENV POSTGRES_PASSWORD=password
 
 HEALTHCHECK --start-period=30s --interval=1s --timeout=60s --retries=30\
   CMD /bootstrap/init.sh
+
+RUN ls -l /docker-entrypoint-initdb.d/
