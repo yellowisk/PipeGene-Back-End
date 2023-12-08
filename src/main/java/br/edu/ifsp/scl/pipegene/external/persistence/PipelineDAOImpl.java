@@ -1,9 +1,6 @@
 package br.edu.ifsp.scl.pipegene.external.persistence;
 
-import br.edu.ifsp.scl.pipegene.domain.Pipeline;
-import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
-import br.edu.ifsp.scl.pipegene.domain.Project;
-import br.edu.ifsp.scl.pipegene.domain.Provider;
+import br.edu.ifsp.scl.pipegene.domain.*;
 import br.edu.ifsp.scl.pipegene.external.persistence.util.JsonUtil;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway.PipelineDAO;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
@@ -93,7 +90,7 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Override
     public Pipeline savePipeline(Pipeline pipeline) {
         UUID pipelineId = UUID.randomUUID();
-        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription());
+        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription(), pipeline.getStatus().name());
 
         List<PipelineStep> steps = pipeline.getSteps();
 
@@ -123,7 +120,7 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Override
     public Pipeline clonePipeline(Pipeline pipeline) {
         UUID pipelineId = UUID.randomUUID();
-        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription());
+        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription(), pipeline.getStatus());
 
         List<PipelineStep> steps = pipeline.getSteps();
 
@@ -170,8 +167,9 @@ public class PipelineDAOImpl implements PipelineDAO {
                     pipelineMap.get(pipelineId).addStep(step);
                 } else {
                     String description = rs.getString("pipeline_description");
+                    PipelineStatus status = PipelineStatus.valueOf(rs.getString("pipeline_status"));
 
-                    Pipeline pipeline = new Pipeline(pipelineId, null, description, step);
+                    Pipeline pipeline = new Pipeline(pipelineId, null, description, status, step);
                     pipelineMap.put(pipelineId, pipeline);
                 }
             } catch (Exception e) {
@@ -202,7 +200,7 @@ public class PipelineDAOImpl implements PipelineDAO {
     private Collection<Pipeline> retrieveAllBasedQueryWithAnIdCondition(String query, UUID id) {
         Map<UUID, Pipeline> pipelineMap = jdbcTemplate.query(query,
                 (rs, rowNum) -> Pipeline.createWithoutProjectAndSteps((UUID) rs.getObject("id"),
-                        rs.getString("description"))
+                        rs.getString("description"), PipelineStatus.valueOf(rs.getString("status")))
                 , id).stream().collect(Collectors.toMap(Pipeline::getId, Function.identity()));
 
         Object[] ids = pipelineMap.keySet().toArray();
@@ -224,8 +222,9 @@ public class PipelineDAOImpl implements PipelineDAO {
             Pipeline pipeline = jdbcTemplate.queryForObject(selectPipelineByIdQuery, (rs, rowNum) -> {
                 UUID id = (UUID) rs.getObject("id");
                 String description = rs.getString("description");
+                PipelineStatus status = PipelineStatus.valueOf(rs.getString("status"));
 
-                return Pipeline.createWithoutProjectAndSteps(id, description);
+                return Pipeline.createWithoutProjectAndSteps(id, description, status);
             }, pipelineId);
 
             if (Objects.isNull(pipeline)) {
@@ -250,8 +249,9 @@ public class PipelineDAOImpl implements PipelineDAO {
                 UUID id = (UUID) rs.getObject("id");
                 UUID queryProjectId = (UUID) rs.getObject("project_id");
                 String description = rs.getString("description");
+                PipelineStatus status = PipelineStatus.valueOf(rs.getString("status"));
 
-                return Pipeline.createWithoutSteps(id, Project.createWithId(queryProjectId), description);
+                return Pipeline.createWithoutSteps(id, Project.createWithId(queryProjectId), description, status);
             }, pipelineId);
 
             if (Objects.isNull(pipeline)) {
@@ -319,7 +319,7 @@ public class PipelineDAOImpl implements PipelineDAO {
     public Pipeline updatePipeline(Pipeline pipeline) {
         UUID pipelineId = pipeline.getId();
 
-        jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipelineId);
+        jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipeline.getStatus(), pipelineId);
 
         List<PipelineStep> steps = pipeline.getSteps();
         jdbcTemplate.batchUpdate(updateStepQuery, new BatchPreparedStatementSetter() {
@@ -358,7 +358,7 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Override
     public Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId) {
         jdbcTemplate.update(deletePipelineStepsQuery, stepId);
-        Pipeline pipeline = Pipeline.getNewInstanceWithDescriptionAndSteps(null, steps);
+        Pipeline pipeline = Pipeline.getNewInstanceWithDescriptionAndStatusAndSteps(null, null, steps);
         return pipeline;
     }
 

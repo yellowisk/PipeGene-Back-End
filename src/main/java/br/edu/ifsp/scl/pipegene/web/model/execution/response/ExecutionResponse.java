@@ -28,7 +28,7 @@ public class ExecutionResponse {
     public static ExecutionResponse createFromExecution(Execution e) {
         return new ExecutionResponse(
                 e.getId(),
-                PipelineResponse.createJustIdAndDescriptionFromPipeline(e.getPipeline()),
+                PipelineResponse.createJustIdAndDescriptionAndStatusFromPipeline(e.getPipeline()),
                 DatasetDTO.createFromDataset(e.getDataset()),
                 e.getDescription(),
                 e.getStatus().name(),

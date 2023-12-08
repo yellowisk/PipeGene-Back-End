@@ -1,5 +1,0 @@
-1 - Tente remover todas as imagens já baixadas: docker rmi $(docker images -a -q)
-2 - Dê um git pull para baixar a última versão do backend
-3 - Realize novamente um docker-compose up --build --remove-orphans -d para subir o banco
-4 - Rode o back pelo Intellij e o front usando yarn start
-5 - Crie um usuário novo e tente logar. 

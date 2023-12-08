@@ -9,26 +9,23 @@ public class Pipeline {
     private UUID id;
     private Project project;
     private String description;
+    private PipelineStatus status;
     private List<PipelineStep> steps;
 
-    public Pipeline(UUID id, Project project, String description, List<PipelineStep> steps) {
+    public Pipeline(UUID id, Project project, String description, PipelineStatus status, List<PipelineStep> steps) {
         this.id = id;
         this.project = project;
         this.description = description;
+        this.status = status;
         this.steps = steps;
 
         steps.forEach(step -> step.setPipeline(this));
     }
 
-    public Pipeline(UUID id, Project project, String description) {
-        this.id = id;
-        this.project = project;
-        this.description = description;
-    }
-
-    private Pipeline(UUID id, String description) {
+    private Pipeline(UUID id, String description, PipelineStatus status) {
         this.id = id;
         this.description = description;
+        this.status = status;
         this.steps = new ArrayList<>();
     }
 
@@ -36,12 +33,12 @@ public class Pipeline {
         this.description = description;
     }
 
-    public static Pipeline createWithoutProjectAndSteps(UUID id, String description) {
-        return new Pipeline(id, description);
+    public static Pipeline createWithoutProjectAndSteps(UUID id, String description, PipelineStatus status) {
+        return new Pipeline(id, description, status);
     }
 
-    public static Pipeline createWithoutSteps(UUID id, Project project, String description) {
-        return new Pipeline(id, project, description, new ArrayList<>());
+    public static Pipeline createWithoutSteps(UUID id, Project project, String description, PipelineStatus status) {
+        return new Pipeline(id, project, description, status, new ArrayList<>());
     }
 
     public static Pipeline createWithOnlyId(UUID id) {
@@ -52,29 +49,32 @@ public class Pipeline {
         this.id = id;
     }
 
-    public Pipeline(UUID id, Project project, String description, PipelineStep step) {
+    public Pipeline(UUID id, Project project, String description,
+                    PipelineStatus status, PipelineStep step) {
         this.id = id;
         this.project = project;
         this.description = description;
+        this.status = status;
         this.steps = new ArrayList<>();
         steps.add(step);
     }
 
-    public Pipeline(String description, List<PipelineStep> steps) {
+    public Pipeline(String description, PipelineStatus status, List<PipelineStep> steps) {
         this.description = description;
+        this.status = status;
         this.steps = steps;
     }
 
     public Pipeline getNewInstanceWithId(UUID uuid) {
-        return new Pipeline(uuid, project, description, steps);
+        return new Pipeline(uuid, project, description, status, steps);
     }
 
-    public static Pipeline getNewInstanceWithDescriptionAndSteps(String description, List<PipelineStep> steps) {
-        return new Pipeline(description, steps);
+    public static Pipeline getNewInstanceWithDescriptionAndStatusAndSteps(String description, PipelineStatus status, List<PipelineStep> steps) {
+        return new Pipeline(description, status, steps);
     }
 
-    public static Pipeline createWithoutId(Project project, String description, List<PipelineStep> steps) {
-        return new Pipeline(null, project, description, steps);
+    public static Pipeline createWithoutId(Project project, String description, PipelineStatus status, List<PipelineStep> steps) {
+        return new Pipeline(null, project, description, status, steps);
     }
 
     public UUID getId() {
@@ -95,6 +95,14 @@ public class Pipeline {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public PipelineStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(PipelineStatus status) {
+        this.status = status;
     }
 
     public List<PipelineStep> getSteps() {
