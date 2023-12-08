@@ -56,6 +56,12 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.group-provider-dao.exists.group-provider-by-group-id-and-provider-id}")
     private String existsGroupProviderByGroupAndProviderIdQuery;
 
+    @Value("${queries.sql.group-provider-dao.select.group-id-by-provider-id}")
+    private String selectAllGroupIdByProviderIdQuery;
+
+    @Value("${queries.sql.provider-dao.select.provider-all-by-user-and-project-id}")
+    private String selectAllProviderByUserAndProjectIdQuery;
+
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, GroupDAO groupDAO, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -82,56 +88,6 @@ public class ProviderDAOImpl implements ProviderDAO {
         return jdbcTemplate.query(selectAllProvidersQuery, this::mapperToProvider);
     }
 
-    @Override
-    public Provider saveNewProvider(Provider provider) {
-        UUID providerId = UUID.randomUUID();
-        String operations;
-        try {
-            operations = objectMapper.writeValueAsString(provider.getOperations());
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException();
-        }
-
-        jdbcTemplate.update(insertProviderQuery, providerId, provider.getName(), provider.getDescription(),
-                provider.getUrl(), provider.getUrlSource(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
-                String.join(",", provider.getOutputSupportedTypes()), operations, authentication.getUserAuthenticatedId());
-
-        return provider.getNewInstanceWithId(providerId);
-    }
-
-    @Override
-    public Provider updateProvider(Provider provider) {
-        UUID providerId = provider.getId();
-        String operations;
-
-        try {
-            operations = objectMapper.writeValueAsString(provider.getOperations());
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException();
-        }
-
-        jdbcTemplate.update(updateProviderQuery, provider.getName(), provider.getDescription(), provider.getUrl(),
-                provider.getUrlSource(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
-                String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
-
-        return provider;
-    }
-
-    @Override
-    public List<Provider> findAllProvidersByUserId(UUID userId) {
-        return jdbcTemplate.query(selectAllProvidersByUserIdQuery, this::mapperToProvider, userId, userId);
-    }
-
-    @Override
-    public void createGroupProvider(UUID groupId, UUID providerId) {
-        jdbcTemplate.update(insertGroupProviderQuery, groupId, providerId);
-    }
-
-    @Override
-    public boolean existsGroupProvider(UUID groupId, UUID providerId) {
-        return jdbcTemplate.queryForObject(existsGroupProviderByGroupAndProviderIdQuery, Boolean.class, groupId, providerId);
-    }
-
     private Provider mapperToProvider(ResultSet rs, int rowNum) throws SQLException {
         UUID id = (UUID) rs.getObject("id");
         String name = rs.getString("name");
@@ -149,7 +105,7 @@ public class ProviderDAOImpl implements ProviderDAO {
                 : Arrays.asList(outputSupported.split(","));
 
         List<UUID> groupsIds = jdbcTemplate.query(selectGroupIdByProviderIdQuery, ps -> ps.setObject(1, id),
-                (rs1, rowNum1) -> (UUID) rs1.getObject("group_id"));
+                    (rs1, rowNum1) -> (UUID) rs1.getObject("group_id"));
 
         List<Group> groups = groupsIds.stream().map(groupDAO::findGroupById)
                 .filter(Optional::isPresent)
@@ -171,4 +127,64 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
     }
 
+    @Override
+    public Provider saveNewProvider(Provider provider) {
+        String operations;
+        try {
+            operations = objectMapper.writeValueAsString(provider.getOperations());
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException();
+        }
+
+        jdbcTemplate.update(insertProviderQuery, provider.getId(), provider.getName(), provider.getDescription(),
+                provider.getUrl(), provider.getUrlSource(), provider.getPublic(), String.join(",", provider.getInputSupportedTypes()),
+                String.join(",", provider.getOutputSupportedTypes()), operations, authentication.getUserAuthenticatedId());
+
+        return provider;
+    }
+
+    @Override
+    public Provider updateProvider(Provider provider) {
+        UUID providerId = provider.getId();
+        String operations;
+
+        try {
+            operations = objectMapper.writeValueAsString(provider.getOperations());
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException();
+        }
+
+        jdbcTemplate.update(updateProviderQuery, provider.getName(), provider.getDescription(), provider.getUrl(),
+                provider.getPublic(),
+                String.join(",", provider.getInputSupportedTypes()),
+                String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
+
+        return provider;
+    }
+
+    @Override
+    public List<Provider> findAllProvidersByUserId(UUID userId) {
+        return jdbcTemplate.query(selectAllProvidersByUserIdQuery, this::mapperToProvider, userId, userId);
+    }
+
+    @Override
+    public List<Provider> findAllProvidersByUserAndProjectId(UUID userId, UUID projectId) {
+        return jdbcTemplate.query(selectAllProviderByUserAndProjectIdQuery, this::mapperToProvider, userId, projectId);
+    }
+
+    @Override
+    public void createGroupProvider(UUID groupId, UUID providerId) {
+        jdbcTemplate.update(insertGroupProviderQuery, groupId, providerId);
+    }
+
+    @Override
+    public List<UUID> findAllGroupsByProviderId(UUID providerId) {
+        return jdbcTemplate.query(selectAllGroupIdByProviderIdQuery, ps -> ps.setObject(1, providerId),
+                (rs, rowNum) -> (UUID) rs.getObject("group_id"));
+    }
+
+    @Override
+    public boolean existsGroupProvider(UUID groupId, UUID providerId) {
+        return jdbcTemplate.queryForObject(existsGroupProviderByGroupAndProviderIdQuery, Boolean.class, groupId, providerId);
+    }
 }

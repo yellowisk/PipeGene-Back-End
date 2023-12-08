@@ -70,6 +70,8 @@ queries:
           INSERT INTO pipegine_platform.dataset(id, filename, project_id) VALUES(?, ?, ?)
 
       select:
+        project-by-group-id: >
+          SELECT * FROM pipegine_platform.project p WHERE p.group_id=?
         project-by-id: >
           SELECT p.id,
             p.name,
@@ -111,6 +113,7 @@ queries:
             WHERE gp.id=? LIMIT 1;
 
       exists:
+
         project-id: >
           SELECT EXISTS(SELECT 1 FROM pipegine_platform.project p WHERE p.id=?)
 
@@ -276,6 +279,18 @@ queries:
             OR p.owner_id=?
             OR p.public=false AND gp.receive_user_id = ? AND gp.status='ACCEPTED'
 
+        provider-all-by-user-and-project-id: >
+          SELECT pr.*
+          FROM pipegine_platform.provider pr
+          LEFT JOIN pipegine_platform.group_provider gp ON pr.id = gp.provider_id
+          LEFT JOIN pipegine_platform.project pj ON gp.group_id = pj.group_id
+          WHERE pr.public = true
+             OR pr.owner_id = ?
+             OR (pr.public = false 
+                 AND gp.group_id IN (SELECT group_id FROM pipegine_platform.project WHERE id = ?) 
+                 AND EXISTS (SELECT 1 FROM pipegine_platform.group_participation gpa 
+                             WHERE gpa.group_id = gp.group_id AND gpa.status = 'ACCEPTED')) 
+
     group-provider-dao:
 
       insert:
@@ -284,7 +299,7 @@ queries:
 
       select:
         group-id-by-provider-id: >
-          SELECT group_id FROM pipegine_platform.provider WHERE id=?;
+          SELECT group_id FROM pipegine_platform.group_provider WHERE provider_id=?;
 
       exists:
         group-provider-by-group-id-and-provider-id: >

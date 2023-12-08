@@ -12,6 +12,10 @@ public interface ProviderService {
 
     Provider createNewProvider(ProviderRequest providerRequest);
 
+    List<UUID> findProjectsIdByProviderId(UUID providerId);
+
+    List<Provider> findProjectsByProjectIdAndUserId(UUID projectId);
+
     void insertIntoGroup(UUID groupId, UUID providerId);
 
     Provider findProviderById(UUID providerId);

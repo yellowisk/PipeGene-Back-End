@@ -22,6 +22,8 @@ public interface ProjectDAO {
 
     Optional<Project> findProjectByGroupParticipantId(UUID groupParticipantId);
 
+    Optional<Project> findProjectByGroupId(UUID groupId);
+
     List<Project> findAllProjectsByUser(UUID userId);
 
     Boolean projectExists(UUID id);

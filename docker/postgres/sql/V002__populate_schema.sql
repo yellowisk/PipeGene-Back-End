@@ -20,9 +20,18 @@ values ('9780ed75-52db-4a4d-a0ad-13681a28e00a'::uuid, 'teste2', 'arthur',
 insert into pipegine_platform.group(id, owner_id)
 values ('cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid);
 
+insert into pipegine_platform.group(id, owner_id)
+values ('52dea72e-bf07-40db-8484-ba5879cbac18'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid);
+
 insert into pipegine_platform.group_participation(id, group_id, receive_user_id,
                                                   submitter_user_id, create_date, status)
 values ('ad76cd44-dc3c-4837-9c35-6bd0bd48bbc8'::uuid, 'cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid,
+        '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        CURRENT_DATE, 'ACCEPTED');
+
+insert into pipegine_platform.group_participation(id, group_id, receive_user_id,
+                                                  submitter_user_id, create_date, status)
+values ('538b32de-49f3-43df-9da0-73e3730ae06f'::uuid, '52dea72e-bf07-40db-8484-ba5879cbac18'::uuid,
         '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
         CURRENT_DATE, 'ACCEPTED');
 
@@ -118,7 +127,7 @@ values('49df4595-b8af-4e32-8791-65e583ae08a2'::uuid, 'Classificação de variant
 INSERT INTO pipegine_platform.project (id, name, description, group_id, owner_id)
 VALUES ('28559f11-0c41-4444-a087-c14efde8b482', 'Pré processamento - Rodrigo e Classificação de variante - Rodrigo',
         'Recebe um input e devolve um maf para ser utilizado como input em outro serviço',
-        'cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid,
+        '52dea72e-bf07-40db-8484-ba5879cbac18'::uuid,
         '78cec5db-6396-4fd9-803f-1fd469d76330');
 
 -- cria dataset do projeto que servira de input para o Pré processamento - Rodrigo
@@ -130,10 +139,6 @@ VALUES ('e1a8ba35-d029-4a7c-bb98-ae7e84c41a41',
 -- cria pipeline para o Pré processamento - Rodrigo e Classificação de variante - Rodrigo
 INSERT INTO pipegine_platform.pipeline (id, project_id, description, status)
 VALUES ('3677aa2e-6be8-43f9-ad8c-a0f1f71e2040', '28559f11-0c41-4444-a087-c14efde8b482', 'Realiza pre processamento e faz a classificação de variante - Rodrigo', 'ENABLED');
-
-INSERT INTO pipegine_platform.group_provider (group_id, provider_id)
-VALUES ('cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid, 'e8bf42e4-2ffc-4935-a546-ee5d9263f419'::uuid);
-
 
 -- cria steps para o Pré processamento - Rodrigo e Classificação de variante - Rodrigo
 INSERT INTO pipegine_platform.pipeline_step (step_id, pipeline_id, provider_id, input_type, output_type, params, step_number)

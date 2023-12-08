@@ -19,6 +19,7 @@ public interface ProjectCRUD {
     List<Project> findAllProjects();
     List<ApplicationUser> findAllUsersByProjectId(UUID projectId);
     List<ApplicationUser> getAllUsersWithAcceptedStatusByProjectId(UUID projectId);
+    Project findProjectByGroupId(UUID groupId);
     Project findProjectByGroupParticipationId(UUID groupParticipationId);
     void deleteProjectById(UUID projectId);
     void deleteAllUsersParticipationByProjectId(UUID projectId, List<UUID> usersIds);

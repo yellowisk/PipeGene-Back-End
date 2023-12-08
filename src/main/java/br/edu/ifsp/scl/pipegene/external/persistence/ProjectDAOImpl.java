@@ -65,6 +65,9 @@ public class ProjectDAOImpl implements ProjectDAO {
     @Value("${queries.sql.project-dao.exists.is-owner}")
     private String isOwnerQuery;
 
+    @Value("${queries.sql.project-dao.select.project-by-group-id}")
+    private String findProjectByGroupIdQuery;
+
     public ProjectDAOImpl(JdbcTemplate jdbcTemplate, PipelineDAO pipelineDAO, DatasetDAO datasetDAO) {
         this.jdbcTemplate = jdbcTemplate;
         this.pipelineDAO = pipelineDAO;
@@ -167,6 +170,22 @@ public class ProjectDAOImpl implements ProjectDAO {
             }, groupParticipantId);
             return Optional.of(project);
         } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Project> findProjectByGroupId(UUID groupId) {
+        try {
+            Project project = jdbcTemplate.queryForObject(findProjectByGroupIdQuery, (rs, rowNum) -> {
+                UUID id = (UUID) rs.getObject("id");
+                String name = rs.getString("name");
+                String description = rs.getString("description");
+                UUID ownerId = (UUID) rs.getObject("owner_id");
+                return Project.createWithoutDatasetsAndPipelines(id, name, description, groupId, ownerId);
+            }, groupId);
+            return Optional.of(project);
+        } catch (EmptyResultDataAccessException e){
             return Optional.empty();
         }
     }

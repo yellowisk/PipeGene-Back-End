@@ -25,18 +25,15 @@ public class ProviderController {
 
     private final ExecutionTransaction executionTransaction;
     private final ProviderService providerService;
-    private final AuthenticationFacade authenticationFacade;
 
-    public ProviderController(ExecutionTransaction executionTransaction, ProviderService providerService, AuthenticationFacade authenticationFacade) {
+    public ProviderController(ExecutionTransaction executionTransaction, ProviderService providerService) {
         this.executionTransaction = executionTransaction;
         this.providerService = providerService;
-        this.authenticationFacade = authenticationFacade;
     }
 
     @PostMapping
     public ResponseEntity<ProviderResponse> addNewProvider(@RequestBody @Valid ProviderRequest providerRequest) {
         Provider provider = providerService.createNewProvider(providerRequest);
-
         return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
     }
 
@@ -87,14 +84,22 @@ public class ProviderController {
         return ResponseEntity.accepted().build();
     }
 
-    @GetMapping("/all")
-    public ResponseEntity<List<ProviderResponse>> getAllProvidersByUserId(){
+    @GetMapping("/all/{projectId}")
+    public ResponseEntity<List<ProviderResponse>> getAllProvidersByUserId(
+            @PathVariable UUID projectId
+    ){
 
-        List<Provider> providers = providerService.listAllProvidersByUserId(authenticationFacade.getUserAuthenticatedId());
+        List<Provider> providers = providerService.findProjectsByProjectIdAndUserId(projectId);
 
         return ResponseEntity.ok(providers.stream()
                 .map(ProviderResponse::createFromProvider)
                 .collect(Collectors.toList()));
+    }
+
+    @GetMapping("/projects/{providerId}")
+    public ResponseEntity<List<UUID>> getProjectsIdByProviderId(@PathVariable UUID providerId){
+        List<UUID> groupsId = providerService.findProjectsIdByProviderId(providerId);
+        return ResponseEntity.ok(groupsId);
     }
 }
 
