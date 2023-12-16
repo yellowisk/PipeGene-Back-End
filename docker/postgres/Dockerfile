@@ -12,3 +12,4 @@ ENV POSTGRES_PASSWORD=password
 
 HEALTHCHECK --start-period=30s --interval=1s --timeout=60s --retries=30\
   CMD /bootstrap/init.sh
+
