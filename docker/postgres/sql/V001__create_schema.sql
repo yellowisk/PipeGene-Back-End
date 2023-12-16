@@ -56,12 +56,22 @@ ALTER TABLE pipegine_platform.provider OWNER TO "pipegine";
 ALTER TABLE pipegine_platform.provider
     ADD CONSTRAINT provider_pkey PRIMARY KEY (id);
 
+DROP TYPE IF EXISTS pipegine_platform.pipeline_status CASCADE;
+
+CREATE TYPE pipegine_platform.pipeline_status AS ENUM (
+    'DISABLED',
+    'ENABLED'
+);
+
+ALTER TYPE pipegine_platform.pipeline_status OWNER TO "pipegine";
+
 DROP TABLE IF EXISTS pipegine_platform.pipeline CASCADE;
 
 CREATE TABLE pipegine_platform.pipeline(
    id uuid NOT NULL,
    project_id uuid NOT NULL,
-   description varchar NOT NULL
+   description varchar NOT NULL,
+   status pipegine_platform.pipeline_status
 );
 
 ALTER TABLE pipegine_platform.pipeline OWNER TO "pipegine";

@@ -3,7 +3,6 @@ package br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway;
 import br.edu.ifsp.scl.pipegene.domain.Pipeline;
 import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
 import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.PipelineStepDTO;
-import br.edu.ifsp.scl.pipegene.web.model.pipeline.request.UpdatePipelineStepRequest;
 
 import java.util.Collection;
 import java.util.List;

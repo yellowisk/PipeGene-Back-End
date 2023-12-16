@@ -148,7 +148,7 @@ queries:
     pipeline-dao:
       insert:
         pipeline: >
-          INSERT INTO pipegine_platform.pipeline(id, project_id, description) VALUES(?, ?, ?)
+          INSERT INTO pipegine_platform.pipeline(id, project_id, description, status) VALUES(?, ?, ?, ?::pipeline_status)
         pipeline-step: >
           INSERT INTO pipegine_platform.pipeline_step(step_id, pipeline_id, provider_id, input_type, output_type,
             params, step_number) VALUES(?, ?, ?, ?, ?, (to_json(?::jsonb)), ?)
@@ -157,6 +157,7 @@ queries:
           SELECT
             p.id pipeline_id,
             p.description pipeline_description,
+            p.status pipeline_status,
 
             ps.step_id pipeline_step_id,
             ps.provider_id pipeline_step_provider_id,
@@ -170,17 +171,17 @@ queries:
           WHERE p.project_id=?
 
         pipelines-by-project-id: >
-          SELECT p.id, p.description FROM pipegine_platform.pipeline p WHERE p.project_id=?
+          SELECT p.id, p.description, p.status FROM pipegine_platform.pipeline p WHERE p.project_id=?
 
         pipelines-by-owner-id: >
-          SELECT p.id, p.description FROM pipegine_platform.pipeline p
+          SELECT p.id, p.description, p.status FROM pipegine_platform.pipeline p
             INNER JOIN project pr ON pr.id = p.project_id
           WHERE pr.owner_id=?
 
         pipeline-by-id: >
-          SELECT p.id, p.description FROM pipegine_platform.pipeline p WHERE p.id=?
+          SELECT p.id, p.description, p.status FROM pipegine_platform.pipeline p WHERE p.id=?
         pipeline-with-project-id-by-id: >
-          SELECT p.id, p.project_id, p.description 
+          SELECT p.id, p.project_id, p.description, p.status 
           FROM pipegine_platform.pipeline p WHERE p.id=?
 
         pipeline-steps-by-pipeline-id: >
@@ -230,7 +231,7 @@ queries:
           WHERE ps.pipeline_id=ANY(?)
       update:
         pipeline-by-id: >
-          UPDATE pipegine_platform.pipeline SET description=?/*, project_id=?*/ WHERE id=?;
+          UPDATE pipegine_platform.pipeline SET description=? WHERE id=?;
         pipeline-step-by-id: >
           UPDATE pipegine_platform.pipeline_step ps
             ps.input_type = ?,
@@ -325,6 +326,7 @@ queries:
             e.status,
             p.id pipeline_id,
             p.description pipeline_description,
+            p.status pipeline_status,
             d.id dataset_id,
             d.filename dataset_filename,
             d.project_id dataset_project_id
@@ -343,6 +345,7 @@ queries:
             e.status,
             p.id pipeline_id,
             p.description pipeline_description,
+            p.status pipeline_status,
             d.id dataset_id,
             d.filename dataset_filename,
             d.project_id dataset_project_id
@@ -362,6 +365,7 @@ queries:
             e.status,
             p.id pipeline_id,
             p.description pipeline_description,
+            p.status pipeline_status,
             d.id dataset_id,
             d.filename dataset_filename,
             d.project_id dataset_project_id
@@ -395,6 +399,7 @@ queries:
             e.*,
             p.id pipeline_id,
             p.description pipeline_description,
+            p.status pipeline_status,
             d.id dataset_id,
             d.filename dataset_filename,
             d.project_id dataset_project_id

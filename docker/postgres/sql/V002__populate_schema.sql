@@ -70,8 +70,8 @@ insert into pipegine_platform.dataset(id, filename, project_id)
            '042e4e39-ba0b-49d1-a01a-237333d0b1a5_uploads_mock_GBM_MEMo.maf', 'f2d6a949-8bb5-4df5-8ca7-e5b8d2292488'::uuid);
 
 -- cria pipeline para o Grafico pré processamento
-INSERT INTO pipegine_platform.pipeline(id, project_id, description)
-    VALUES('959f2ff3-ed29-435b-83bb-c8390f6385bf'::uuid, 'f2d6a949-8bb5-4df5-8ca7-e5b8d2292488'::uuid, 'Exporta grafico resultante do pre processamento');
+INSERT INTO pipegine_platform.pipeline(id, project_id, description, status)
+    VALUES('959f2ff3-ed29-435b-83bb-c8390f6385bf'::uuid, 'f2d6a949-8bb5-4df5-8ca7-e5b8d2292488'::uuid, 'Exporta grafico resultante do pre processamento', 'ENABLED');
 
 -- cria step unico para o Grafico pré processamento
 INSERT INTO pipegine_platform.pipeline_step(step_id, pipeline_id, provider_id, input_type, output_type, params, step_number)
@@ -137,8 +137,8 @@ VALUES ('e1a8ba35-d029-4a7c-bb98-ae7e84c41a41',
         '28559f11-0c41-4444-a087-c14efde8b482');
 
 -- cria pipeline para o Pré processamento - Rodrigo e Classificação de variante - Rodrigo
-INSERT INTO pipegine_platform.pipeline (id, project_id, description)
-VALUES ('3677aa2e-6be8-43f9-ad8c-a0f1f71e2040', '28559f11-0c41-4444-a087-c14efde8b482', 'Realiza pre processamento e faz a classificação de variante - Rodrigo');
+INSERT INTO pipegine_platform.pipeline (id, project_id, description, status)
+VALUES ('3677aa2e-6be8-43f9-ad8c-a0f1f71e2040', '28559f11-0c41-4444-a087-c14efde8b482', 'Realiza pre processamento e faz a classificação de variante - Rodrigo', 'ENABLED');
 
 -- cria steps para o Pré processamento - Rodrigo e Classificação de variante - Rodrigo
 INSERT INTO pipegine_platform.pipeline_step (step_id, pipeline_id, provider_id, input_type, output_type, params, step_number)

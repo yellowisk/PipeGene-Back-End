@@ -156,7 +156,8 @@ public class ExecutionDAOImpl implements ExecutionDAO {
 
         UUID pipelineId = (UUID) rs.getObject("pipeline_id");
         String pipelineDescription = rs.getString("pipeline_description");
-        Pipeline pipeline = Pipeline.createWithoutProjectAndSteps(pipelineId, pipelineDescription);
+        PipelineStatus pipelineStatus = PipelineStatus.valueOf(rs.getString("pipeline_status"));
+        Pipeline pipeline = Pipeline.createWithoutProjectAndSteps(pipelineId, pipelineDescription, pipelineStatus);
 
         Dataset dataset = new Dataset(
                 (UUID) rs.getObject("dataset_id"),

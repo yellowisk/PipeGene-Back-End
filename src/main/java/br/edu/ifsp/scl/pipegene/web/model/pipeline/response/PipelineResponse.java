@@ -12,6 +12,7 @@ public class PipelineResponse {
     private UUID id;
     private Project project;
     private String description;
+    private String status;
     private List<PipelineStepResponse> steps;
 
     public static PipelineResponse createJustId(UUID id) {
@@ -22,16 +23,18 @@ public class PipelineResponse {
         this.id = id;
     }
 
-    public PipelineResponse(UUID id, Project project, String description, List<PipelineStepResponse> steps) {
+    public PipelineResponse(UUID id, Project project, String description, String status, List<PipelineStepResponse> steps) {
         this.id = id;
         this.project = project;
         this.description = description;
+        this.status = status;
         this.steps = steps;
     }
 
-    public PipelineResponse(UUID id, String description, List<PipelineStepResponse> steps) {
+    public PipelineResponse(UUID id, String description, String status, List<PipelineStepResponse> steps) {
         this.id = id;
         this.description = description;
+        this.status = status;
         this.steps = steps;
     }
 
@@ -50,6 +53,10 @@ public class PipelineResponse {
         return description;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
     public List<PipelineStepResponse> getSteps() {
         return steps;
     }
@@ -59,6 +66,7 @@ public class PipelineResponse {
                 p.getId(),
                 p.getProject(),
                 p.getDescription(),
+                p.getStatus().name(),
                 p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStepWithStepNumber).collect(Collectors.toList())
         );
     }
@@ -67,6 +75,7 @@ public class PipelineResponse {
         return new PipelineResponse(
                 p.getId(),
                 p.getDescription(),
+                p.getStatus().name(),
                 p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStepWithStepNumber).collect(Collectors.toList())
         );
     }
@@ -76,24 +85,29 @@ public class PipelineResponse {
                 p.getId(),
                 p.getProject(),
                 p.getDescription(),
+                p.getStatus().name(),
                 p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStepWithStepNumber).collect(Collectors.toList())
         );
     }
 
-    public static PipelineResponse createJustIdAndDescriptionFromPipeline(Pipeline p) {
-        return new PipelineResponse(p.getId(), p.getDescription());
+    public static PipelineResponse createJustIdAndDescriptionAndStatusFromPipeline(Pipeline p) {
+        return new PipelineResponse(p.getId(), p.getDescription(), p.getStatus().name());
     }
 
-    private PipelineResponse(UUID id, String description) {
+    private PipelineResponse(UUID id, String description, String status) {
         this.id = id;
         this.description = description;
+        this.status = status;
     }
+
+
 
     public static PipelineResponse createFromPipelineWithoutProject(Pipeline p) {
         return new PipelineResponse(
                 p.getId(),
                 null,
                 p.getDescription(),
+                p.getStatus().name(),
                 p.getSteps().stream().map(PipelineStepResponse::createFromPipelineStep).collect(Collectors.toList())
         );
     }

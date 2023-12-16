@@ -1,10 +1,7 @@
 package br.edu.ifsp.scl.pipegene.usecases.pipeline;
 
 import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
-import br.edu.ifsp.scl.pipegene.domain.PipelineStep;
-import br.edu.ifsp.scl.pipegene.domain.Pipeline;
-import br.edu.ifsp.scl.pipegene.domain.Project;
-import br.edu.ifsp.scl.pipegene.domain.Provider;
+import br.edu.ifsp.scl.pipegene.domain.*;
 import br.edu.ifsp.scl.pipegene.usecases.pipeline.gateway.PipelineDAO;
 import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
 import br.edu.ifsp.scl.pipegene.usecases.provider.gateway.ProviderDAO;
@@ -51,7 +48,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         Project project = optionalProject.get();
         List<PipelineStep> pipelineSteps = mapToPipelineStep(steps);
-        Pipeline pipeline = Pipeline.createWithoutId(project, request.getDescription(), pipelineSteps);
+        Pipeline pipeline = Pipeline.createWithoutId(project, request.getDescription(), PipelineStatus.ENABLED, pipelineSteps);
 
         return pipelineDAO.savePipeline(pipeline);
     }
@@ -242,10 +239,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         newSteps.removeAll(stepsAdded);
         reqPipeline.setSteps(newSteps);
 
-        System.out.println(Arrays.toString(stepsAdded.toArray()));
-        System.out.println(Arrays.toString(newSteps.toArray()));
-        System.out.println(Arrays.toString(reqPipeline.getSteps().toArray()));
-
         pipelineDAO.updatePipeline(reqPipeline.getNewInstanceWithId(pipelineId));
         stepsAdded.forEach(stepToAdd -> addNewPipelineStep(pipelineId, CreateStepRequest.createFromStep(stepToAdd)));
 
@@ -301,7 +294,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
         Pipeline imported = Pipeline.createWithoutId(
                 Project.createWithId(importProjectId),
-                pipeline.getDescription()  + " [Imported]", pipeline.getSteps()
+                pipeline.getDescription()  + " [Imported]", pipeline.getStatus(), pipeline.getSteps()
         );
 
         /*Verifying connection between providers and the group of the project that's importing
@@ -334,7 +327,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         List<PipelineStep> pipelineSteps = PipelineStepDTO.createListFromPipelineStepDTOList(pipelineStepsDTO);
         List<PipelineStep> pipelineStepsResponse = new ArrayList<>();
 
-        if (pipelineSteps.size() != 0) {
+        if (!pipelineSteps.isEmpty()) {
             for (PipelineStep step : pipelineSteps) {
                 if (step.getStepId().equals(pipelineStepId)) {
                     chosenStep = step;
