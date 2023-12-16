@@ -1,4 +1,4 @@
-FROM postgres:latest
+FROM postgres:14.2
 
 RUN echo "Building Dockerfile..."
 

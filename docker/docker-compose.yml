@@ -1,21 +1,16 @@
 version: "3.8"
-
 services:
-  pipegine-postgres:
+  postgres:
     build: ./postgres
-    container_name: pipegine-postgres
-    ports:
-      - "5432:5432"
     environment:
       - POSTGRES_USER=pipegine-app
       - POSTGRES_PASSWORD=pipegine-app
       - POSTGRES_DB=pipegine
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    ports:
+      - '5432:5432'
     volumes:
       - .volume/postgres:/var/lib/postgresql/data
 
-#  docker run -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres -p 5432:5432 -v ${PWD}/.volume/postgres:/var/lib/postgresql/data pipegine-postgres
+
+
+
