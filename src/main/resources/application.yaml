@@ -272,12 +272,17 @@ queries:
           SELECT * FROM pipegine_platform.provider
 
         provider-all-by-userId: >
-          SELECT *
-          FROM pipegine_platform.provider p
-            LEFT JOIN pipegine_platform.group_participation gp ON p.group_id=gp.group_id
-          WHERE p.public=true
-            OR p.owner_id=?
-            OR p.public=false AND gp.receive_user_id = ? AND gp.status='ACCEPTED'
+          SELECT DISTINCT pr.*
+          FROM pipegine_platform.provider pr
+          LEFT JOIN (
+              SELECT DISTINCT gp.provider_id
+              FROM pipegine_platform.group_provider gp
+              LEFT JOIN pipegine_platform.group_participation gpa ON gpa.group_id = gp.group_id
+              WHERE gpa.receive_user_id = ? AND gpa.status = 'ACCEPTED'
+          ) unique_providers ON pr.id = unique_providers.provider_id
+          WHERE pr.public = true
+             OR pr.owner_id = ?
+             OR (pr.public = false AND unique_providers.provider_id IS NOT NULL)
 
         provider-all-by-user-and-project-id: >
           SELECT pr.*

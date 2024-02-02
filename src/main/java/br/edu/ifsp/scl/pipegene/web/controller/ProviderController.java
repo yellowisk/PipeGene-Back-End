@@ -45,7 +45,7 @@ public class ProviderController {
 
     @GetMapping
     public ResponseEntity<List<ProviderResponse>> listAllProviders() {
-        List<Provider> providers = providerService.listAllProviders();
+        List<Provider> providers = providerService.listAllProvidersByUserId();
 
         return ResponseEntity.ok(
                 providers.stream()

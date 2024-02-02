@@ -110,7 +110,9 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
-    public List<Provider> listAllProvidersByUserId(UUID userId) {
+    public List<Provider> listAllProvidersByUserId() {
+        UUID userId = authenticationFacade.getUserAuthenticatedId();
+
         Optional<ApplicationUser> optionalUser = userApplicationDAO.findUserById(userId);
 
         if (optionalUser.isEmpty()){
