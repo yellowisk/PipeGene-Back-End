@@ -24,4 +24,6 @@ public interface ProviderService {
 
     List<Provider> listAllProvidersByUserId();
 
+    boolean isOwner(UUID providerId);
+
 }

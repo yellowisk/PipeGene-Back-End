@@ -123,6 +123,19 @@ public class ProviderServiceImpl implements ProviderService {
     }
 
     @Override
+    public boolean isOwner(UUID providerId) {
+        UUID userId = authenticationFacade.getUserAuthenticatedId();
+
+        Optional<ApplicationUser> optionalUser = userApplicationDAO.findUserById(userId);
+
+        if (optionalUser.isEmpty()){
+            throw new ResourceNotFoundException("Not found user with id: " + userId);
+        }
+
+        return providerDAO.isOwner(providerId, userId);
+    }
+
+    @Override
     public Provider findProviderById(UUID providerId) {
         Optional<Provider> optional = providerDAO.findProviderById(providerId);
 
