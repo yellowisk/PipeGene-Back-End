@@ -294,7 +294,10 @@ queries:
              OR (pr.public = false 
                  AND gp.group_id IN (SELECT group_id FROM pipegine_platform.project WHERE id = ?) 
                  AND EXISTS (SELECT 1 FROM pipegine_platform.group_participation gpa 
-                             WHERE gpa.group_id = gp.group_id AND gpa.status = 'ACCEPTED')) 
+                             WHERE gpa.group_id = gp.group_id AND gpa.status = 'ACCEPTED'))
+      exists:
+        is-owner: >
+          SELECT EXISTS(SELECT 1 FROM pipegine_platform.provider p WHERE p.id=? AND p.owner_id=?)
 
     group-provider-dao:
 

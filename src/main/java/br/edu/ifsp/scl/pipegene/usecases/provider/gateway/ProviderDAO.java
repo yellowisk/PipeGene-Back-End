@@ -25,4 +25,6 @@ public interface ProviderDAO {
 
     boolean existsGroupProvider(UUID groupId, UUID providerId);
 
+    boolean isOwner(UUID providerId, UUID userId);
+
 }

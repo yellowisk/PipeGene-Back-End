@@ -62,6 +62,9 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.provider-dao.select.provider-all-by-user-and-project-id}")
     private String selectAllProviderByUserAndProjectIdQuery;
 
+    @Value("${queries.sql.provider-dao.exists.is-owner}")
+    private String isOwnerProviderQuery;
+
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, GroupDAO groupDAO, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -185,6 +188,11 @@ public class ProviderDAOImpl implements ProviderDAO {
 
     @Override
     public boolean existsGroupProvider(UUID groupId, UUID providerId) {
-        return jdbcTemplate.queryForObject(existsGroupProviderByGroupAndProviderIdQuery, Boolean.class, groupId, providerId);
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(existsGroupProviderByGroupAndProviderIdQuery, Boolean.class, groupId, providerId));
+    }
+
+    @Override
+    public boolean isOwner(UUID providerId, UUID userId) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(isOwnerProviderQuery, Boolean.class, providerId, userId));
     }
 }
