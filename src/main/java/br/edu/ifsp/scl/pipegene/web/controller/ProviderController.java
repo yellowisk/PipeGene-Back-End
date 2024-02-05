@@ -101,5 +101,10 @@ public class ProviderController {
         List<UUID> groupsId = providerService.findProjectsIdByProviderId(providerId);
         return ResponseEntity.ok(groupsId);
     }
+
+    @GetMapping("/owner/{providerId}")
+    public ResponseEntity<Boolean> isOwner(@PathVariable UUID providerId){
+        return ResponseEntity.ok(providerService.isOwner(providerId));
+    }
 }
 
