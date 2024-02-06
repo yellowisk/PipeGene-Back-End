@@ -26,4 +26,6 @@ public interface ProviderService {
 
     boolean isOwner(UUID providerId);
 
+    boolean isProviderInProject(UUID providerId, UUID projectId);
+
 }

@@ -104,7 +104,6 @@ public class ProviderServiceImpl implements ProviderService {
         }
 
         Provider provider = providerRequest.convertToProvider();
-        System.out.println(provider);
 
         return providerDAO.updateProvider(provider.getNewInstanceWithId(providerId));
     }
@@ -133,6 +132,18 @@ public class ProviderServiceImpl implements ProviderService {
         }
 
         return providerDAO.isOwner(providerId, userId);
+    }
+
+    @Override
+    public boolean isProviderInProject(UUID providerId, UUID projectId) {
+
+        projectCRUD.findProjectById(projectId);
+
+        providerDAO.findProviderById(providerId).orElseThrow(
+                () -> new ResourceNotFoundException("Not found provider with id: " + providerId)
+        );
+
+        return providerDAO.isProviderInProject(providerId, projectId);
     }
 
     @Override
