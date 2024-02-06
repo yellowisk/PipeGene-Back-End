@@ -313,6 +313,15 @@ queries:
         group-provider-by-group-id-and-provider-id: >
           SELECT EXISTS(SELECT 1 FROM pipegine_platform.group_provider WHERE group_id=? AND provider_id=?)
 
+        provider-pipeline-step: >
+          SELECT EXISTS (
+              SELECT 1
+              FROM pipegine_platform.pipeline AS p
+              JOIN pipegine_platform.pipeline_step AS ps ON p.id = ps.pipeline_id
+              WHERE p.project_id = ?
+              AND ps.provider_id = ?
+          ) AS provider_used;
+
 
     execution-dao:
       insert:

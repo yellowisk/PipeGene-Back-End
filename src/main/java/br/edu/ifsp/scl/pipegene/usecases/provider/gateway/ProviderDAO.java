@@ -27,4 +27,6 @@ public interface ProviderDAO {
 
     boolean isOwner(UUID providerId, UUID userId);
 
+    boolean isProviderInProject(UUID providerId, UUID projectId);
+
 }

@@ -65,6 +65,9 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Value("${queries.sql.provider-dao.exists.is-owner}")
     private String isOwnerProviderQuery;
 
+    @Value("${queries.sql.group-provider-dao.exists.provider-pipeline-step}")
+    private String ProviderInPipelineStepQuery;
+
     public ProviderDAOImpl(JdbcTemplate jdbcTemplate, ObjectMapper objectMapper, GroupDAO groupDAO, IAuthenticationFacade authentication) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
@@ -158,7 +161,7 @@ public class ProviderDAOImpl implements ProviderDAO {
         }
 
         jdbcTemplate.update(updateProviderQuery, provider.getName(), provider.getDescription(), provider.getUrl(),
-                provider.getPublic(),
+                provider.getUrlSource(), provider.getPublic(),
                 String.join(",", provider.getInputSupportedTypes()),
                 String.join(",", provider.getOutputSupportedTypes()), operations, providerId);
 
@@ -194,5 +197,10 @@ public class ProviderDAOImpl implements ProviderDAO {
     @Override
     public boolean isOwner(UUID providerId, UUID userId) {
         return Boolean.TRUE.equals(jdbcTemplate.queryForObject(isOwnerProviderQuery, Boolean.class, providerId, userId));
+    }
+
+    @Override
+    public boolean isProviderInProject(UUID providerId, UUID projectId) {
+        return Boolean.TRUE.equals(jdbcTemplate.queryForObject(ProviderInPipelineStepQuery, Boolean.class, projectId, providerId));
     }
 }
