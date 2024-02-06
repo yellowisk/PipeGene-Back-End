@@ -64,11 +64,17 @@ public class ProviderController {
     @PatchMapping("/{providerId}")
     public ResponseEntity<ProviderResponse> updateProvider(
             @PathVariable UUID providerId,
-            @RequestBody @Valid ProviderRequest providerRequest
-    ) {
+            @RequestBody @Valid ProviderRequest providerRequest) {
         Provider provider = providerService.updateProvider(providerId, providerRequest);
 
         return ResponseEntity.ok(ProviderResponse.createFromProvider(provider));
+    }
+
+    @GetMapping("/project/{providerId}/{projectId}")
+    public ResponseEntity<Boolean> isProviderInProject(
+            @PathVariable UUID providerId,
+            @PathVariable UUID projectId) {
+        return ResponseEntity.ok(providerService.isProviderInProject(providerId, projectId));
     }
 
     @PostMapping("/{providerId}/executions/{executionId}/steps/{stepId}")
