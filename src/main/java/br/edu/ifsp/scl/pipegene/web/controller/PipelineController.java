@@ -53,6 +53,19 @@ public class PipelineController {
         );
     }
 
+    @GetMapping("/providers/{providerId}")
+    public ResponseEntity<List<PipelineResponse>> listAllByProvider(
+            @PathVariable UUID projectId,
+            @PathVariable UUID providerId) {
+        List<Pipeline> pipelines = pipelineCRUD.listAllPipelineByProviderId(projectId, providerId);
+
+        return ResponseEntity.ok(
+                pipelines.stream()
+                        .map(PipelineResponse::createFromPipeline)
+                        .collect(Collectors.toList())
+        );
+    }
+
     @GetMapping("/{pipelineId}")
     public ResponseEntity<PipelineResponse> findById(
             @PathVariable UUID projectId,
@@ -102,9 +115,10 @@ public class PipelineController {
 
     @DeleteMapping("/{pipelineId}/steps/{stepId}")
     public ResponseEntity<PipelineResponse> deletePipelineStep(
+            @PathVariable UUID projectId,
             @PathVariable UUID pipelineId,
             @PathVariable UUID stepId) {
-        Pipeline updatedPipeline = pipelineCRUD.deletePipelineStep(pipelineId, stepId);
+        Pipeline updatedPipeline = pipelineCRUD.deletePipelineStep(projectId, pipelineId, stepId);
 
         return ResponseEntity.ok(PipelineResponse.createFromPipelineFull(updatedPipeline));
     }

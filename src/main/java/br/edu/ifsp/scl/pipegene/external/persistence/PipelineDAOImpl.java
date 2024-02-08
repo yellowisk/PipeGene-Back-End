@@ -196,6 +196,14 @@ public class PipelineDAOImpl implements PipelineDAO {
     }
 
     @Override
+    public List<Pipeline> listAllPipelineByProjectAndProvider(UUID projectId, UUID providerId) {
+        List<Pipeline> pipelinesFromProject = findPipelinesByProjectId(projectId).stream().toList();
+        List<Pipeline> pipelinesByProviderId = pipelinesFromProject.stream()
+                .filter(pipeline -> pipeline.getSteps().stream().anyMatch(step -> step.getProvider().getId().equals(providerId))).toList();
+        return pipelinesByProviderId;
+    }
+
+    @Override
     public Collection<Pipeline> findPipelinesByProjectId(UUID projectId) {
         return retrieveAllBasedQueryWithAnIdCondition(selectPipelinesByProjectIdQuery, projectId);
     }

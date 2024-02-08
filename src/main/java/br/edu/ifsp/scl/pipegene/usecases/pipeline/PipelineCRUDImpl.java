@@ -158,6 +158,19 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
+    public List<Pipeline> listAllPipelineByProviderId(UUID projectId, UUID providerId) {
+        if(!projectDAO.projectExists(projectId)) {
+            throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
+        }
+
+        if (!providerDAO.isProviderInProject(providerId, projectId)) {
+            throw new ResourceNotFoundException("Couldn't find provider " + providerId + " in project " + projectId);
+        }
+
+        return pipelineDAO.listAllPipelineByProjectAndProvider(projectId, providerId);
+    }
+
+    @Override
     public PipelineStepDTO findPipelineStepById(UUID projectId, UUID pipelineId, UUID stepId) {
         Boolean projectExists = projectDAO.projectExists(projectId);
         if (!projectExists) {
@@ -179,16 +192,6 @@ public class PipelineCRUDImpl implements PipelineCRUD {
             throw new ResourceNotFoundException("Couldn't find project with id: " + projectId);
         }
 
-        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
-        if (!pipelineExists) {
-            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
-        }
-
-        return pipelineDAO.findAllPipelineStepsByPipelineId(pipelineId);
-    }
-
-    @Override
-    public List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId) {
         Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
         if (!pipelineExists) {
             throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
@@ -229,7 +232,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
                 .toList();
 
         for (UUID stepId : stepsToRemove) {
-            deletePipelineStep(pipelineId, stepId);
+            deletePipelineStep(projectId, pipelineId, stepId);
         }
 
         List<PipelineStep> stepsAdded = reqPipeline.getSteps().stream()
@@ -313,7 +316,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
-    public Pipeline deletePipelineStep(UUID pipelineId, UUID pipelineStepId) {
+    public Pipeline deletePipelineStep(UUID projectId, UUID pipelineId, UUID pipelineStepId) {
 
         Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
         if (!pipelineExists) {
@@ -323,7 +326,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         Pipeline pipeline = pipelineDAO.findPipelineById(pipelineId).get();
         PipelineStep chosenStep = null;
 
-        List<PipelineStepDTO> pipelineStepsDTO = findAllPipelineStepsByPipelineId(pipeline.getId());
+        List<PipelineStepDTO> pipelineStepsDTO = listAllPipelineStepsByPipelineId(projectId, pipeline.getId());
         List<PipelineStep> pipelineSteps = PipelineStepDTO.createListFromPipelineStepDTOList(pipelineStepsDTO);
         List<PipelineStep> pipelineStepsResponse = new ArrayList<>();
 
