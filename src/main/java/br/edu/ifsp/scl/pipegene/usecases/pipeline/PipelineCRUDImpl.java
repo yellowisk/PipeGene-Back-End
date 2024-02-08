@@ -344,6 +344,11 @@ public class PipelineCRUDImpl implements PipelineCRUD {
 
     @Override
     public Pipeline disablePipeline(UUID projectId, UUID pipelineId) {
+        if (!projectDAO.isOwner(projectId, authenticationFacade.getUserAuthenticatedId())) {
+            throw new GenericResourceException("User " + authenticationFacade.getUserAuthenticatedId() +
+                    " is not the owner of the project " + projectId, "Invalid user");
+        }
+
         Pipeline pipeline = findByProjectIdAndPipelineId(projectId, pipelineId);
         pipeline.setStatus(PipelineStatus.DISABLED);
 
