@@ -339,6 +339,15 @@ public class PipelineCRUDImpl implements PipelineCRUD {
             throw new ResourceNotFoundException("Pipeline " + pipelineId + " is empty");
         }
 
-        return pipelineDAO.deletePipeline(pipelineStepsResponse, chosenStep.getStepId());
+        return pipelineDAO.deletePipelineStep(pipelineStepsResponse, chosenStep.getStepId());
     }
+
+    @Override
+    public Pipeline disablePipeline(UUID projectId, UUID pipelineId) {
+        Pipeline pipeline = findByProjectIdAndPipelineId(projectId, pipelineId);
+        pipeline.setStatus(PipelineStatus.DISABLED);
+
+        return pipelineDAO.disablePipeline(pipeline);
+    }
+
 }

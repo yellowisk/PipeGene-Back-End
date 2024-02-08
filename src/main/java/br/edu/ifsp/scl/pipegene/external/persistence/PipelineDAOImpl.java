@@ -64,6 +64,9 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.update.pipeline-step-by-id}")
     private String updatePipelineStepByIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.update.pipeline-status-by-id}")
+    private String updatePipelineStatusByIdQuery;
+
     @Value("${queries.sql.pipeline-dao.update.step}")
     private String updateStepQuery;
 
@@ -120,7 +123,7 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Override
     public Pipeline clonePipeline(Pipeline pipeline) {
         UUID pipelineId = UUID.randomUUID();
-        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription(), pipeline.getStatus());
+        jdbcTemplate.update(insertPipelineQuery, pipelineId, pipeline.getProjectId(), pipeline.getDescription(), pipeline.getStatus().name());
 
         List<PipelineStep> steps = pipeline.getSteps();
 
@@ -319,7 +322,7 @@ public class PipelineDAOImpl implements PipelineDAO {
     public Pipeline updatePipeline(Pipeline pipeline) {
         UUID pipelineId = pipeline.getId();
 
-        jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipeline.getStatus(), pipelineId);
+        jdbcTemplate.update(updatePipelineByIdQuery, pipeline.getDescription(), pipeline.getStatus().name(), pipelineId);
 
         List<PipelineStep> steps = pipeline.getSteps();
         jdbcTemplate.batchUpdate(updateStepQuery, new BatchPreparedStatementSetter() {
@@ -356,12 +359,17 @@ public class PipelineDAOImpl implements PipelineDAO {
     }
 
     @Override
-    public Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId) {
+    public Pipeline deletePipelineStep(List<PipelineStep> steps, UUID stepId) {
         jdbcTemplate.update(deletePipelineStepsQuery, stepId);
         Pipeline pipeline = Pipeline.getNewInstanceWithDescriptionAndStatusAndSteps(null, null, steps);
         return pipeline;
     }
 
+    @Override
+    public Pipeline disablePipeline(Pipeline pipeline) {
+        jdbcTemplate.update(updatePipelineStatusByIdQuery, pipeline.getId());
+        return pipeline;
+    }
 
     private PipelineStepDTO shortMapperPipelineStepFromRs(ResultSet rs, int rowNum) throws SQLException {
         UUID stepId = (UUID) rs.getObject("step_id");

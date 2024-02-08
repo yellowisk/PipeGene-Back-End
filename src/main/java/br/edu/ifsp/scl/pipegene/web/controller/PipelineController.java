@@ -91,6 +91,15 @@ public class PipelineController {
         return ResponseEntity.ok(PipelineResponse.createFromPipeline(updatedPipeline));
     }
 
+    @PatchMapping("/{pipelineId}/disable")
+    public ResponseEntity<PipelineResponse> disablePipeline(
+            @PathVariable UUID projectId,
+            @PathVariable UUID pipelineId) {
+        Pipeline pipeline = pipelineCRUD.disablePipeline(projectId, pipelineId);
+
+        return ResponseEntity.ok(PipelineResponse.createFromPipeline(pipeline));
+    }
+
     @DeleteMapping("/{pipelineId}/steps/{stepId}")
     public ResponseEntity<PipelineResponse> deletePipelineStep(
             @PathVariable UUID pipelineId,

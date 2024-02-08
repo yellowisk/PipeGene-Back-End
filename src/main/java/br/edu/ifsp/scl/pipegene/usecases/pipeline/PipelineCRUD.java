@@ -20,6 +20,7 @@ public interface PipelineCRUD {
     List<PipelineStepDTO> listAllPipelineStepsByPipelineId(UUID projectId, UUID pipelineId);
     List<PipelineStepDTO> findAllPipelineStepsByPipelineId(UUID pipelineId);
     Pipeline updatePipeline(UUID projectId, UUID pipelineId, UpdatePipelineRequest request);
+    Pipeline disablePipeline(UUID projectId, UUID pipelineId);
     Pipeline clonePipeline(UUID projectId, UUID pipelineId, ClonePipelineRequest request);
     Pipeline addNewPipelineStep(UUID pipelineId, CreateStepRequest request);
     Pipeline deletePipelineStep(UUID pipelineId, UUID pipelineStepId);

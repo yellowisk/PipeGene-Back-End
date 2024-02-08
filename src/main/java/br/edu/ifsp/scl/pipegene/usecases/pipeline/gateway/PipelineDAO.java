@@ -29,11 +29,13 @@ public interface PipelineDAO {
 
     Pipeline updatePipeline(Pipeline pipeline);
 
+    Pipeline disablePipeline(Pipeline pipeline);
+
     Pipeline addPipelineStep(UUID pipelineId, PipelineStep pipelineStep);
 
     Pipeline clonePipeline(Pipeline pipeline);
 
-    Pipeline deletePipeline(List<PipelineStep> steps, UUID stepId);
+    Pipeline deletePipelineStep(List<PipelineStep> steps, UUID stepId);
 
     Boolean pipelineExists(UUID pipelineId);
 
