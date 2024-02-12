@@ -1,13 +1,10 @@
 -- \connect "pipegine"
 
-
-
-
 -- Cria um usuário com username 'vini' e senha 'password'
 
 insert into pipegine_platform.application_user(id, name, username, password, is_account_non_expired,
     is_account_nonLocked, is_credentials_non_expired, is_enabled)
-    values ('78cec5db-6396-4fd9-803f-1fd469d76330'::uuid, 'vini', 'vini',
+    values ('78cec5db-6396-4fd9-803f-1fd469d76330'::uuid, 'Vinicius', 'vini',
         '$2a$10$M2lu6nBJ4yCdJ/qtbT7aZeofmxsFqYlMQtz1M2QQgRm1sCwTi2i/m', true, true, true, true);
 
 -- Cria um usuário com username 'arthur' e senha '123'
@@ -17,11 +14,15 @@ insert into pipegine_platform.application_user(id, name, username, password, is_
 values ('9780ed75-52db-4a4d-a0ad-13681a28e00a'::uuid, 'teste2', 'arthur',
         '$2a$10$XbQdgwykWtY7no9nNJTVO.97cSRNZx2b6MZ9AYnTNNtoDWX0Q9zxi', true, true, true, true);
 
+-- Cria grupos para vini
+
 insert into pipegine_platform.group(id, owner_id)
 values ('cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid);
 
 insert into pipegine_platform.group(id, owner_id)
 values ('52dea72e-bf07-40db-8484-ba5879cbac18'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid);
+
+-- Cria participações nos grupos
 
 insert into pipegine_platform.group_participation(id, group_id, receive_user_id,
                                                   submitter_user_id, create_date, status)
@@ -56,6 +57,10 @@ insert into pipegine_platform.provider(id, name, description, url, url_source, p
             ]
         }]'::jsonb));
 
+-- adiciona provider aos grupos
+
+insert into pipegine_platform.group_provider(group_id, provider_id)
+    values('cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid, '78cec5db-6396-4fd9-803f-1fd469d76312'::uuid);
 
 -- cria projeto que vai utilizar do provider de Grafico pré processamento
 insert into pipegine_platform.project(id, name, description, group_id, owner_id)
