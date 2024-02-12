@@ -231,7 +231,7 @@ queries:
           WHERE ps.pipeline_id=ANY(?)
       update:
         pipeline-by-id: >
-          UPDATE pipegine_platform.pipeline SET description=? WHERE id=?;
+          UPDATE pipegine_platform.pipeline SET description=?, status=?::pipeline_status WHERE id=?;
         pipeline-step-by-id: >
           UPDATE pipegine_platform.pipeline_step ps
             ps.input_type = ?,
