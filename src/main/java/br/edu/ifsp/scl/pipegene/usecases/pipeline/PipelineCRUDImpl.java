@@ -273,15 +273,7 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         return pipelineDAO.addPipelineStep(pipelineId, step);
     }
 
-    @Override
-    public Pipeline clonePipeline(UUID exportProjectId, UUID pipelineId, ClonePipelineRequest request) {
-        UUID importProjectId = request.getProjectId();
-
-        Boolean pipelineExists = pipelineDAO.pipelineExists(pipelineId);
-        if (!pipelineExists) {
-            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
-        }
-
+    public void validatePipelineCloning(UUID exportProjectId, UUID importProjectId, UUID pipelineId) {
         if (!projectDAO.projectExists(exportProjectId)) {
             throw new ResourceNotFoundException("Couldn't find project with id: " + exportProjectId);
         }
@@ -289,6 +281,17 @@ public class PipelineCRUDImpl implements PipelineCRUD {
         if (!projectDAO.projectExists(importProjectId)) {
             throw new ResourceNotFoundException("Couldn't find project with id: " + importProjectId);
         }
+
+        if (!pipelineDAO.pipelineExists(pipelineId)) {
+            throw new ResourceNotFoundException("Couldn't find pipeline with id: " + pipelineId);
+        }
+    }
+
+    @Override
+    public Pipeline clonePipeline(UUID exportProjectId, UUID pipelineId, ClonePipelineRequest request) {
+        UUID importProjectId = request.getProjectId();
+
+        validatePipelineCloning(exportProjectId, importProjectId, pipelineId);
 
         UUID projectGroupId = projectDAO.findProjectById(importProjectId).get().getGroupId();
 
