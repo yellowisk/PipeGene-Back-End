@@ -127,6 +127,7 @@ CREATE TABLE pipegine_platform.execution(
     description varchar NOT NULL,
     result varchar,
     current_step integer,
+    error_message varchar,
     status pipegine_platform.execution_status
 );
 
