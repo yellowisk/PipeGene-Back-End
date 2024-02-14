@@ -104,7 +104,6 @@ ALTER TABLE pipegine_platform.pipeline_step
     ADD CONSTRAINT pipeline_step_pipeline_id_fkey FOREIGN KEY (pipeline_id)
         REFERENCES pipegine_platform.pipeline(id) ON DELETE CASCADE;
 
-
 ALTER TABLE pipegine_platform.pipeline_step
     ADD CONSTRAINT pipeline_step_provider_id_fkey FOREIGN KEY (provider_id)
         REFERENCES pipegine_platform.provider(id) ON DELETE CASCADE;

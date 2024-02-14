@@ -135,6 +135,10 @@ VALUES ('28559f11-0c41-4444-a087-c14efde8b482', 'Pré processamento - Rodrigo e 
         '52dea72e-bf07-40db-8484-ba5879cbac18'::uuid,
         '78cec5db-6396-4fd9-803f-1fd469d76330');
 
+-- cria group_provider para o provider de Pré processamento - Rodrigo
+INSERT INTO pipegine_platform.group_provider (group_id, provider_id)
+VALUES ('cdcb7005-6387-4184-b9a1-ebe620daf3b4'::uuid, 'e8bf42e4-2ffc-4935-a546-ee5d9263f419'::uuid);
+
 -- cria dataset do projeto que servira de input para o Pré processamento - Rodrigo
 INSERT INTO pipegine_platform.dataset (id, filename, project_id)
 VALUES ('e1a8ba35-d029-4a7c-bb98-ae7e84c41a41',
