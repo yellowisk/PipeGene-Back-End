@@ -46,6 +46,9 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.select.pipeline-with-project-id-by-id}")
     private String selectPipelineWithProjectIdByIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.select.pipeline-by-provider-id}")
+    private String selectPipelineByProviderIdQuery;
+
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-by-pipeline-ids}")
     private String selectPipelineStepsByPipelineIdsQuery;
 
@@ -150,10 +153,23 @@ public class PipelineDAOImpl implements PipelineDAO {
     }
 
     @Override
-    public List<Pipeline> findAll(UUID projectId) {
+    public List<Pipeline> listAllByOwnerId(UUID ownerId) {
+        Collection<Pipeline> pipelines = retrieveAllBasedQueryWithAnIdCondition(selectPipelinesByOwnerIdQuery, ownerId);
+        return new ArrayList<>(pipelines);
+    }
+
+    @Override
+    public List<Pipeline> listAllPipelineByProjectAndProvider(UUID projectId, UUID providerId) {
+        List<Pipeline> pipelinesFromProject = findPipelinesByProjectId(projectId).stream().toList();
+        List<Pipeline> pipelinesByProviderId = pipelinesFromProject.stream()
+                .filter(pipeline -> pipeline.getSteps().stream().anyMatch(step -> step.getProvider().getId().equals(providerId))).toList();
+        return pipelinesByProviderId;
+    }
+
+    private Collection<Pipeline> retrievePipelinesByQueryAndParams(String query, Object... params) {
         Map<UUID, Pipeline> pipelineMap = new HashMap<>();
 
-        jdbcTemplate.query(selectAllPipelineQuery, (rs, rowNum) -> {
+        jdbcTemplate.query(query, (rs, rowNum) -> {
             try {
                 UUID pipelineId = (UUID) rs.getObject("pipeline_id");
                 PipelineStep step = PipelineStep.of(
@@ -181,26 +197,22 @@ public class PipelineDAOImpl implements PipelineDAO {
             }
 
             return null;
-        }, projectId);
+        }, params);
 
         Collection<Pipeline> pipelines = pipelineMap.values();
         pipelines.forEach(Pipeline::sortedSteps);
 
-        return new ArrayList<>(pipelines);
+        return pipelines;
     }
 
     @Override
-    public List<Pipeline> listAllByOwnerId(UUID ownerId) {
-        Collection<Pipeline> pipelines = retrieveAllBasedQueryWithAnIdCondition(selectPipelinesByOwnerIdQuery, ownerId);
-        return new ArrayList<>(pipelines);
+    public List<Pipeline> findAll(UUID projectId) {
+        return new ArrayList<>(retrievePipelinesByQueryAndParams(selectAllPipelineQuery, projectId));
     }
 
     @Override
-    public List<Pipeline> listAllPipelineByProjectAndProvider(UUID projectId, UUID providerId) {
-        List<Pipeline> pipelinesFromProject = findPipelinesByProjectId(projectId).stream().toList();
-        List<Pipeline> pipelinesByProviderId = pipelinesFromProject.stream()
-                .filter(pipeline -> pipeline.getSteps().stream().anyMatch(step -> step.getProvider().getId().equals(providerId))).toList();
-        return pipelinesByProviderId;
+    public List<Pipeline> listAllPipelinesByProvider(UUID providerId) {
+        return new ArrayList<>(retrievePipelinesByQueryAndParams(selectPipelineByProviderIdQuery, providerId));
     }
 
     @Override

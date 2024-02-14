@@ -54,10 +54,10 @@ public class PipelineController {
     }
 
     @GetMapping("/providers/{providerId}")
-    public ResponseEntity<List<PipelineResponse>> listAllByProvider(
+    public ResponseEntity<List<PipelineResponse>> listAllByProviderAndProject(
             @PathVariable UUID projectId,
             @PathVariable UUID providerId) {
-        List<Pipeline> pipelines = pipelineCRUD.listAllPipelineByProviderId(projectId, providerId);
+        List<Pipeline> pipelines = pipelineCRUD.listAllPipelineByProviderIdAndProject(projectId, providerId);
 
         return ResponseEntity.ok(
                 pipelines.stream()
