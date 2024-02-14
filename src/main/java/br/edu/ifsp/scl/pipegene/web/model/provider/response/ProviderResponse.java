@@ -4,6 +4,7 @@ import br.edu.ifsp.scl.pipegene.domain.Group;
 import br.edu.ifsp.scl.pipegene.domain.Provider;
 import br.edu.ifsp.scl.pipegene.web.controller.GroupController;
 import br.edu.ifsp.scl.pipegene.web.model.provider.request.ProviderOperationDTO;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ public class ProviderResponse {
     private String description;
     private String url;
     private String urlSource;
+    @JsonProperty("isPublic")
     private Boolean isPublic;
     private List<Group> groups;
     private Collection<String> inputSupportedTypes;
