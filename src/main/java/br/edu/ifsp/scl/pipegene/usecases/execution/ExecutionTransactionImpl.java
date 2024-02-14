@@ -49,6 +49,11 @@ public class ExecutionTransactionImpl implements ExecutionTransaction {
 
         logger.info(execution.toString());
 
+        if (execution.getPipeline().getStatus() == PipelineStatus.DISABLED) {
+            logger.info("Pipeline " + execution.getPipeline().getId() + " is disabled. Skip execution...");
+            return;
+        }
+
         ExecutionStep executionStep = execution.getFirstStep();
 
         Provider provider = providerDAO

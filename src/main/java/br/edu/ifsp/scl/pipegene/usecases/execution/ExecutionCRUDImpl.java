@@ -1,10 +1,7 @@
 package br.edu.ifsp.scl.pipegene.usecases.execution;
 
 import br.edu.ifsp.scl.pipegene.configuration.security.IAuthenticationFacade;
-import br.edu.ifsp.scl.pipegene.domain.Dataset;
-import br.edu.ifsp.scl.pipegene.domain.Execution;
-import br.edu.ifsp.scl.pipegene.domain.Pipeline;
-import br.edu.ifsp.scl.pipegene.domain.Project;
+import br.edu.ifsp.scl.pipegene.domain.*;
 import br.edu.ifsp.scl.pipegene.usecases.execution.gateway.ExecutionDAO;
 import br.edu.ifsp.scl.pipegene.usecases.execution.queue.QueueService;
 import br.edu.ifsp.scl.pipegene.usecases.project.gateway.ProjectDAO;
@@ -50,6 +47,11 @@ public class ExecutionCRUDImpl implements ExecutionCRUD {
         UUID executionId = queueService.add(request);
         Dataset dataset = project.findDatasetById(request.getDatasetId());
         Pipeline pipeline = project.findPipelineById(request.getPipelineId());
+
+        if (pipeline.getStatus() == PipelineStatus.DISABLED) {
+            throw new IllegalArgumentException("Pipeline " + pipeline.getId() + " is disabled");
+        }
+
         pipeline.setFirstInputType(dataset.getFileType());
 
         Execution execution = Execution.createWithWaitingStatus(executionId, pipeline, dataset,
