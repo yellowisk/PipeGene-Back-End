@@ -185,22 +185,6 @@ queries:
           SELECT p.id, p.project_id, p.description, p.status 
           FROM pipegine_platform.pipeline p WHERE p.id=?
 
-        pipeline-by-provider-id: >
-          SELECT DISTINCT 
-            p.id pipeline_id,
-            p.description pipeline_description,
-            p.status pipeline_status,
-
-            ps.step_id pipeline_step_id,
-            ps.provider_id pipeline_step_provider_id,
-            ps.input_type pipeline_step_input_type,
-            ps.output_type pipeline_step_output_type,
-            ps.params pipeline_step_params,
-            ps.step_number pipeline_step_number
-          FROM pipegine_platform.pipeline p
-          INNER JOIN pipegine_platform.pipeline_step ps ON ps.pipeline_id = p.id
-          WHERE ps.provider_id = ?
-
         pipeline-steps-by-pipeline-id: >
           SELECT
             ps.*,
@@ -246,6 +230,42 @@ queries:
           FROM pipegine_platform.pipeline_step ps
             INNER JOIN pipegine_platform.provider p ON p.id=ps.provider_id
           WHERE ps.pipeline_id=ANY(?)
+        pipeline-by-provider-id: >
+          SELECT DISTINCT 
+            p.id pipeline_id,
+            p.description pipeline_description,
+            p.status pipeline_status,
+          
+            ps.step_id pipeline_step_id,
+            ps.provider_id pipeline_step_provider_id,
+            ps.input_type pipeline_step_input_type,
+            ps.output_type pipeline_step_output_type,
+            ps.params pipeline_step_params,
+            ps.step_number pipeline_step_number
+          FROM pipegine_platform.pipeline p
+          INNER JOIN pipegine_platform.pipeline_step ps ON ps.pipeline_id = p.id
+          WHERE ps.provider_id = ?
+
+        all-pipeline-by-provider-and-project-id: >
+          SELECT DISTINCT
+              p.id AS pipeline_id,
+              p.description AS pipeline_description,
+              p.status AS pipeline_status
+          
+              ps.step_id pipeline_step_id,
+              ps.provider_id pipeline_step_provider_id,
+              ps.input_type pipeline_step_input_type,
+              ps.output_type pipeline_step_output_type,
+              ps.params pipeline_step_params,
+              ps.step_number pipeline_step_number
+          FROM
+              pipegine_platform.pipeline p
+              INNER JOIN pipegine_platform.pipeline_step ps ON p.id = ps.pipeline_id
+              INNER JOIN pipegine_platform.project proj ON p.project_id = proj.id
+          WHERE
+              ps.provider_id = ?
+              AND proj.id = ?
+
       update:
         pipeline-by-id: >
           UPDATE pipegine_platform.pipeline SET description=?, status=?::pipeline_status WHERE id=?;

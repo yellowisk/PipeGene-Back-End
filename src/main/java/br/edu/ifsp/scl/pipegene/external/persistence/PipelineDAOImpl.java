@@ -49,6 +49,9 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Value("${queries.sql.pipeline-dao.select.pipeline-by-provider-id}")
     private String selectPipelineByProviderIdQuery;
 
+    @Value("${queries.sql.pipeline-dao.select.all-pipeline-by-provider-and-project-id}")
+    private String selectPipelineByProviderAndProjectIdQuery;
+
     @Value("${queries.sql.pipeline-dao.select.pipeline-steps-by-pipeline-ids}")
     private String selectPipelineStepsByPipelineIdsQuery;
 
@@ -218,6 +221,11 @@ public class PipelineDAOImpl implements PipelineDAO {
     @Override
     public Collection<Pipeline> findPipelinesByProjectId(UUID projectId) {
         return retrieveAllBasedQueryWithAnIdCondition(selectPipelinesByProjectIdQuery, projectId);
+    }
+
+    @Override
+    public List<Pipeline> listAllPipelinesByProviderAndProjectId(UUID projectId, UUID providerId){
+        return new ArrayList<>(retrievePipelinesByQueryAndParams(selectPipelineByProviderAndProjectIdQuery, providerId, projectId));
     }
 
     private Collection<Pipeline> retrieveAllBasedQueryWithAnIdCondition(String query, UUID id) {

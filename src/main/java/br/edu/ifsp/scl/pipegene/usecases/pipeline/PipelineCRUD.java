@@ -18,6 +18,7 @@ public interface PipelineCRUD {
     List<Pipeline> listAllPipelinesByUserId(UUID userId);
     List<Pipeline> listAllPipelineByProviderIdAndProject(UUID projectId, UUID providerId);
     List<Pipeline> listAllPipelineByProviderId(UUID providerId);
+    List<Pipeline> listAllPipelineByProviderAndProjectId(UUID projectId, UUID providerId);
     PipelineStepDTO findPipelineStepById(UUID projectId, UUID pipelineId, UUID stepId);
     List<PipelineStepDTO> listAllPipelineStepsByPipelineId(UUID projectId, UUID pipelineId);
     Pipeline updatePipeline(UUID projectId, UUID pipelineId, UpdatePipelineRequest request);

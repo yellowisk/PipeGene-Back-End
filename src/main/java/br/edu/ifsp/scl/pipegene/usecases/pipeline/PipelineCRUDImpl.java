@@ -180,6 +180,19 @@ public class PipelineCRUDImpl implements PipelineCRUD {
     }
 
     @Override
+    public List<Pipeline> listAllPipelineByProviderAndProjectId(UUID projectId, UUID providerId) {
+        providerDAO.findProviderById(providerId).orElseThrow(
+                () -> new ResourceNotFoundException("Couldn't find provider with id: " + providerId)
+        );
+
+        projectDAO.findProjectById(projectId).orElseThrow(
+                () -> new ResourceNotFoundException("Couldn't find project with id: " + projectId)
+        );
+
+        return pipelineDAO.listAllPipelinesByProviderAndProjectId(projectId, providerId);
+    }
+
+    @Override
     public PipelineStepDTO findPipelineStepById(UUID projectId, UUID pipelineId, UUID stepId) {
         Boolean projectExists = projectDAO.projectExists(projectId);
         if (!projectExists) {
