@@ -175,7 +175,7 @@ public class ProviderDAOImpl implements ProviderDAO {
 
     @Override
     public List<Provider> findAllProvidersByUserAndProjectId(UUID userId, UUID projectId) {
-        return jdbcTemplate.query(selectAllProviderByUserAndProjectIdQuery, this::mapperToProvider, userId, projectId);
+        return jdbcTemplate.query(selectAllProviderByUserAndProjectIdQuery, this::mapperToProvider, userId, userId, projectId);
     }
 
     @Override
