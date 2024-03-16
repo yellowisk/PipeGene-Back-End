@@ -157,3 +157,97 @@ VALUES ('7b97b9b1-346b-47ed-aeef-bee8bbdcf064', '3677aa2e-6be8-43f9-ad8c-a0f1f71
 INSERT INTO pipegine_platform.pipeline_step (step_id, pipeline_id, provider_id, input_type, output_type, params, step_number)
  VALUES ('2fe129d3-f3d2-46c5-b34a-e472ed217b07', '3677aa2e-6be8-43f9-ad8c-a0f1f71e2040', '49df4595-b8af-4e32-8791-65e583ae08a2',
          'maf', 'png', '{"columns": "Hugo_Symbol,Chromosome,Start_Position,End_Position,Reference_Allele,Tumor_Seq_Allele2,Variant_Classification,Variant_Type,Tumor_Sample_Barcode"}', 2);
+
+-- QUERIES SERVIÇOS PRISCILA
+
+INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
+VALUES ('2147af4c-a4ca-4e11-98b5-e6fc8bfe7d0e'::uuid, 'service 3 Plot gene bar chart', 'service 3', 'http://localhost:5012/', 'http://localhost:5012/', true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        to_json('[{
+          "type": "column",
+          "description": "app service 3",
+          "params": [
+            {
+              "type": "text",
+              "name": "a",
+              "key": "app service 3",
+              "example": "e"
+            }
+          ]
+        }]'::jsonb));
+
+INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
+VALUES ('25d6d899-9c8b-4833-8f13-04684648bf1d'::uuid, 'service 7 Plot composite bar chart', 'service 7', 'http://localhost:5017/', 'http://localhost:5017/', true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        to_json('[{
+          "type": "column",
+          "description": "app service 7",
+          "params": [
+            {
+              "type": "text",
+              "name": "a",
+              "key": "app service 7",
+              "example": "e"
+            }
+          ]
+        }]'::jsonb));
+
+INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
+VALUES ('5b20c543-0254-44ac-b572-c3f267abc3f2'::uuid, 'service 6 Compute top ten mutation', 'service 6', 'http://localhost:5016/', 'x', true, 'tsv', 'json', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        to_json('[{
+          "type": "column",
+          "description": "service 6 app",
+          "params": [
+            {
+              "type": "text",
+              "name": "a",
+              "key": "service 6 app",
+              "example": "e"
+            }
+          ]
+        }]'::jsonb));
+
+INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
+VALUES ('6147edd6-4b8d-4481-8bd4-6a40ecbaa19f'::uuid, 'service 4 Compute mutation incidence', 'service 4', 'http://localhost:5014/', NULL, true, 'tsv', 'json', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        to_json('[{
+          "type": "column",
+          "description": "service 4",
+          "params": [
+            {
+              "type": "text",
+              "name": "a",
+              "key": "service 4",
+              "example": "e"
+            }
+          ]
+        }]'::jsonb));
+
+INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
+VALUES ('944df70f-120a-472d-8a36-60026873d2b3'::uuid, 'service 2 Compute gene incidence', 'service 2 ', 'http://localhost:5011/', NULL, true, 'tsv', 'tsv', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        to_json('[{
+          "type": "column",
+          "description": "service 2",
+          "params": [
+            {
+              "type": "text",
+              "name": "a",
+              "key": "service 2",
+              "example": "e"
+            }
+          ]
+        }]'::jsonb));
+
+INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
+VALUES ('12dd474e-1d1c-4bda-999e-bf2a7dfbf465'::uuid, 'service 5 Plot mutation barchart snv', 'service 5', 'http://localhost:5015/', NULL, true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+        to_json('[{
+          "type": "column",
+          "description": "service 5",
+          "params": [
+            {
+              "type": "text",
+              "name": "a",
+              "key": "service 5",
+              "example": "e"
+            }
+          ]
+        }]'::jsonb));
+
+
