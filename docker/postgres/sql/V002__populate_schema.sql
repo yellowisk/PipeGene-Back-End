@@ -161,91 +161,91 @@ INSERT INTO pipegine_platform.pipeline_step (step_id, pipeline_id, provider_id, 
 -- QUERIES SERVIÇOS PRISCILA
 
 INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
-VALUES ('2147af4c-a4ca-4e11-98b5-e6fc8bfe7d0e'::uuid, 'service 3 Plot gene bar chart', 'service 3', 'http://localhost:5012/', 'http://localhost:5012/', true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+VALUES ('2147af4c-a4ca-4e11-98b5-e6fc8bfe7d0e'::uuid, 'Compute Gene Incidence', 'Este serviço computa a incidência genética com base em um arquivo MAF pré-processado. Ele utiliza os dados de variantes para calcular a incidência genética, produzindo uma visualização em formato PNG.', 'http://localhost:5012/', 'https://github.com/lucas-ifsp/pipegene-services.git', true, 'maf', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
         to_json('[{
           "type": "column",
-          "description": "app service 3",
+          "description": "Compute Gene Incidence",
           "params": [
             {
               "type": "text",
-              "name": "a",
-              "key": "app service 3",
-              "example": "e"
+              "name": "colunas desejadas",
+              "key": "columns",
+              "example": "Hugo_Symbol, Chromosome"
             }
           ]
         }]'::jsonb));
 
 INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
-VALUES ('25d6d899-9c8b-4833-8f13-04684648bf1d'::uuid, 'service 7 Plot composite bar chart', 'service 7', 'http://localhost:5017/', 'http://localhost:5017/', true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+VALUES ('25d6d899-9c8b-4833-8f13-04684648bf1d'::uuid, 'Plot Gene Bar Chart', 'Este serviço gera um gráfico de barras de genes com base em um conjunto de dados de variantes. Utilizando um formato de entrada JSON, produz um gráfico PNG que visualiza a distribuição de genes.', 'http://localhost:5017/', 'https://github.com/lucas-ifsp/pipegene-services.git', true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
         to_json('[{
           "type": "column",
-          "description": "app service 7",
+          "description": "Plot Gene Bar Chart",
           "params": [
             {
               "type": "text",
-              "name": "a",
-              "key": "app service 7",
-              "example": "e"
+              "name": "colunas desejadas",
+              "key": "columns",
+              "example": "Hugo_Symbol, Chromosome"
             }
           ]
         }]'::jsonb));
 
 INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
-VALUES ('5b20c543-0254-44ac-b572-c3f267abc3f2'::uuid, 'service 6 Compute top ten mutation', 'service 6', 'http://localhost:5016/', 'x', true, 'tsv', 'json', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+VALUES ('5b20c543-0254-44ac-b572-c3f267abc3f2'::uuid, 'Compute Mutation Incidence', 'Este serviço calcula a incidência de mutações com base em um arquivo MAF pré-processado. Utiliza os dados de variantes para calcular a incidência de mutações, gerando um formato de saída JSON que descreve a incidência.', 'http://localhost:5016/', 'https://github.com/lucas-ifsp/pipegene-services.git', true, 'tsv', 'json', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
         to_json('[{
           "type": "column",
-          "description": "service 6 app",
+          "description": "Compute Mutation Incidence",
           "params": [
             {
               "type": "text",
-              "name": "a",
-              "key": "service 6 app",
-              "example": "e"
+              "name": "colunas desejadas",
+              "key": "columns",
+              "example": "Hugo_Symbol, Chromosome"
             }
           ]
         }]'::jsonb));
 
 INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
-VALUES ('6147edd6-4b8d-4481-8bd4-6a40ecbaa19f'::uuid, 'service 4 Compute mutation incidence', 'service 4', 'http://localhost:5014/', NULL, true, 'tsv', 'json', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+VALUES ('6147edd6-4b8d-4481-8bd4-6a40ecbaa19f'::uuid, 'Plot Mutation Barchart Snv', 'Este serviço gera um gráfico de barras de mutações SNV (Single Nucleotide Variant) com base em um conjunto de dados de variantes. Aceita um formato de entrada TSV e produz um gráfico em formato JSON que visualiza as mutações.', 'http://localhost:5014/', 'https://github.com/lucas-ifsp/pipegene-services.git', true, 'tsv', 'json', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
         to_json('[{
           "type": "column",
-          "description": "service 4",
+          "description": "Plot Mutation Barchart Snv",
           "params": [
             {
               "type": "text",
-              "name": "a",
-              "key": "service 4",
-              "example": "e"
+              "name": "colunas desejadas",
+              "key": "columns",
+              "example": "Hugo_Symbol, Chromosome"
             }
           ]
         }]'::jsonb));
 
 INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
-VALUES ('944df70f-120a-472d-8a36-60026873d2b3'::uuid, 'service 2 Compute gene incidence', 'service 2 ', 'http://localhost:5011/', NULL, true, 'tsv', 'tsv', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+VALUES ('944df70f-120a-472d-8a36-60026873d2b3'::uuid, 'Compute Top Ten Mutation', 'Este serviço computa as dez principais mutações com base em um arquivo TSV de variantes. Utiliza os dados para identificar as dez mutações mais comuns, produzindo um formato de saída TSV descrevendo essas mutações.', 'http://localhost:5011/', 'https://github.com/lucas-ifsp/pipegene-services.git', true, 'tsv', 'tsv', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
         to_json('[{
           "type": "column",
-          "description": "service 2",
+          "description": "Compute Top Ten Mutation",
           "params": [
             {
               "type": "text",
-              "name": "a",
-              "key": "service 2",
-              "example": "e"
+              "name": "colunas desejadas",
+              "key": "columns",
+              "example": "Hugo_Symbol, Chromosome"
             }
           ]
         }]'::jsonb));
 
 INSERT INTO pipegine_platform.provider(id, name, description, url, url_source, public, input_supported_types, output_supported_types, owner_id, operations)
-VALUES ('12dd474e-1d1c-4bda-999e-bf2a7dfbf465'::uuid, 'service 5 Plot mutation barchart snv', 'service 5', 'http://localhost:5015/', NULL, true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
+VALUES ('12dd474e-1d1c-4bda-999e-bf2a7dfbf465'::uuid, 'Plot Composite Bar Chart', 'Este serviço gera um gráfico de barras compostas com base em um conjunto de dados de variantes. Utiliza um formato de entrada JSON e produz um gráfico em formato PNG que compara diferentes tipos de mutações.', 'http://localhost:5015/', 'https://github.com/lucas-ifsp/pipegene-services.git', true, 'json', 'png', '78cec5db-6396-4fd9-803f-1fd469d76330'::uuid,
         to_json('[{
           "type": "column",
-          "description": "service 5",
+          "description": "Plot Composite Bar Chart",
           "params": [
             {
               "type": "text",
-              "name": "a",
-              "key": "service 5",
-              "example": "e"
+              "name": "colunas desejadas",
+              "key": "columns",
+              "example": "Hugo_Symbol, Chromosome"
             }
           ]
         }]'::jsonb));
